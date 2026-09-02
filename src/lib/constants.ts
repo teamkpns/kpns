@@ -24,6 +24,7 @@ export const DEFAULT_CLUB_SETTINGS: ClubSettings = {
   contactEmail: 'contact@kpns.org.in',
   contactPhone: '+91 98765 43210',
   address: 'Vill: Khejurdaha, P.O: Khejurdaha, Dist: Purba Medinipur, West Bengal - 721401',
+  logoUrl: '/img/logo.png',
   registrationOpen: true,
   autoGenerateMemberId: true,
   memberIdPrefix: 'KPNS',

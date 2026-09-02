@@ -160,7 +160,7 @@ export default function AdminSettingsPage() {
                         <p className="text-xs font-bold text-gray-800">
                           {clubSettings.clubNameBengali}
                         </p>
-                        <p className="text-[11px] text-gray-500">Vector SVG Badge Active</p>
+                        <p className="text-[11px] text-gray-500">Official Logo (/img/logo.png) Active</p>
                       </div>
                     </div>
 
