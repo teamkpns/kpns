@@ -8,7 +8,6 @@ import {
   UserOutlined,
   KeyOutlined,
   BellOutlined,
-  GiftOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
@@ -23,7 +22,6 @@ export const MemberLayout: React.FC<{ children: React.ReactNode }> = ({ children
     { label: 'Dashboard', href: '/member/dashboard', icon: <DashboardOutlined /> },
     { label: 'My Profile', href: '/member/profile', icon: <UserOutlined /> },
     { label: 'Change Password', href: '/member/password', icon: <KeyOutlined /> },
-    { label: 'Birthdays', href: '/member/birthdays', icon: <GiftOutlined /> },
     { label: 'Notifications', href: '/member/notifications', icon: <BellOutlined />, badge: unread },
   ];
 

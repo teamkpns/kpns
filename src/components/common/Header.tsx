@@ -92,11 +92,6 @@ export const Header: React.FC = () => {
             icon: <KeyOutlined />,
             label: <Link href="/member/password">Change Password</Link>,
           },
-          {
-            key: 'member-birthdays',
-            icon: <GiftOutlined />,
-            label: <Link href="/member/birthdays">Birthdays</Link>,
-          },
         ]),
     { type: 'divider' },
     {
@@ -313,14 +308,6 @@ export const Header: React.FC = () => {
               >
                 <KeyOutlined className="text-base text-[#3447AA]" />
                 <span>Change Password</span>
-              </Link>
-              <Link
-                href="/member/birthdays"
-                onClick={() => setMobileDrawerOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
-              >
-                <GiftOutlined className="text-base text-[#3447AA]" />
-                <span>Birthdays</span>
               </Link>
               <Link
                 href="/member/notifications"

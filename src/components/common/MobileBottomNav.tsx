@@ -181,14 +181,6 @@ export const MobileBottomNav: React.FC = () => {
                 <KeyOutlined className="text-2xl text-[#3447AA] mb-1" />
                 <span className="text-xs font-semibold text-gray-800">Password</span>
               </Link>
-              <Link
-                href="/member/birthdays"
-                onClick={() => setMoreDrawerOpen(false)}
-                className="flex flex-col items-center p-3 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
-              >
-                <GiftOutlined className="text-2xl text-[#3447AA] mb-1" />
-                <span className="text-xs font-semibold text-gray-800">Birthdays</span>
-              </Link>
             </>
           )}
 

@@ -7,7 +7,6 @@ import {
   UserOutlined,
   EditOutlined,
   LockOutlined,
-  GiftOutlined,
   BellOutlined,
   CalendarOutlined,
   IdcardOutlined,
@@ -147,17 +146,6 @@ export default function MemberDashboardPage() {
               </div>
               <span className="text-xs sm:text-sm font-bold text-gray-900">Password</span>
               <span className="text-[10px] text-gray-400 mt-0.5">Change security</span>
-            </Link>
-
-            <Link
-              href="/member/birthdays"
-              className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs hover:shadow-md hover:border-pink-100 transition group flex flex-col items-center text-center"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition">
-                <GiftOutlined />
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-gray-900">Birthdays</span>
-              <span className="text-[10px] text-gray-400 mt-0.5">Celebration feed</span>
             </Link>
           </div>
         </div>
