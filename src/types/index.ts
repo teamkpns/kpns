@@ -30,6 +30,7 @@ export interface Member {
   postOffice?: string;
   policeStation?: string;
   city?: string;
+  district?: string;
   state: string;
   country: string;
   pincode: string;
@@ -63,6 +64,7 @@ export interface Application {
   postOffice?: string;
   policeStation?: string;
   city?: string;
+  district?: string;
   state: string;
   country: string;
   pincode: string;

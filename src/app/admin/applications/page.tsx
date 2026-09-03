@@ -439,13 +439,17 @@ export default function AdminApplicationsPage() {
                     <p className="font-bold text-gray-900">{selectedApp.policeStation || '—'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">City / District:</span>
+                    <span className="text-gray-400">City / Block:</span>
                     <p className="font-bold text-gray-900">{selectedApp.city || '—'}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">District:</span>
+                    <p className="font-bold text-[#3447AA]">{selectedApp.district || 'Purba Medinipur'}</p>
                   </div>
                   <div>
                     <span className="text-gray-400">State & Country:</span>
                     <p className="font-bold text-gray-900">
-                      {selectedApp.state}, {selectedApp.country}
+                      {selectedApp.state || 'West Bengal'}, {selectedApp.country || 'India'}
                     </p>
                   </div>
                   <div>

@@ -152,6 +152,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             postOffice: m.post_office,
             policeStation: m.police_station,
             city: m.city,
+            district: m.district || 'Purba Medinipur',
             state: m.state || 'West Bengal',
             country: m.country || 'India',
             pincode: m.pincode,
@@ -182,8 +183,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             postOffice: a.post_office,
             policeStation: a.police_station,
             city: a.city,
-            state: a.state,
-            country: a.country,
+            district: a.district || 'Purba Medinipur',
+            state: a.state || 'West Bengal',
+            country: a.country || 'India',
             pincode: a.pincode,
             fromNo: a.from_no,
             memberId: a.member_id,
@@ -340,6 +342,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             post_office: newApp.postOffice,
             police_station: newApp.policeStation,
             city: newApp.city,
+            district: newApp.district || 'Purba Medinipur',
             state: newApp.state,
             country: newApp.country,
             pincode: newApp.pincode,
@@ -429,6 +432,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       postOffice: targetApp.postOffice,
       policeStation: targetApp.policeStation,
       city: targetApp.city,
+      district: targetApp.district || 'Purba Medinipur',
       state: targetApp.state,
       country: targetApp.country,
       pincode: targetApp.pincode,
@@ -477,6 +481,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             post_office: newMember.postOffice,
             police_station: newMember.policeStation,
             city: newMember.city,
+            district: newMember.district,
             state: newMember.state,
             country: newMember.country,
             pincode: newMember.pincode,
@@ -577,6 +582,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (updatedFields.postOffice !== undefined) updatePayload.post_office = updatedFields.postOffice;
         if (updatedFields.policeStation !== undefined) updatePayload.police_station = updatedFields.policeStation;
         if (updatedFields.city !== undefined) updatePayload.city = updatedFields.city;
+        if (updatedFields.district !== undefined) updatePayload.district = updatedFields.district;
+        if (updatedFields.state !== undefined) updatePayload.state = updatedFields.state;
         if (updatedFields.pincode) updatePayload.pincode = updatedFields.pincode;
         if (updatedFields.status) updatePayload.status = updatedFields.status;
 
@@ -649,6 +656,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         postOffice: item.postOffice || '',
         policeStation: item.policeStation || '',
         city: item.city || '',
+        district: item.district || 'Purba Medinipur',
         state: item.state || 'West Bengal',
         country: item.country || 'India',
         pincode: item.pincode || '721401',
@@ -674,6 +682,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         email: newMember.email,
         blood_group: newMember.bloodGroup,
         village_town: newMember.villageTown,
+        district: newMember.district,
         pincode: newMember.pincode,
         profile_completion: newMember.profileCompletion,
       });

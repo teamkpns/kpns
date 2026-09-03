@@ -34,7 +34,7 @@ import { StatusTag } from '@/components/common/StatusTag';
 import { AadhaarMask } from '@/components/common/AadhaarMask';
 import { usePortal } from '@/context/portal-context';
 import { Member } from '@/types';
-import { BLOOD_GROUPS, KPNS_COLORS } from '@/lib/constants';
+import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import dayjs from 'dayjs';
 
@@ -408,7 +408,9 @@ export default function AdminMembersPage() {
                   <p><strong>Village/Town:</strong> {selectedMember.villageTown}</p>
                   <p><strong>Post Office:</strong> {selectedMember.postOffice || '—'}</p>
                   <p><strong>Police Station:</strong> {selectedMember.policeStation || '—'}</p>
-                  <p><strong>City / State:</strong> {selectedMember.city || '—'}, {selectedMember.state}</p>
+                  <p><strong>City / Block:</strong> {selectedMember.city || '—'}</p>
+                  <p><strong>District:</strong> <span className="text-[#3447AA] font-bold">{selectedMember.district || 'Purba Medinipur'}</span></p>
+                  <p><strong>State:</strong> {selectedMember.state || 'West Bengal'}</p>
                   <p><strong>Pincode:</strong> {selectedMember.pincode}</p>
                 </div>
               </div>
@@ -508,15 +510,38 @@ export default function AdminMembersPage() {
                 </Form.Item>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <Form.Item label="Village / Town *" name="villageTown" rules={[{ required: true }]}>
                   <Input className="rounded-xl" />
                 </Form.Item>
                 <Form.Item label="Post Office" name="postOffice">
                   <Input className="rounded-xl" />
                 </Form.Item>
-                <Form.Item label="City" name="city">
+                <Form.Item label="Police Station" name="policeStation">
                   <Input className="rounded-xl" />
+                </Form.Item>
+                <Form.Item label="City / Block" name="city">
+                  <Input className="rounded-xl" />
+                </Form.Item>
+                <Form.Item label="District *" name="district" rules={[{ required: true }]}>
+                  <Select
+                    showSearch
+                    className="rounded-xl"
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={WEST_BENGAL_DISTRICTS.map((d) => ({ label: d, value: d }))}
+                  />
+                </Form.Item>
+                <Form.Item label="State *" name="state" rules={[{ required: true }]}>
+                  <Select
+                    showSearch
+                    className="rounded-xl"
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={INDIAN_STATES.map((s) => ({ label: s, value: s }))}
+                  />
                 </Form.Item>
                 <Form.Item label="Pincode *" name="pincode" rules={[{ required: true }]}>
                   <Input className="rounded-xl" maxLength={6} />

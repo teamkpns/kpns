@@ -29,7 +29,7 @@ import {
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
-import { BLOOD_GROUPS, KPNS_COLORS } from '@/lib/constants';
+import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS } from '@/lib/constants';
 import { maskAadhaar, formatDate } from '@/lib/utils';
 import dayjs from 'dayjs';
 
@@ -45,6 +45,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState<any>({
     country: 'India',
     state: 'West Bengal',
+    district: 'Purba Medinipur',
     villageTown: 'Khejurdaha',
   });
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
@@ -95,6 +96,7 @@ export default function RegisterPage() {
           'postOffice',
           'policeStation',
           'city',
+          'district',
           'state',
           'country',
           'pincode',
@@ -133,6 +135,7 @@ export default function RegisterPage() {
         postOffice: formData.postOffice || '',
         policeStation: formData.policeStation || '',
         city: formData.city || '',
+        district: formData.district || 'Purba Medinipur',
         state: formData.state || 'West Bengal',
         country: formData.country || 'India',
         pincode: formData.pincode,
@@ -200,6 +203,7 @@ export default function RegisterPage() {
             initialValues={{
               country: 'India',
               state: 'West Bengal',
+              district: 'Purba Medinipur',
               villageTown: 'Khejurdaha',
               pincode: '721401',
               bloodGroup: 'O+',
@@ -387,17 +391,44 @@ export default function RegisterPage() {
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">City</span>}
+                    label={<span className="text-xs font-bold text-gray-700">City / Block</span>}
                     name="city"
                   >
                     <Input placeholder="e.g. Contai" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">State</span>}
-                    name="state"
+                    label={<span className="text-xs font-bold text-gray-700">District *</span>}
+                    name="district"
+                    rules={[{ required: true, message: 'Please select District' }]}
                   >
-                    <Input placeholder="e.g. West Bengal" size="large" className="rounded-xl" />
+                    <Select
+                      showSearch
+                      placeholder="Select District"
+                      size="large"
+                      className="rounded-xl"
+                      filterOption={(input, option) =>
+                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                      }
+                      options={WEST_BENGAL_DISTRICTS.map((d) => ({ label: d, value: d }))}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span className="text-xs font-bold text-gray-700">State *</span>}
+                    name="state"
+                    rules={[{ required: true, message: 'Please select State' }]}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Select State"
+                      size="large"
+                      className="rounded-xl"
+                      filterOption={(input, option) =>
+                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                      }
+                      options={INDIAN_STATES.map((s) => ({ label: s, value: s }))}
+                    />
                   </Form.Item>
 
                   <Form.Item
@@ -546,13 +577,17 @@ export default function RegisterPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-400 font-medium">City</p>
+                      <p className="text-gray-400 font-medium">City / Block</p>
                       <p className="font-bold text-gray-800 text-sm mt-0.5">{formData.city || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 font-medium">District</p>
+                      <p className="font-bold text-[#3447AA] text-sm mt-0.5">{formData.district || 'Purba Medinipur'}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 font-medium">State & Country</p>
                       <p className="font-bold text-gray-800 text-sm mt-0.5">
-                        {formData.state}, {formData.country}
+                        {formData.state || 'West Bengal'}, {formData.country || 'India'}
                       </p>
                     </div>
                     <div>

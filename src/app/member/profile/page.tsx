@@ -27,7 +27,7 @@ import { MemberLayout } from '@/components/layouts/MemberLayout';
 import { StatusTag } from '@/components/common/StatusTag';
 import { AadhaarMask } from '@/components/common/AadhaarMask';
 import { usePortal } from '@/context/portal-context';
-import { BLOOD_GROUPS, KPNS_COLORS } from '@/lib/constants';
+import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import dayjs from 'dayjs';
 
@@ -61,6 +61,7 @@ function ProfileContent() {
     postOffice: 'Khejurdaha',
     policeStation: 'Khejuri',
     city: 'Contai',
+    district: 'Purba Medinipur',
     state: 'West Bengal',
     country: 'India',
     pincode: '721401',
@@ -347,6 +348,7 @@ function ProfileContent() {
                       postOffice: user.postOffice,
                       policeStation: user.policeStation,
                       city: user.city,
+                      district: user.district || 'Purba Medinipur',
                       state: user.state || 'West Bengal',
                       country: user.country || 'India',
                       pincode: user.pincode,
@@ -383,24 +385,49 @@ function ProfileContent() {
                       </Form.Item>
 
                       <Form.Item
-                        label={<span className="text-xs font-bold text-gray-700">City</span>}
+                        label={<span className="text-xs font-bold text-gray-700">City / Block</span>}
                         name="city"
                       >
                         <Input size="large" className="rounded-xl" />
                       </Form.Item>
 
                       <Form.Item
-                        label={<span className="text-xs font-bold text-gray-700">State</span>}
-                        name="state"
+                        label={<span className="text-xs font-bold text-gray-700">District *</span>}
+                        name="district"
+                        rules={[{ required: true, message: 'Please select District' }]}
                       >
-                        <Input size="large" className="rounded-xl" />
+                        <Select
+                          showSearch
+                          size="large"
+                          className="rounded-xl"
+                          filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                          }
+                          options={WEST_BENGAL_DISTRICTS.map((d) => ({ label: d, value: d }))}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        label={<span className="text-xs font-bold text-gray-700">State *</span>}
+                        name="state"
+                        rules={[{ required: true, message: 'Please select State' }]}
+                      >
+                        <Select
+                          showSearch
+                          size="large"
+                          className="rounded-xl"
+                          filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                          }
+                          options={INDIAN_STATES.map((s) => ({ label: s, value: s }))}
+                        />
                       </Form.Item>
 
                       <Form.Item
                         label={<span className="text-xs font-bold text-gray-700">Country</span>}
                         name="country"
                       >
-                        <Input size="large" className="rounded-xl" />
+                        <Input size="large" className="rounded-xl" disabled />
                       </Form.Item>
 
                       <Form.Item
