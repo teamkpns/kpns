@@ -124,9 +124,27 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return DEFAULT_CLUB_SETTINGS;
   });
 
-  const [currentRole, setCurrentRole] = useState<UserRole | 'GUEST'>('MEMBER');
+  const [currentRole, setCurrentRole] = useState<UserRole | 'GUEST'>(() => {
+    if (typeof window !== 'undefined') {
+      const savedRole = localStorage.getItem('kpns_auth_role');
+      if (savedRole === 'ADMIN' || savedRole === 'MEMBER' || savedRole === 'SUPERADMIN') {
+        return savedRole;
+      }
+    }
+    return 'GUEST';
+  });
   const [currentUser, setCurrentUser] = useState<Member | null>(() => {
-    return INITIAL_MEMBERS[0]; // Default to Pintu Patra
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('kpns_auth_user');
+      if (savedUser) {
+        try {
+          return JSON.parse(savedUser);
+        } catch {
+          // fallback
+        }
+      }
+    }
+    return null;
   });
 
   // Supabase Fetch Function
@@ -174,11 +192,25 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }));
         setMembers(mapped);
 
-        // Keep current user updated
+        // Keep current user updated if logged in
         setCurrentUser((prev) => {
-          if (!prev) return mapped[0];
+          if (!prev) {
+            if (typeof window !== 'undefined') {
+              const savedUserId = localStorage.getItem('kpns_auth_user_id');
+              if (savedUserId) {
+                const matched = mapped.find(
+                  (m) =>
+                    m.memberId.toLowerCase() === savedUserId.toLowerCase() ||
+                    m.id === savedUserId ||
+                    m.userId.toLowerCase() === savedUserId.toLowerCase()
+                );
+                if (matched) return matched;
+              }
+            }
+            return null;
+          }
           const matched = mapped.find((m) => m.memberId === prev.memberId || m.id === prev.id);
-          return matched || mapped[0];
+          return matched || prev;
         });
       }
 
@@ -348,6 +380,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (found) {
       setCurrentUser(found);
       setCurrentRole(found.role);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('kpns_auth_user_id', found.memberId);
+        localStorage.setItem('kpns_auth_role', found.role);
+        localStorage.setItem('kpns_auth_user', JSON.stringify(found));
+      }
       addActivityLog('User Logged In', found.memberId, `Logged in with ${identifier}`);
       return true;
     }
@@ -356,21 +393,43 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const adminUser = members.find((m) => m.role === 'ADMIN') || members[1] || INITIAL_MEMBERS[1];
       setCurrentUser(adminUser);
       setCurrentRole('ADMIN');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('kpns_auth_user_id', adminUser.memberId);
+        localStorage.setItem('kpns_auth_role', 'ADMIN');
+        localStorage.setItem('kpns_auth_user', JSON.stringify(adminUser));
+      }
       addActivityLog('Admin Demo Login', adminUser?.memberId, `Logged in as Admin`);
       return true;
     }
 
-    const defaultMember = members[0] || INITIAL_MEMBERS[0];
-    setCurrentUser(defaultMember);
-    setCurrentRole('MEMBER');
-    addActivityLog('Member Demo Login', defaultMember?.memberId, `Logged in as Member`);
-    return true;
+    if (role === 'MEMBER') {
+      const defaultMember = members.find((m) => m.role === 'MEMBER') || members[0] || INITIAL_MEMBERS[0];
+      setCurrentUser(defaultMember);
+      setCurrentRole('MEMBER');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('kpns_auth_user_id', defaultMember.memberId);
+        localStorage.setItem('kpns_auth_role', 'MEMBER');
+        localStorage.setItem('kpns_auth_user', JSON.stringify(defaultMember));
+      }
+      addActivityLog('Member Demo Login', defaultMember?.memberId, `Logged in as Member`);
+      return true;
+    }
+
+    return false;
   };
 
   const logout = () => {
-    addActivityLog('User Logged Out', currentUser?.memberId);
+    if (currentUser) {
+      addActivityLog('User Logged Out', currentUser.memberId);
+    }
     setCurrentRole('GUEST');
     setCurrentUser(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('kpns_auth_user_id');
+      localStorage.removeItem('kpns_auth_role');
+      localStorage.removeItem('kpns_auth_user');
+    }
+    message.success('Logged out successfully.');
   };
 
   const switchDemoUser = (target: 'MEMBER' | 'ADMIN') => {
@@ -378,11 +437,21 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const admin = members.find((m) => m.role === 'ADMIN') || members[1] || INITIAL_MEMBERS[1];
       setCurrentUser(admin);
       setCurrentRole('ADMIN');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('kpns_auth_user_id', admin.memberId);
+        localStorage.setItem('kpns_auth_role', 'ADMIN');
+        localStorage.setItem('kpns_auth_user', JSON.stringify(admin));
+      }
       message.info('Switched to Admin Mode (Arup Maiti)');
     } else {
       const member = members.find((m) => m.role === 'MEMBER') || members[0] || INITIAL_MEMBERS[0];
       setCurrentUser(member);
       setCurrentRole('MEMBER');
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('kpns_auth_user_id', member.memberId);
+        localStorage.setItem('kpns_auth_role', 'MEMBER');
+        localStorage.setItem('kpns_auth_user', JSON.stringify(member));
+      }
       message.info('Switched to Member Mode (Pintu Patra)');
     }
   };

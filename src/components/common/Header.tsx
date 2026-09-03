@@ -45,7 +45,7 @@ export const Header: React.FC = () => {
       label: (
         <div className="py-1 px-1">
           <p className="font-bold text-gray-900 text-sm">{currentUser?.name || 'User'}</p>
-          <p className="text-xs text-gray-500">{currentUser?.memberId || currentUser?.userId}</p>
+          <p className="text-xs text-gray-500 font-mono">{currentUser?.memberId || currentUser?.userId}</p>
           <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold bg-[#3447AA]/10 text-[#3447AA] rounded-md uppercase">
             {currentRole}
           </span>
@@ -75,6 +75,12 @@ export const Header: React.FC = () => {
             icon: <SettingOutlined />,
             label: <Link href="/admin/settings">Club Settings</Link>,
           },
+          { type: 'divider' as const },
+          {
+            key: 'view-member-portal',
+            icon: <DashboardOutlined />,
+            label: <Link href="/member/dashboard">Member Dashboard</Link>,
+          },
         ]
       : [
           {
@@ -92,22 +98,12 @@ export const Header: React.FC = () => {
             icon: <KeyOutlined />,
             label: <Link href="/member/password">Change Password</Link>,
           },
+          {
+            key: 'member-notifs',
+            icon: <BellOutlined />,
+            label: <Link href="/member/notifications">Notifications</Link>,
+          },
         ]),
-    { type: 'divider' },
-    {
-      key: 'switch-role',
-      icon: <SwapOutlined />,
-      label: (
-        <span
-          onClick={() => {
-            if (isAdmin) switchDemoUser('MEMBER');
-            else switchDemoUser('ADMIN');
-          }}
-        >
-          Switch to {isAdmin ? 'Member View' : 'Admin View'}
-        </span>
-      ),
-    },
     { type: 'divider' },
     {
       key: 'logout',
@@ -176,6 +172,7 @@ export const Header: React.FC = () => {
             Membership
           </Link>
 
+          {/* Normal member only sees Member Portal */}
           {isAuth && !isAdmin && (
             <Link
               href="/member/dashboard"
@@ -187,29 +184,42 @@ export const Header: React.FC = () => {
             </Link>
           )}
 
+          {/* Admin can see both Admin Portal and Member Portal ("admin can see all the page") */}
           {isAuth && isAdmin && (
-            <Link
-              href="/admin/dashboard"
-              className={`transition hover:text-[#3447AA] ${
-                pathname.startsWith('/admin') ? 'text-[#3447AA] font-semibold' : ''
-              }`}
-            >
-              Admin Portal
-            </Link>
+            <>
+              <Link
+                href="/admin/dashboard"
+                className={`transition hover:text-[#3447AA] font-bold ${
+                  pathname.startsWith('/admin') ? 'text-[#3447AA]' : 'text-blue-800'
+                }`}
+              >
+                Admin Portal
+              </Link>
+              <Link
+                href="/member/dashboard"
+                className={`transition hover:text-[#3447AA] ${
+                  pathname.startsWith('/member') ? 'text-[#3447AA] font-semibold' : ''
+                }`}
+              >
+                Member Portal
+              </Link>
+            </>
           )}
         </nav>
 
         {/* Right action items */}
         <div className="flex items-center gap-3">
-          {/* Notification bell */}
-          <Link
-            href={isAdmin ? '/admin/dashboard' : '/member/notifications'}
-            className="relative p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition flex items-center justify-center"
-          >
-            <Badge count={unreadCount} size="small" offset={[2, -2]}>
-              <BellOutlined className="text-xl text-gray-700" />
-            </Badge>
-          </Link>
+          {/* Notification bell (authenticated only) */}
+          {isAuth && (
+            <Link
+              href={isAdmin ? '/admin/dashboard' : '/member/notifications'}
+              className="relative p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition flex items-center justify-center"
+            >
+              <Badge count={unreadCount} size="small" offset={[2, -2]}>
+                <BellOutlined className="text-xl text-gray-700" />
+              </Badge>
+            </Link>
+          )}
 
           {/* User Profile or Login */}
           {isAuth ? (
@@ -413,19 +423,6 @@ export const Header: React.FC = () => {
           )}
 
           <div className="border-t border-gray-200 mt-4 pt-3 space-y-2">
-            <Button
-              block
-              icon={<SwapOutlined />}
-              onClick={() => {
-                if (isAdmin) switchDemoUser('MEMBER');
-                else switchDemoUser('ADMIN');
-                setMobileDrawerOpen(false);
-              }}
-              className="rounded-xl border-[#3447AA] text-[#3447AA] font-semibold text-xs h-9"
-            >
-              Switch to {isAdmin ? 'Member' : 'Admin'} Mode
-            </Button>
-
             {isAuth ? (
               <Button
                 danger
@@ -436,7 +433,7 @@ export const Header: React.FC = () => {
                   setMobileDrawerOpen(false);
                   router.push('/login');
                 }}
-                className="rounded-xl font-semibold text-xs h-9"
+                className="rounded-xl font-bold text-xs h-10"
               >
                 Logout
               </Button>
@@ -445,7 +442,7 @@ export const Header: React.FC = () => {
                 <Button
                   type="primary"
                   block
-                  className="bg-[#3447AA] rounded-xl font-semibold text-xs h-9"
+                  className="bg-[#3447AA] rounded-xl font-bold text-xs h-10"
                 >
                   Member / Admin Login
                 </Button>

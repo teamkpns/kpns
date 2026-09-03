@@ -21,6 +21,28 @@ export default function LoginPage() {
   const { login, switchDemoUser } = usePortal();
   const [loading, setLoading] = useState(false);
   const [roleType, setRoleType] = useState<UserRole>('MEMBER');
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const r = params.get('redirect');
+      if (r) setRedirectUrl(r);
+    }
+  }, []);
+
+  const getDestination = (role: 'ADMIN' | 'MEMBER' | 'SUPERADMIN') => {
+    if (redirectUrl) {
+      if (role === 'ADMIN' || role === 'SUPERADMIN') {
+        return redirectUrl;
+      }
+      // Regular members can only be redirected to member pages, never admin pages
+      if (redirectUrl.startsWith('/member') && !redirectUrl.startsWith('/admin')) {
+        return redirectUrl;
+      }
+    }
+    return role === 'ADMIN' || role === 'SUPERADMIN' ? '/admin/dashboard' : '/member/dashboard';
+  };
 
   const onFinish = (values: { identifier: string; password?: string; remember?: boolean }) => {
     setLoading(true);
@@ -29,15 +51,12 @@ export default function LoginPage() {
       setLoading(false);
       if (success) {
         message.success(`Welcome back! Logged in as ${roleType}`);
-        if (roleType === 'ADMIN') {
-          router.push('/admin/dashboard');
-        } else {
-          router.push('/member/dashboard');
-        }
+        const dest = getDestination(roleType);
+        router.push(dest);
       } else {
-        message.error('Invalid credentials. Please try demo accounts below.');
+        message.error('Invalid credentials. Please verify your User ID or Email.');
       }
-    }, 600);
+    }, 400);
   };
 
   const handleQuickDemoLogin = (targetRole: 'MEMBER' | 'ADMIN') => {
@@ -45,12 +64,9 @@ export default function LoginPage() {
     setTimeout(() => {
       switchDemoUser(targetRole);
       setLoading(false);
-      if (targetRole === 'ADMIN') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/member/dashboard');
-      }
-    }, 400);
+      const dest = getDestination(targetRole);
+      router.push(dest);
+    }, 300);
   };
 
   return (
