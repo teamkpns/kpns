@@ -30,6 +30,8 @@ import {
   KeyOutlined,
   CrownOutlined,
   MinusCircleOutlined,
+  DeleteOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { StatusTag } from '@/components/common/StatusTag';
@@ -43,7 +45,7 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 export default function AdminMembersPage() {
-  const { members, updateMemberProfile, addActivityLog, assignCommitteeRole } = usePortal();
+  const { members, updateMemberProfile, deleteMember, addActivityLog, assignCommitteeRole, refreshData } = usePortal();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [bloodFilter, setBloodFilter] = useState<string>('ALL');
@@ -54,6 +56,7 @@ export default function AdminMembersPage() {
   const [pendingRole, setPendingRole] = useState<string | null>(null);
   const [editForm] = Form.useForm();
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   // Filters logic
   const filteredMembers = members.filter((m) => {
@@ -154,15 +157,29 @@ export default function AdminMembersPage() {
             </p>
           </div>
 
-          <Link href="/admin/members/import">
+          <div className="flex items-center gap-2">
             <Button
-              type="primary"
-              icon={<UploadOutlined />}
-              className="bg-[#3447AA] font-bold text-xs h-10 px-5 rounded-xl shadow-xs"
+              icon={<ReloadOutlined spin={syncing} />}
+              onClick={async () => {
+                setSyncing(true);
+                await refreshData();
+                setSyncing(false);
+                message.success('Refreshed member list from database!');
+              }}
+              className="rounded-xl text-xs h-10 border-gray-300 font-semibold"
             >
-              Import Members (CSV/Excel)
+              Refresh Data
             </Button>
-          </Link>
+            <Link href="/admin/members/import">
+              <Button
+                type="primary"
+                icon={<UploadOutlined />}
+                className="bg-[#3447AA] font-bold text-xs h-10 px-5 rounded-xl shadow-xs"
+              >
+                Import Members
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Search & Filter Bar (Specification Section 20) */}
@@ -354,6 +371,23 @@ export default function AdminMembersPage() {
                         >
                           {member.committeeRole ? 'Role ✓' : 'Set Role'}
                         </Button>
+                        <Popconfirm
+                          title="Delete Member"
+                          description={`Are you sure you want to delete ${member.name} (${member.memberId}) permanently?`}
+                          onConfirm={() => deleteMember(member.memberId)}
+                          okText="Yes, Delete"
+                          cancelText="Cancel"
+                          okButtonProps={{ danger: true, className: 'bg-red-600 font-bold' }}
+                        >
+                          <Button
+                            size="small"
+                            danger
+                            icon={<DeleteOutlined />}
+                            className="rounded-lg text-xs font-semibold"
+                          >
+                            Delete
+                          </Button>
+                        </Popconfirm>
                       </td>
                     </tr>
                   ))}
@@ -377,6 +411,24 @@ export default function AdminMembersPage() {
           onCancel={() => setViewModalOpen(false)}
           width={700}
           footer={[
+            <Popconfirm
+              key="delete"
+              title="Delete Member"
+              description={`Are you sure you want to permanently delete ${selectedMember?.name}?`}
+              onConfirm={() => {
+                if (selectedMember) {
+                  deleteMember(selectedMember.memberId);
+                  setViewModalOpen(false);
+                }
+              }}
+              okText="Delete Permanently"
+              cancelText="Cancel"
+              okButtonProps={{ danger: true, className: 'bg-red-600 font-bold' }}
+            >
+              <Button danger icon={<DeleteOutlined />}>
+                Delete Member
+              </Button>
+            </Popconfirm>,
             <Button
               key="edit"
               type="primary"

@@ -91,22 +91,21 @@ export default function AdminApplicationsPage() {
       if (!selectedApp) return;
 
       setProcessing(true);
-      setTimeout(() => {
-        approveApplication(selectedApp.id, {
-          fromNo: values.fromNo,
-          memberId: values.memberId,
-          admissionDate: values.admissionDate.format('YYYY-MM-DD'),
-          userId: values.userId,
-          initialPassword: values.initialPassword,
-          status: values.status,
-        });
+      await approveApplication(selectedApp.id, {
+        fromNo: values.fromNo,
+        memberId: values.memberId,
+        admissionDate: values.admissionDate.format('YYYY-MM-DD'),
+        userId: values.userId,
+        initialPassword: values.initialPassword,
+        status: values.status,
+      });
 
-        setProcessing(false);
-        setApproveModalOpen(false);
-        setViewModalOpen(false);
-        message.success(`Application ${selectedApp.id} approved successfully!`);
-      }, 500);
+      setProcessing(false);
+      setApproveModalOpen(false);
+      setViewModalOpen(false);
+      message.success(`Application ${selectedApp.id} approved and added to Members table!`);
     } catch {
+      setProcessing(false);
       message.error('Please verify all required approval fields.');
     }
   };

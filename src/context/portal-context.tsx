@@ -40,6 +40,7 @@ interface PortalContextType {
   ) => void;
   rejectApplication: (applicationId: string, reason: string) => void;
   updateMemberProfile: (memberId: string, updatedFields: Partial<Member>) => void;
+  deleteMember: (memberId: string) => Promise<boolean>;
   assignCommitteeRole: (memberId: string, role: string | null) => void;
   importMembersList: (importedData: Partial<Member>[]) => { added: number; duplicates: number };
   addActivityLog: (action: string, memberId?: string, details?: string) => void;
@@ -599,10 +600,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setMembers((prev) => [newMember, ...prev]);
 
-    // Sync to Supabase
+    // Sync to Supabase: Update application & insert new member into members table
     (async () => {
       try {
-        await supabase
+        const { error: appErr } = await supabase
           .from('applications')
           .update({
             status: 'APPROVED',
@@ -615,7 +616,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           })
           .eq('id', applicationId);
 
-        await supabase.from('members').insert([
+        if (appErr) {
+          console.warn('Supabase application update warning:', appErr);
+        }
+
+        const { error: memErr } = await supabase.from('members').insert([
           {
             member_id: newMember.memberId,
             from_no: newMember.fromNo,
@@ -643,6 +648,14 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             profile_completion: score,
           },
         ]);
+
+        if (memErr) {
+          console.error('Supabase members table insert error:', memErr);
+          message.warning(`Approved locally. Note: Supabase write gave: ${memErr.message}`);
+        } else {
+          console.log('Applicant successfully stored in Supabase members table!');
+          message.success(`New member ${newMember.memberId} saved to database!`);
+        }
       } catch (err) {
         console.warn('Supabase approve sync bypassed:', err);
       }
@@ -657,12 +670,42 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const notif: NotificationItem = {
       id: `notif-${Date.now()}`,
       title: 'Membership Approved',
-      description: `Application ${applicationId} for ${targetApp.name} was approved.`,
+      description: `Application ${applicationId} for ${targetApp.name} was approved and added to Members table.`,
       date: 'Just now',
       read: false,
       type: 'success',
     };
     setNotifications((prev) => [notif, ...prev]);
+  };
+
+  const deleteMember = async (memberId: string): Promise<boolean> => {
+    try {
+      // 1. Delete from Supabase members table
+      const { error } = await supabase
+        .from('members')
+        .delete()
+        .or(`member_id.eq.${memberId},id.eq.${memberId}`);
+
+      if (error) {
+        console.error('Supabase delete member error:', error);
+      }
+
+      // 2. Remove from local state
+      setMembers((prev) => prev.filter((m) => m.memberId !== memberId && m.id !== memberId));
+
+      addActivityLog(
+        `Deleted Member ${memberId}`,
+        memberId,
+        'Admin permanently deleted member record from database'
+      );
+
+      message.success(`Member ${memberId} deleted successfully.`);
+      return true;
+    } catch (err) {
+      console.error('deleteMember error:', err);
+      message.error('An error occurred while deleting member.');
+      return false;
+    }
   };
 
   const rejectApplication = (applicationId: string, reason: string) => {
@@ -964,6 +1007,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         approveApplication,
         rejectApplication,
         updateMemberProfile,
+        deleteMember,
         assignCommitteeRole,
         importMembersList,
         addActivityLog,

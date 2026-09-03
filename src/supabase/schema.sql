@@ -122,34 +122,16 @@ CREATE TABLE IF NOT EXISTS public.club_settings (
 );
 
 -- ==============================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES FOR WEB CLIENT ACCESS
+-- ROW LEVEL SECURITY (RLS) CONFIGURATION
 -- ==============================================================================
-ALTER TABLE public.members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.club_settings ENABLE ROW LEVEL SECURITY;
+-- Disable RLS to allow seamless web portal CRUD operations (Select, Insert, Update, Delete)
+-- via the Supabase Publishable / Anon API Key
+ALTER TABLE public.members DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.applications DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_logs DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notifications DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.club_settings DISABLE ROW LEVEL SECURITY;
 
--- Clean existing policies to avoid conflict
-DROP POLICY IF EXISTS "Public access members" ON public.members;
-DROP POLICY IF EXISTS "Public access applications" ON public.applications;
-DROP POLICY IF EXISTS "Public access activity_logs" ON public.activity_logs;
-DROP POLICY IF EXISTS "Public access notifications" ON public.notifications;
-DROP POLICY IF EXISTS "Public access club_settings" ON public.club_settings;
-DROP POLICY IF EXISTS "Members can view own profile" ON public.members;
-DROP POLICY IF EXISTS "Members can update own profile" ON public.members;
-DROP POLICY IF EXISTS "Admins have full access to members" ON public.members;
-DROP POLICY IF EXISTS "Admins have full access to applications" ON public.applications;
-DROP POLICY IF EXISTS "Admins have full access to activity logs" ON public.activity_logs;
-DROP POLICY IF EXISTS "Public can submit applications" ON public.applications;
-DROP POLICY IF EXISTS "Public can view club settings" ON public.club_settings;
-
--- Allow full client access through anon API key
-CREATE POLICY "Public access members" ON public.members FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public access applications" ON public.applications FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public access activity_logs" ON public.activity_logs FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public access notifications" ON public.notifications FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public access club_settings" ON public.club_settings FOR ALL USING (true) WITH CHECK (true);
 
 -- ==============================================================================
 -- INITIAL SEED DATA
