@@ -152,10 +152,20 @@ export const Header: React.FC = () => {
             Home
           </Link>
           <Link
-            href="/#about"
-            className="transition hover:text-[#3447AA]"
+            href="/about"
+            className={`transition hover:text-[#3447AA] ${
+              pathname === '/about' ? 'text-[#3447AA] font-semibold' : ''
+            }`}
           >
-            About
+            About Us
+          </Link>
+          <Link
+            href="/team"
+            className={`transition hover:text-[#3447AA] ${
+              pathname === '/team' ? 'text-[#3447AA] font-semibold' : ''
+            }`}
+          >
+            Team KPNS
           </Link>
           <Link
             href="/register"
@@ -269,6 +279,24 @@ export const Header: React.FC = () => {
           >
             <HomeOutlined className="text-base text-[#3447AA]" />
             <span>Home</span>
+          </Link>
+
+          <Link
+            href="/about"
+            onClick={() => setMobileDrawerOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
+          >
+            <FileTextOutlined className="text-base text-[#3447AA]" />
+            <span>About Us</span>
+          </Link>
+
+          <Link
+            href="/team"
+            onClick={() => setMobileDrawerOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
+          >
+            <TeamOutlined className="text-base text-[#3447AA]" />
+            <span>Team KPNS</span>
           </Link>
 
           <Link

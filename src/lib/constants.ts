@@ -82,18 +82,139 @@ export const WEST_BENGAL_DISTRICTS = [
   'Uttar Dinajpur',
 ];
 
+export interface CommitteeMember {
+  id: string;
+  name: string;
+  designation: string;
+  roleType: 'EXECUTIVE_LEADER' | 'OFFICE_BEARER' | 'EXECUTIVE_MEMBER';
+  phone?: string;
+  whatsapp?: string;
+  email?: string;
+  avatarUrl?: string;
+  bio?: string;
+  sinceYear: string;
+}
+
 export const DEFAULT_CLUB_SETTINGS: ClubSettings = {
   clubNameBengali: 'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ',
   clubNameEnglish: 'Khejurdaha Pally Unnayan Narayan Sangha (KPNS)',
   tagline: 'একসাথে, এক পরিচয়ে, এক পরিবারের বন্ধনে',
-  contactEmail: 'contact@kpns.org.in',
-  contactPhone: '+91 98765 43210',
-  address: 'Vill: Khejurdaha, P.O: Khejurdaha, Dist: Purba Medinipur, West Bengal - 721401',
+  contactEmail: 'kpnsclub@gmail.com',
+  contactPhone: '+91 94756 46111',
+  address: 'Vill: Khejurdaha, P.O: Khejurdaha, P.S: Khejuri, Dist: Purba Medinipur, West Bengal - 721401',
   logoUrl: '/img/logo.png',
   registrationOpen: true,
   autoGenerateMemberId: true,
   memberIdPrefix: 'KPNS',
 };
+
+export const SOCIAL_LINKS = {
+  facebook: 'http://www.facebook.com/kpns.club',
+  youtube: 'http://www.youtube.com/user/kpns1935',
+  twitter: 'https://twitter.com/KPNS_CLUB',
+};
+
+export const MANAGING_COMMITTEE: CommitteeMember[] = [
+  {
+    id: 'mc-01',
+    name: 'Arup Maiti',
+    designation: 'President',
+    roleType: 'EXECUTIVE_LEADER',
+    phone: '+91 98321 09876',
+    whatsapp: '9832109876',
+    email: 'president@kpns.org.in',
+    sinceYear: '2020',
+    bio: 'Oversees organizational vision, institutional governance, and community leadership.',
+  },
+  {
+    id: 'mc-02',
+    name: 'Dr. Debabrata Karan',
+    designation: 'Vice President & Medical Director',
+    roleType: 'EXECUTIVE_LEADER',
+    phone: '+91 94756 46111',
+    whatsapp: '9475646111',
+    email: 'vp@kpns.org.in',
+    sinceYear: '2014',
+    bio: 'Child Specialist (Ramnagar State General Hospital); leads pediatric health camps and medical relief.',
+  },
+  {
+    id: 'mc-03',
+    name: 'Avijit Jana',
+    designation: 'General Secretary',
+    roleType: 'OFFICE_BEARER',
+    phone: '+91 98765 43210',
+    whatsapp: '9876543210',
+    email: 'secretary@kpns.org.in',
+    sinceYear: '2014',
+    bio: 'Manages sangha administration, regulatory compliance, public relations, and portal operations.',
+  },
+  {
+    id: 'mc-04',
+    name: 'Pritam Das',
+    designation: 'Assistant Secretary',
+    roleType: 'OFFICE_BEARER',
+    phone: '+91 98300 12345',
+    whatsapp: '9830012345',
+    email: 'asst.secretary@kpns.org.in',
+    sinceYear: '2014',
+    bio: 'Coordinates volunteer teams, field social activities, and public outreach drives.',
+  },
+  {
+    id: 'mc-05',
+    name: 'Subhas Patra',
+    designation: 'Treasurer & Accounts In-Charge',
+    roleType: 'OFFICE_BEARER',
+    phone: '+91 91234 56780',
+    whatsapp: '9123456780',
+    email: 'treasurer@kpns.org.in',
+    sinceYear: '2018',
+    bio: 'Manages financial transparency, annual audit records, and community fund stewardship.',
+  },
+  {
+    id: 'mc-06',
+    name: 'Monotosh Acharayea',
+    designation: 'Cultural & Literary Secretary',
+    roleType: 'OFFICE_BEARER',
+    phone: '+91 97334 45566',
+    whatsapp: '9733445566',
+    email: 'culture@kpns.org.in',
+    sinceYear: '2010',
+    bio: 'Curator of "Sahitya Baasar", chief organizer of "Sudhi Samman", and editor of "Saaraswat Arghya".',
+  },
+  {
+    id: 'mc-07',
+    name: 'Pintu Patra',
+    designation: 'Social Welfare & ICDS Liaison',
+    roleType: 'EXECUTIVE_MEMBER',
+    phone: '+91 98765 43210',
+    whatsapp: '9876543210',
+    email: 'pintu.patra@example.com',
+    sinceYear: '2026',
+    bio: 'Coordinates Anganwadi center support, child nutrition initiatives, and youth volunteers.',
+  },
+  {
+    id: 'mc-08',
+    name: 'Raja Mukherjee',
+    designation: 'Executive Committee Member',
+    roleType: 'EXECUTIVE_MEMBER',
+    phone: '+91 98300 12345',
+    whatsapp: '9830012345',
+    email: 'raja.mukherjee@example.com',
+    sinceYear: '2025',
+    bio: 'Supports youth sports development, emergency relief mobilization, and festival committees.',
+  },
+  {
+    id: 'mc-09',
+    name: 'Rani Ghosh',
+    designation: 'Women Empowerment & ASHA Liaison',
+    roleType: 'EXECUTIVE_MEMBER',
+    phone: '+91 98711 22334',
+    whatsapp: '9871122334',
+    email: 'rani.ghosh@example.com',
+    sinceYear: '2026',
+    bio: 'Direct coordination with ASHA Karmees, maternal health education, and blood donation drives.',
+  },
+];
 
 export const INITIAL_MEMBERS: Member[] = [
   {
