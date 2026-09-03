@@ -114,6 +114,31 @@ export const SOCIAL_LINKS = {
   twitter: 'https://twitter.com/KPNS_CLUB',
 };
 
+export const COMMITTEE_ROLES = [
+  'President',
+  'Vice President',
+  'General Secretary',
+  'Assistant Secretary',
+  'Treasurer',
+  'Sports Secretary',
+  'Cultural Secretary',
+  'Information Technology Secretary',
+  'Executive Committee Member',
+];
+
+// Role display order for Team KPNS page (lower index = higher hierarchy)
+export const COMMITTEE_ROLE_ORDER: Record<string, number> = {
+  'President': 0,
+  'Vice President': 1,
+  'General Secretary': 2,
+  'Assistant Secretary': 3,
+  'Treasurer': 4,
+  'Sports Secretary': 5,
+  'Cultural Secretary': 6,
+  'Information Technology Secretary': 7,
+  'Executive Committee Member': 8,
+};
+
 export const MANAGING_COMMITTEE: CommitteeMember[] = [
   {
     id: 'mc-01',

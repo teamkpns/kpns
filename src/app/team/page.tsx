@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Tabs, Input, Select, Button, Avatar, Tag, Card, Row, Col, Empty } from 'antd';
+import { Tabs, Input, Select, Avatar, Empty } from 'antd';
 import {
   TeamOutlined,
   CrownOutlined,
@@ -11,26 +11,55 @@ import {
   WhatsAppOutlined,
   MailOutlined,
   SearchOutlined,
-  IdcardOutlined,
   EnvironmentOutlined,
-  UserAddOutlined,
-  SafetyCertificateOutlined,
   CalendarOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { StatusTag } from '@/components/common/StatusTag';
 import { usePortal } from '@/context/portal-context';
-import { MANAGING_COMMITTEE, CommitteeMember, KPNS_COLORS } from '@/lib/constants';
+import { COMMITTEE_ROLE_ORDER } from '@/lib/constants';
+import { Member } from '@/types';
 import { formatDate } from '@/lib/utils';
 
 const { Option } = Select;
+
+// Role badge colour coding
+const roleBadgeClass = (role: string): string => {
+  if (role === 'President') return 'bg-[#3447AA] text-white';
+  if (role === 'Vice President') return 'bg-indigo-700 text-white';
+  if (role.includes('Secretary')) return 'bg-indigo-100 text-indigo-900';
+  if (role === 'Treasurer') return 'bg-green-100 text-green-800';
+  if (role === 'Executive Committee Member') return 'bg-gray-100 text-gray-700';
+  return 'bg-pink-100 text-pink-800';
+};
 
 export default function TeamKPNSPage() {
   const { members, clubSettings } = usePortal();
   const [activeTab, setActiveTab] = useState('committee');
   const [memberSearch, setMemberSearch] = useState('');
   const [bloodFilter, setBloodFilter] = useState('ALL');
+
+  // Derive committee members from actual member data
+  const committeeMembers = members
+    .filter((m) => m.committeeRole && m.status === 'ACTIVE')
+    .sort((a, b) => {
+      const orderA = COMMITTEE_ROLE_ORDER[a.committeeRole!] ?? 99;
+      const orderB = COMMITTEE_ROLE_ORDER[b.committeeRole!] ?? 99;
+      return orderA - orderB;
+    });
+
+  // Group by role category for section headings
+  const leadership = committeeMembers.filter((m) =>
+    ['President', 'Vice President'].includes(m.committeeRole!)
+  );
+  const officeBearers = committeeMembers.filter((m) =>
+    ['General Secretary', 'Assistant Secretary', 'Treasurer', 'Sports Secretary', 'Cultural Secretary', 'Information Technology Secretary'].includes(m.committeeRole!)
+  );
+  const executiveMembers = committeeMembers.filter(
+    (m) => m.committeeRole === 'Executive Committee Member'
+  );
 
   // Filter members for the Members tab
   const filteredMembers = members.filter((m) => {
@@ -39,88 +68,64 @@ export default function TeamKPNSPage() {
       m.memberId.toLowerCase().includes(memberSearch.toLowerCase()) ||
       (m.villageTown && m.villageTown.toLowerCase().includes(memberSearch.toLowerCase())) ||
       (m.city && m.city.toLowerCase().includes(memberSearch.toLowerCase()));
-
     const matchesBlood = bloodFilter === 'ALL' || m.bloodGroup === bloodFilter;
     return matchesSearch && matchesBlood;
   });
 
-  const renderCommitteeCard = (person: CommitteeMember) => {
-    const isLeadership = person.roleType === 'EXECUTIVE_LEADER';
-    const isBearer = person.roleType === 'OFFICE_BEARER';
-
+  const renderMemberCard = (member: Member) => {
+    const isLeader = ['President', 'Vice President'].includes(member.committeeRole ?? '');
     return (
       <div
-        key={person.id}
-        className={`bg-white rounded-3xl p-6 border transition hover:shadow-md flex flex-col justify-between ${
-          isLeadership
+        key={member.id}
+        className={`bg-white rounded-3xl p-5 sm:p-6 border transition hover:shadow-md flex flex-col justify-between ${
+          isLeader
             ? 'border-pink-200 bg-gradient-to-b from-pink-50/50 to-white shadow-xs'
-            : isBearer
-            ? 'border-indigo-100 hover:border-indigo-200'
-            : 'border-gray-100'
+            : 'border-gray-100 shadow-xs'
         }`}
       >
         <div>
           <div className="flex items-start justify-between gap-3 mb-4">
             <Avatar
-              size={64}
+              size={60}
               icon={<UserOutlined />}
-              className={`shrink-0 ${
-                isLeadership
-                  ? 'bg-[#3447AA] text-white'
-                  : 'bg-[#FBEAEB] text-[#3447AA]'
-              }`}
+              className={`shrink-0 ${isLeader ? 'bg-[#3447AA] text-white' : 'bg-[#FBEAEB] text-[#3447AA]'}`}
             />
             <span
-              className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                isLeadership
-                  ? 'bg-[#3447AA] text-white'
-                  : isBearer
-                  ? 'bg-indigo-100 text-indigo-900'
-                  : 'bg-gray-100 text-gray-700'
-              }`}
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${roleBadgeClass(member.committeeRole!)}`}
             >
-              Since {person.sinceYear}
+              {member.committeeRole}
             </span>
           </div>
 
           <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-snug">
-            {person.name}
+            {member.name}
           </h3>
-          <p className="text-xs font-extrabold text-[#3447AA] mt-0.5">{person.designation}</p>
-
-          {person.bio && (
-            <p className="text-xs text-gray-500 mt-2.5 leading-relaxed">{person.bio}</p>
-          )}
+          <p className="text-[11px] font-mono text-gray-400 mt-0.5">{member.memberId}</p>
+          <p className="text-xs text-gray-500 mt-1">
+            {member.villageTown}
+            {member.district ? `, ${member.district}` : ''}
+          </p>
         </div>
 
-        <div className="mt-5 pt-4 border-t border-gray-100 flex flex-wrap items-center gap-2 text-xs">
-          {person.whatsapp && (
+        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center gap-2 text-xs">
+          {member.whatsapp && (
             <a
-              href={`https://wa.me/91${person.whatsapp}`}
+              href={`https://wa.me/91${member.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 font-semibold transition"
             >
               <WhatsAppOutlined />
-              <span>WhatsApp</span>
+              WhatsApp
             </a>
           )}
-          {person.phone && (
+          {member.email && (
             <a
-              href={`tel:${person.phone}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 text-gray-700 hover:bg-gray-100 font-semibold transition"
-            >
-              <PhoneOutlined />
-              <span>Call</span>
-            </a>
-          )}
-          {person.email && (
-            <a
-              href={`mailto:${person.email}`}
+              href={`mailto:${member.email}`}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold transition"
             >
               <MailOutlined />
-              <span>Email</span>
+              Email
             </a>
           )}
         </div>
@@ -143,16 +148,27 @@ export default function TeamKPNSPage() {
             Team KPNS
           </h1>
           <p className="text-base sm:text-lg text-pink-100 font-light max-w-2xl mx-auto">
-            Meet our dedicated Managing Committee leadership and registered community members
-            working together for rural progress.
+            Our elected Managing Committee and all registered community members — fetched live from
+            the database.
           </p>
+          <div className="flex items-center justify-center gap-6 pt-2">
+            <div className="text-center">
+              <p className="text-2xl font-black text-white">{committeeMembers.length}</p>
+              <p className="text-xs text-pink-100 uppercase tracking-wider">Committee Members</p>
+            </div>
+            <div className="border-l border-white/30 h-8" />
+            <div className="text-center">
+              <p className="text-2xl font-black text-white">{members.length}</p>
+              <p className="text-xs text-pink-100 uppercase tracking-wider">Total Members</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <main className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm mb-8">
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-sm mb-8">
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
@@ -163,7 +179,7 @@ export default function TeamKPNSPage() {
                 key: 'committee',
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <CrownOutlined /> Managing Committee ({MANAGING_COMMITTEE.length})
+                    <CrownOutlined /> Managing Committee ({committeeMembers.length})
                   </span>
                 ),
               },
@@ -179,57 +195,70 @@ export default function TeamKPNSPage() {
           />
         </div>
 
-        {/* TAB 1: MANAGING COMMITTEE */}
+        {/* TAB 1: MANAGING COMMITTEE (from live backend) */}
         {activeTab === 'committee' && (
           <div className="space-y-10 animate-fade-in">
-            {/* Executive Leadership */}
-            <div className="space-y-4">
-              <div className="border-b border-gray-200/80 pb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                  Executive Leadership
-                </span>
-                <h2 className="text-xl font-black text-gray-900">President & Executive Directorate</h2>
+            {committeeMembers.length === 0 ? (
+              <div className="bg-white rounded-3xl p-12 border border-gray-100 text-center space-y-3">
+                <CrownOutlined className="text-4xl text-amber-400" />
+                <h3 className="text-lg font-bold text-gray-700">No Committee Roles Assigned Yet</h3>
+                <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                  Admin can assign committee roles to any member from{' '}
+                  <strong>Admin → Members Directory → Set Role</strong>.
+                </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {MANAGING_COMMITTEE.filter((m) => m.roleType === 'EXECUTIVE_LEADER').map(
-                  renderCommitteeCard
+            ) : (
+              <>
+                {/* Leadership */}
+                {leadership.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="border-b border-gray-200/80 pb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                        Executive Leadership
+                      </span>
+                      <h2 className="text-xl font-black text-gray-900">President & Vice President</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {leadership.map(renderMemberCard)}
+                    </div>
+                  </div>
                 )}
-              </div>
-            </div>
 
-            {/* Office Bearers */}
-            <div className="space-y-4">
-              <div className="border-b border-gray-200/80 pb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                  Administrative Office Bearers
-                </span>
-                <h2 className="text-xl font-black text-gray-900">Secretaries & Portfolio In-Charge</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {MANAGING_COMMITTEE.filter((m) => m.roleType === 'OFFICE_BEARER').map(
-                  renderCommitteeCard
+                {/* Office Bearers */}
+                {officeBearers.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="border-b border-gray-200/80 pb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                        Administrative Office Bearers
+                      </span>
+                      <h2 className="text-xl font-black text-gray-900">Secretaries & Portfolio In-Charge</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {officeBearers.map(renderMemberCard)}
+                    </div>
+                  </div>
                 )}
-              </div>
-            </div>
 
-            {/* Executive Committee Members */}
-            <div className="space-y-4">
-              <div className="border-b border-gray-200/80 pb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                  Field & Program Coordinators
-                </span>
-                <h2 className="text-xl font-black text-gray-900">Executive Committee Members</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {MANAGING_COMMITTEE.filter((m) => m.roleType === 'EXECUTIVE_MEMBER').map(
-                  renderCommitteeCard
+                {/* Executive Members */}
+                {executiveMembers.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="border-b border-gray-200/80 pb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                        Field & Programme Coordinators
+                      </span>
+                      <h2 className="text-xl font-black text-gray-900">Executive Committee Members</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {executiveMembers.map(renderMemberCard)}
+                    </div>
+                  </div>
                 )}
-              </div>
-            </div>
+              </>
+            )}
           </div>
         )}
 
-        {/* TAB 2: MEMBERS DIRECTORY */}
+        {/* TAB 2: ALL MEMBERS DIRECTORY */}
         {activeTab === 'members' && (
           <div className="space-y-6 animate-fade-in">
             {/* Filter & Search Bar */}
@@ -237,7 +266,7 @@ export default function TeamKPNSPage() {
               <div className="w-full sm:w-80">
                 <Input
                   prefix={<SearchOutlined className="text-gray-400" />}
-                  placeholder="Search members by name, ID, or village..."
+                  placeholder="Search by name, member ID, or village..."
                   value={memberSearch}
                   onChange={(e) => setMemberSearch(e.target.value)}
                   allowClear
@@ -245,7 +274,6 @@ export default function TeamKPNSPage() {
                   size="large"
                 />
               </div>
-
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <span className="text-xs font-bold text-gray-500 shrink-0">Blood Group:</span>
                 <Select
@@ -255,19 +283,14 @@ export default function TeamKPNSPage() {
                   className="w-full sm:w-40 rounded-xl"
                 >
                   <Option value="ALL">All Groups</Option>
-                  <Option value="A+">A+</Option>
-                  <Option value="A-">A-</Option>
-                  <Option value="B+">B+</Option>
-                  <Option value="B-">B-</Option>
-                  <Option value="AB+">AB+</Option>
-                  <Option value="AB-">AB-</Option>
-                  <Option value="O+">O+</Option>
-                  <Option value="O-">O-</Option>
+                  {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bg) => (
+                    <Option key={bg} value={bg}>{bg}</Option>
+                  ))}
                 </Select>
               </div>
             </div>
 
-            {/* Members Cards Grid */}
+            {/* Members Grid */}
             {filteredMembers.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {filteredMembers.map((member) => (
@@ -276,25 +299,28 @@ export default function TeamKPNSPage() {
                     className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs hover:shadow-md transition flex flex-col justify-between"
                   >
                     <div>
-                      <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-start justify-between gap-2 mb-3">
                         <Avatar
                           size={48}
                           icon={<UserOutlined />}
                           className="bg-[#3447AA] text-white shrink-0"
                         />
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#FBEAEB] text-[#3447AA] text-[11px] font-mono font-bold">
-                          {member.memberId}
-                        </span>
+                        <div className="text-right">
+                          <span className="block px-2 py-0.5 rounded-full bg-[#FBEAEB] text-[#3447AA] text-[11px] font-mono font-bold">
+                            {member.memberId}
+                          </span>
+                          {member.committeeRole && (
+                            <span className="mt-1 block px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+                              <CrownOutlined className="mr-0.5" />{member.committeeRole}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      <h4 className="text-sm font-bold text-gray-900 leading-snug">
-                        {member.name}
-                      </h4>
-                      <p className="text-[11px] text-gray-400">
-                        Father: {member.fatherName || '—'}
-                      </p>
+                      <h4 className="text-sm font-bold text-gray-900">{member.name}</h4>
+                      <p className="text-[11px] text-gray-400">Father: {member.fatherName || '—'}</p>
 
-                      <div className="mt-3 space-y-1.5 text-xs text-gray-600">
+                      <div className="mt-2.5 space-y-1.5 text-xs text-gray-600">
                         <div className="flex items-center gap-1.5">
                           <EnvironmentOutlined className="text-gray-400" />
                           <span>
@@ -303,7 +329,7 @@ export default function TeamKPNSPage() {
                         </div>
                         <div className="flex items-center gap-1.5">
                           <CalendarOutlined className="text-gray-400" />
-                          <span>Member Since: {formatDate(member.admissionDate)}</span>
+                          <span>Since: {formatDate(member.admissionDate)}</span>
                         </div>
                       </div>
                     </div>
@@ -325,7 +351,7 @@ export default function TeamKPNSPage() {
           </div>
         )}
 
-        {/* Bottom Call to Action */}
+        {/* Bottom CTA */}
         <div className="mt-12 bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm text-center max-w-2xl mx-auto space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
             Grow Our Community
@@ -334,19 +360,15 @@ export default function TeamKPNSPage() {
             Want to Join Team KPNS?
           </h3>
           <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto">
-            Enroll today as a registered member of খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ through our 4-step
+            Enroll today as a registered member of খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ through our
             online portal.
           </p>
           <div className="pt-2">
             <Link href="/register">
-              <Button
-                type="primary"
-                size="large"
-                icon={<UserAddOutlined />}
-                className="bg-[#3447AA] hover:bg-[#283887] font-bold text-sm h-11 px-7 rounded-xl shadow-md"
-              >
+              <button className="inline-flex items-center gap-2 bg-[#3447AA] hover:bg-[#283887] text-white font-bold text-sm h-11 px-7 rounded-xl shadow-md transition">
+                <UserAddOutlined />
                 Apply for Membership
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

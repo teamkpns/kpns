@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS public.members (
     
     -- Meta & Scores
     profile_completion INTEGER DEFAULT 85,
+    committee_role VARCHAR(100) DEFAULT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     last_login TIMESTAMP WITH TIME ZONE

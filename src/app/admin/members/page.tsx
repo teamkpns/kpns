@@ -28,26 +28,30 @@ import {
   IdcardOutlined,
   SafetyCertificateOutlined,
   KeyOutlined,
+  CrownOutlined,
+  MinusCircleOutlined,
 } from '@ant-design/icons';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { StatusTag } from '@/components/common/StatusTag';
 import { AadhaarMask } from '@/components/common/AadhaarMask';
 import { usePortal } from '@/context/portal-context';
 import { Member } from '@/types';
-import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS } from '@/lib/constants';
+import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS, COMMITTEE_ROLES } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
 
 export default function AdminMembersPage() {
-  const { members, updateMemberProfile, addActivityLog } = usePortal();
+  const { members, updateMemberProfile, addActivityLog, assignCommitteeRole } = usePortal();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [bloodFilter, setBloodFilter] = useState<string>('ALL');
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [pendingRole, setPendingRole] = useState<string | null>(null);
   const [editForm] = Form.useForm();
   const [resettingPassword, setResettingPassword] = useState(false);
 
@@ -116,6 +120,23 @@ export default function AdminMembersPage() {
       );
       message.success(`Temporary login password reset link sent to ${member.email || member.whatsapp}`);
     }, 600);
+  };
+
+  const handleOpenRoleModal = (member: Member) => {
+    setSelectedMember(member);
+    setPendingRole(member.committeeRole ?? null);
+    setRoleModalOpen(true);
+  };
+
+  const handleSaveRole = () => {
+    if (!selectedMember) return;
+    assignCommitteeRole(selectedMember.memberId, pendingRole);
+    if (pendingRole) {
+      message.success(`${selectedMember.name} assigned as ${pendingRole} in Managing Committee.`);
+    } else {
+      message.success(`${selectedMember.name} reverted to normal Member.`);
+    }
+    setRoleModalOpen(false);
   };
 
   return (
@@ -320,6 +341,18 @@ export default function AdminMembersPage() {
                           className="bg-[#3447AA] rounded-lg text-xs font-bold"
                         >
                           Edit
+                        </Button>
+                        <Button
+                          size="small"
+                          icon={<CrownOutlined />}
+                          onClick={() => handleOpenRoleModal(member)}
+                          className={`rounded-lg text-xs font-bold ${
+                            member.committeeRole
+                              ? 'bg-amber-50 text-amber-700 border-amber-300'
+                              : 'text-gray-600'
+                          }`}
+                        >
+                          {member.committeeRole ? 'Role ✓' : 'Set Role'}
                         </Button>
                       </td>
                     </tr>
@@ -548,6 +581,93 @@ export default function AdminMembersPage() {
                 </Form.Item>
               </div>
             </Form>
+          )}
+        </Modal>
+
+        {/* 3. COMMITTEE ROLE ASSIGNMENT MODAL */}
+        <Modal
+          title={
+            <div className="space-y-0.5">
+              <span className="text-xs font-bold text-amber-600 uppercase flex items-center gap-1.5">
+                <CrownOutlined /> Managing Committee Role
+              </span>
+              <h3 className="text-base font-black text-gray-900">
+                Assign Role — {selectedMember?.name}
+              </h3>
+              <p className="text-[11px] text-gray-500 font-normal">
+                Member ID: {selectedMember?.memberId}
+              </p>
+            </div>
+          }
+          open={roleModalOpen}
+          onCancel={() => setRoleModalOpen(false)}
+          onOk={handleSaveRole}
+          okText={pendingRole ? `Assign as ${pendingRole}` : 'Revert to Normal Member'}
+          okButtonProps={{
+            className: pendingRole
+              ? 'bg-amber-500 hover:bg-amber-600 font-bold h-10 px-6 rounded-xl border-0'
+              : 'bg-gray-600 hover:bg-gray-700 font-bold h-10 px-6 rounded-xl border-0',
+            type: 'primary',
+          }}
+          cancelButtonProps={{ className: 'rounded-xl h-10' }}
+          width={520}
+        >
+          {selectedMember && (
+            <div className="space-y-5 py-3">
+              {/* Current status */}
+              <div className="bg-[#FBEAEB] p-4 rounded-2xl border border-pink-200 text-xs text-gray-700 space-y-1">
+                <p>
+                  <strong>Current Committee Role:</strong>{' '}
+                  {selectedMember.committeeRole ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-xs">
+                      <CrownOutlined /> {selectedMember.committeeRole}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 italic">No committee role (Normal Member)</span>
+                  )}
+                </p>
+              </div>
+
+              {/* Role selector */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-700 block">
+                  Select New Committee Role:
+                </label>
+                <Select
+                  value={pendingRole ?? undefined}
+                  onChange={(val) => setPendingRole(val)}
+                  placeholder="Pick a role..."
+                  className="w-full"
+                  size="large"
+                  allowClear
+                  onClear={() => setPendingRole(null)}
+                >
+                  {COMMITTEE_ROLES.map((r) => (
+                    <Option key={r} value={r}>
+                      <span className="flex items-center gap-2">
+                        <CrownOutlined className="text-amber-500" />
+                        {r}
+                      </span>
+                    </Option>
+                  ))}
+                </Select>
+                <p className="text-[11px] text-gray-400">
+                  Clearing the selection will revert this member to a normal member with no committee
+                  role.
+                </p>
+              </div>
+
+              {/* Revert button shortcut */}
+              {selectedMember.committeeRole && (
+                <button
+                  onClick={() => setPendingRole(null)}
+                  className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition text-xs font-bold"
+                >
+                  <MinusCircleOutlined />
+                  Remove Role &amp; Revert to Normal Member
+                </button>
+              )}
+            </div>
           )}
         </Modal>
       </div>

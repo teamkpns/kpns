@@ -40,6 +40,7 @@ interface PortalContextType {
   ) => void;
   rejectApplication: (applicationId: string, reason: string) => void;
   updateMemberProfile: (memberId: string, updatedFields: Partial<Member>) => void;
+  assignCommitteeRole: (memberId: string, role: string | null) => void;
   importMembersList: (importedData: Partial<Member>[]) => { added: number; duplicates: number };
   addActivityLog: (action: string, memberId?: string, details?: string) => void;
   markNotificationAsRead: (id: string) => void;
@@ -167,6 +168,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           pincode: m.pincode,
           profileCompletion: m.profile_completion || 85,
           missingFields: [],
+          committeeRole: m.committee_role || undefined,
           createdAt: m.created_at,
           updatedAt: m.updated_at,
         }));
@@ -841,6 +843,39 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     addActivityLog(`Updated club settings`, undefined, 'General club info updated');
   };
 
+  // Assign or remove a committee role for any member (Admin only)
+  const assignCommitteeRole = (memberId: string, role: string | null) => {
+    setMembers((prev) =>
+      prev.map((m) => {
+        if (m.memberId === memberId || m.id === memberId) {
+          return { ...m, committeeRole: role ?? undefined, updatedAt: new Date().toISOString() };
+        }
+        return m;
+      })
+    );
+
+    // Sync to Supabase
+    (async () => {
+      try {
+        await supabase
+          .from('members')
+          .update({ committee_role: role ?? null })
+          .eq('member_id', memberId);
+      } catch (err) {
+        console.warn('Supabase committee_role sync bypassed:', err);
+      }
+    })();
+
+    const target = members.find((m) => m.memberId === memberId || m.id === memberId);
+    addActivityLog(
+      role
+        ? `Assigned committee role "${role}" to ${memberId}`
+        : `Removed committee role from ${memberId}`,
+      memberId,
+      role ? `Member is now: ${role}` : 'Member reverted to normal member'
+    );
+  };
+
   return (
     <PortalContext.Provider
       value={{
@@ -860,6 +895,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         approveApplication,
         rejectApplication,
         updateMemberProfile,
+        assignCommitteeRole,
         importMembersList,
         addActivityLog,
         markNotificationAsRead,

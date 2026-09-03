@@ -38,6 +38,7 @@ export interface Member {
   // Computed & Meta
   profileCompletion: number; // 0 - 100
   missingFields: string[];
+  committeeRole?: string; // e.g. 'President', 'General Secretary', etc.
   createdAt: string;
   updatedAt: string;
   lastLogin?: string;
