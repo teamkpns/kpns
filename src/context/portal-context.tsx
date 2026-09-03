@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Member, Application, ActivityLog, NotificationItem, ClubSettings, UserRole } from '@/types';
 import {
   INITIAL_MEMBERS,
@@ -21,6 +21,8 @@ interface PortalContextType {
   notifications: NotificationItem[];
   activityLogs: ActivityLog[];
   clubSettings: ClubSettings;
+  isLoading: boolean;
+  refreshData: () => Promise<void>;
   setCurrentUserRole: (role: UserRole | 'GUEST') => void;
   login: (identifier: string, role?: UserRole) => boolean;
   logout: () => void;
@@ -49,6 +51,8 @@ interface PortalContextType {
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
 
 export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const [members, setMembers] = useState<Member[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('kpns_members');
@@ -124,88 +128,169 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return INITIAL_MEMBERS[0]; // Default to Pintu Patra
   });
 
-  // Supabase Initial Fetch
-  useEffect(() => {
-    async function loadFromSupabase() {
-      try {
-        const { data: dbMembers, error: mErr } = await supabase.from('members').select('*');
-        if (!mErr && dbMembers && dbMembers.length > 0) {
-          const mapped: Member[] = dbMembers.map((m: any) => ({
-            id: m.id,
-            memberId: m.member_id,
-            fromNo: m.from_no,
-            userId: m.user_id,
-            role: m.role || 'MEMBER',
-            status: m.status || 'ACTIVE',
-            admissionDate: m.admission_date,
-            avatarUrl: m.avatar_url,
-            name: m.name,
-            fatherName: m.father_name,
-            whatsapp: m.whatsapp,
-            altMobile: m.alt_mobile,
-            email: m.email,
-            aadhaar: m.aadhaar,
-            bloodGroup: m.blood_group,
-            dob: m.dob,
-            houseNumber: m.house_number,
-            villageTown: m.village_town,
-            postOffice: m.post_office,
-            policeStation: m.police_station,
-            city: m.city,
-            district: m.district || 'Purba Medinipur',
-            state: m.state || 'West Bengal',
-            country: m.country || 'India',
-            pincode: m.pincode,
-            profileCompletion: m.profile_completion || 85,
-            missingFields: [],
-            createdAt: m.created_at,
-            updatedAt: m.updated_at,
-          }));
-          setMembers(mapped);
-        }
+  // Supabase Fetch Function
+  const loadFromSupabase = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      // 1. Fetch Members
+      const { data: dbMembers, error: mErr } = await supabase
+        .from('members')
+        .select('*')
+        .order('admission_date', { ascending: false });
 
-        const { data: dbApps, error: aErr } = await supabase.from('applications').select('*');
-        if (!aErr && dbApps && dbApps.length > 0) {
-          const mappedApps: Application[] = dbApps.map((a: any) => ({
-            id: a.id,
-            status: a.status,
-            appliedDate: a.applied_date,
-            name: a.name,
-            fatherName: a.father_name,
-            whatsapp: a.whatsapp,
-            altMobile: a.alt_mobile,
-            email: a.email,
-            aadhaar: a.aadhaar,
-            bloodGroup: a.blood_group,
-            dob: a.dob,
-            houseNumber: a.house_number,
-            villageTown: a.village_town,
-            postOffice: a.post_office,
-            policeStation: a.police_station,
-            city: a.city,
-            district: a.district || 'Purba Medinipur',
-            state: a.state || 'West Bengal',
-            country: a.country || 'India',
-            pincode: a.pincode,
-            fromNo: a.from_no,
-            memberId: a.member_id,
-            admissionDate: a.admission_date,
-            userId: a.user_id,
-            rejectionReason: a.rejection_reason,
-            reviewedBy: a.reviewed_by,
-            reviewedAt: a.reviewed_at,
-          }));
-          setApplications(mappedApps);
-        }
-      } catch (err) {
-        console.warn('Supabase initial fetch bypassed, using local cached store:', err);
+      if (!mErr && dbMembers && dbMembers.length > 0) {
+        const mapped: Member[] = dbMembers.map((m: any) => ({
+          id: m.id,
+          memberId: m.member_id,
+          fromNo: m.from_no,
+          userId: m.user_id,
+          role: m.role || 'MEMBER',
+          status: m.status || 'ACTIVE',
+          admissionDate: m.admission_date,
+          avatarUrl: m.avatar_url,
+          name: m.name,
+          fatherName: m.father_name,
+          whatsapp: m.whatsapp,
+          altMobile: m.alt_mobile,
+          email: m.email,
+          aadhaar: m.aadhaar,
+          bloodGroup: m.blood_group,
+          dob: m.dob,
+          houseNumber: m.house_number,
+          villageTown: m.village_town,
+          postOffice: m.post_office,
+          policeStation: m.police_station,
+          city: m.city,
+          district: m.district || 'Purba Medinipur',
+          state: m.state || 'West Bengal',
+          country: m.country || 'India',
+          pincode: m.pincode,
+          profileCompletion: m.profile_completion || 85,
+          missingFields: [],
+          createdAt: m.created_at,
+          updatedAt: m.updated_at,
+        }));
+        setMembers(mapped);
+
+        // Keep current user updated
+        setCurrentUser((prev) => {
+          if (!prev) return mapped[0];
+          const matched = mapped.find((m) => m.memberId === prev.memberId || m.id === prev.id);
+          return matched || mapped[0];
+        });
       }
-    }
 
-    loadFromSupabase();
+      // 2. Fetch Applications
+      const { data: dbApps, error: aErr } = await supabase
+        .from('applications')
+        .select('*')
+        .order('applied_date', { ascending: false });
+
+      if (!aErr && dbApps && dbApps.length > 0) {
+        const mappedApps: Application[] = dbApps.map((a: any) => ({
+          id: a.id,
+          status: a.status,
+          appliedDate: a.applied_date,
+          name: a.name,
+          fatherName: a.father_name,
+          whatsapp: a.whatsapp,
+          altMobile: a.alt_mobile,
+          email: a.email,
+          aadhaar: a.aadhaar,
+          bloodGroup: a.blood_group,
+          dob: a.dob,
+          houseNumber: a.house_number,
+          villageTown: a.village_town,
+          postOffice: a.post_office,
+          policeStation: a.police_station,
+          city: a.city,
+          district: a.district || 'Purba Medinipur',
+          state: a.state || 'West Bengal',
+          country: a.country || 'India',
+          pincode: a.pincode,
+          fromNo: a.from_no,
+          memberId: a.member_id,
+          admissionDate: a.admission_date,
+          userId: a.user_id,
+          rejectionReason: a.rejection_reason,
+          reviewedBy: a.reviewed_by,
+          reviewedAt: a.reviewed_at,
+        }));
+        setApplications(mappedApps);
+      }
+
+      // 3. Fetch Activity Logs
+      const { data: dbLogs, error: lErr } = await supabase
+        .from('activity_logs')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(50);
+
+      if (!lErr && dbLogs && dbLogs.length > 0) {
+        const mappedLogs: ActivityLog[] = dbLogs.map((l: any) => ({
+          id: l.id,
+          timestamp: l.timestamp ? new Date(l.timestamp).toLocaleString('en-IN') : '',
+          user: l.user_name || 'SYSTEM',
+          role: l.role || 'Admin',
+          action: l.action,
+          memberId: l.member_id,
+          details: l.details,
+        }));
+        setActivityLogs(mappedLogs);
+      }
+
+      // 4. Fetch Notifications
+      const { data: dbNotifs, error: nErr } = await supabase
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+      if (!nErr && dbNotifs && dbNotifs.length > 0) {
+        const mappedNotifs: NotificationItem[] = dbNotifs.map((n: any) => ({
+          id: n.id,
+          title: n.title,
+          description: n.description,
+          date: n.created_at ? new Date(n.created_at).toLocaleDateString() : 'Recent',
+          read: n.read ?? false,
+          type: n.type || 'info',
+        }));
+        setNotifications(mappedNotifs);
+      }
+
+      // 5. Fetch Club Settings
+      const { data: dbSettings, error: sErr } = await supabase
+        .from('club_settings')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (!sErr && dbSettings) {
+        setClubSettings({
+          clubNameBengali: dbSettings.club_name_bengali || DEFAULT_CLUB_SETTINGS.clubNameBengali,
+          clubNameEnglish: dbSettings.club_name_english || DEFAULT_CLUB_SETTINGS.clubNameEnglish,
+          tagline: dbSettings.tagline || DEFAULT_CLUB_SETTINGS.tagline,
+          contactEmail: dbSettings.contact_email || DEFAULT_CLUB_SETTINGS.contactEmail,
+          contactPhone: dbSettings.contact_phone || DEFAULT_CLUB_SETTINGS.contactPhone,
+          address: dbSettings.address || DEFAULT_CLUB_SETTINGS.address,
+          logoUrl: dbSettings.logo_url || DEFAULT_CLUB_SETTINGS.logoUrl,
+          registrationOpen: dbSettings.registration_open ?? true,
+          autoGenerateMemberId: dbSettings.auto_generate_member_id ?? true,
+          memberIdPrefix: dbSettings.member_id_prefix || 'KPNS',
+        });
+      }
+    } catch (err) {
+      console.warn('Supabase fetch encountered an issue, using local cache:', err);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  // Sync to localStorage
+  useEffect(() => {
+    loadFromSupabase();
+  }, [loadFromSupabase]);
+
+  // Sync to localStorage as resilient offline backup
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('kpns_members', JSON.stringify(members));
@@ -233,7 +318,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setActivityLogs((prev) => [newLog, ...prev]);
 
-    // Push to Supabase if table exists
     try {
       await supabase.from('activity_logs').insert([
         {
@@ -244,8 +328,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           details,
         },
       ]);
-    } catch {
-      // Ignored if table not created yet
+    } catch (err) {
+      console.warn('Supabase log insert bypassed:', err);
     }
   };
 
@@ -267,37 +351,34 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     if (role === 'ADMIN' || clean.includes('admin')) {
-      const adminUser = members.find((m) => m.role === 'ADMIN') || members[1];
+      const adminUser = members.find((m) => m.role === 'ADMIN') || members[1] || INITIAL_MEMBERS[1];
       setCurrentUser(adminUser);
       setCurrentRole('ADMIN');
-      addActivityLog('Admin Logged In', adminUser?.memberId, 'Admin portal access');
+      addActivityLog('Admin Demo Login', adminUser?.memberId, `Logged in as Admin`);
       return true;
     }
 
-    // Allow mock fallback login for user test
-    if (members.length > 0) {
-      setCurrentUser(members[0]);
-      setCurrentRole(role);
-      return true;
-    }
-
-    return false;
+    const defaultMember = members[0] || INITIAL_MEMBERS[0];
+    setCurrentUser(defaultMember);
+    setCurrentRole('MEMBER');
+    addActivityLog('Member Demo Login', defaultMember?.memberId, `Logged in as Member`);
+    return true;
   };
 
   const logout = () => {
     addActivityLog('User Logged Out', currentUser?.memberId);
-    setCurrentUser(null);
     setCurrentRole('GUEST');
+    setCurrentUser(null);
   };
 
   const switchDemoUser = (target: 'MEMBER' | 'ADMIN') => {
     if (target === 'ADMIN') {
-      const admin = members.find((m) => m.role === 'ADMIN') || members[1];
+      const admin = members.find((m) => m.role === 'ADMIN') || members[1] || INITIAL_MEMBERS[1];
       setCurrentUser(admin);
       setCurrentRole('ADMIN');
       message.info('Switched to Admin Mode (Arup Maiti)');
     } else {
-      const member = members.find((m) => m.role === 'MEMBER') || members[0];
+      const member = members.find((m) => m.role === 'MEMBER') || members[0] || INITIAL_MEMBERS[0];
       setCurrentUser(member);
       setCurrentRole('MEMBER');
       message.info('Switched to Member Mode (Pintu Patra)');
@@ -324,7 +405,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Async push to Supabase
     (async () => {
       try {
-        await supabase.from('applications').insert([
+        const { error } = await supabase.from('applications').insert([
           {
             id: newApp.id,
             status: 'PENDING',
@@ -343,11 +424,14 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             police_station: newApp.policeStation,
             city: newApp.city,
             district: newApp.district || 'Purba Medinipur',
-            state: newApp.state,
-            country: newApp.country,
+            state: newApp.state || 'West Bengal',
+            country: newApp.country || 'India',
             pincode: newApp.pincode,
           },
         ]);
+        if (error) {
+          console.warn('Supabase application sync error:', error);
+        }
       } catch (err) {
         console.warn('Supabase application sync bypassed:', err);
       }
@@ -433,8 +517,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       policeStation: targetApp.policeStation,
       city: targetApp.city,
       district: targetApp.district || 'Purba Medinipur',
-      state: targetApp.state,
-      country: targetApp.country,
+      state: targetApp.state || 'West Bengal',
+      country: targetApp.country || 'India',
       pincode: targetApp.pincode,
       profileCompletion: score,
       missingFields,
@@ -713,14 +797,47 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
+    (async () => {
+      try {
+        await supabase.from('notifications').update({ read: true }).eq('id', id);
+      } catch (err) {
+        console.warn('Supabase mark notification bypassed:', err);
+      }
+    })();
   };
 
   const markAllNotificationsAsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    (async () => {
+      try {
+        await supabase.from('notifications').update({ read: true }).neq('id', '0');
+      } catch (err) {
+        console.warn('Supabase mark all notifications bypassed:', err);
+      }
+    })();
   };
 
   const updateClubSettings = (newSettings: Partial<ClubSettings>) => {
     setClubSettings((prev) => ({ ...prev, ...newSettings }));
+    (async () => {
+      try {
+        const payload: any = {};
+        if (newSettings.clubNameBengali) payload.club_name_bengali = newSettings.clubNameBengali;
+        if (newSettings.clubNameEnglish) payload.club_name_english = newSettings.clubNameEnglish;
+        if (newSettings.tagline) payload.tagline = newSettings.tagline;
+        if (newSettings.contactEmail) payload.contact_email = newSettings.contactEmail;
+        if (newSettings.contactPhone) payload.contact_phone = newSettings.contactPhone;
+        if (newSettings.address) payload.address = newSettings.address;
+        if (newSettings.logoUrl) payload.logo_url = newSettings.logoUrl;
+        if (newSettings.registrationOpen !== undefined) payload.registration_open = newSettings.registrationOpen;
+        if (newSettings.autoGenerateMemberId !== undefined) payload.auto_generate_member_id = newSettings.autoGenerateMemberId;
+        if (newSettings.memberIdPrefix) payload.member_id_prefix = newSettings.memberIdPrefix;
+
+        await supabase.from('club_settings').update(payload).neq('id', '00000000-0000-0000-0000-000000000000');
+      } catch (err) {
+        console.warn('Supabase update settings bypassed:', err);
+      }
+    })();
     addActivityLog(`Updated club settings`, undefined, 'General club info updated');
   };
 
@@ -734,6 +851,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         notifications,
         activityLogs,
         clubSettings,
+        isLoading,
+        refreshData: loadFromSupabase,
         setCurrentUserRole: (role) => setCurrentRole(role),
         login,
         logout,
