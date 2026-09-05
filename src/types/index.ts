@@ -125,3 +125,19 @@ export interface ContactMessage {
   read: boolean;
   createdAt: string;
 }
+
+export interface ActivityPost {
+  id: string;
+  title: string;
+  body: string;
+  photoUrl?: string;
+  postDate: string; // YYYY-MM-DD
+  fbLink?: string;
+  instagramLink?: string;
+  youtubeLink?: string;
+  xLink?: string;
+  published: boolean;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}

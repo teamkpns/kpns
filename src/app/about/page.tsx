@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { Button, Row, Col, Tabs, Tag, Card } from 'antd';
+import { useSearchParams } from 'next/navigation';
+import dayjs from 'dayjs';
+import { Button, Row, Col, Tabs, Tag, Card, Empty, Spin } from 'antd';
 import {
   HeartFilled,
   MedicineBoxOutlined,
@@ -17,15 +19,27 @@ import {
   SmileOutlined,
   AuditOutlined,
   ExportOutlined,
+  FacebookOutlined,
+  InstagramOutlined,
+  YoutubeOutlined,
+  NotificationOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
 import { SOCIAL_LINKS } from '@/lib/constants';
+import { ActivityPost } from '@/types';
 
-export default function AboutPage() {
-  const { clubSettings } = usePortal();
+function AboutContent() {
+  const { clubSettings, activityPosts } = usePortal();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Allow direct deep-link to activity tab: /about?tab=activity
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
 
   const icdsObjectives = [
     {
@@ -114,6 +128,14 @@ export default function AboutPage() {
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
                     <BookOutlined /> Sudhi Samman & Literature
+                  </span>
+                ),
+              },
+              {
+                key: 'activity',
+                label: (
+                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
+                    <NotificationOutlined /> Recent Activity
                   </span>
                 ),
               },
@@ -348,6 +370,40 @@ export default function AboutPage() {
           </div>
         )}
 
+        {/* TAB 5: RECENT ACTIVITY */}
+        {activeTab === 'activity' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                News &amp; Programs
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Recent Activity</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Latest events, health camps, and community initiatives by KPNS.
+              </p>
+            </div>
+
+            {activityPosts.filter((p) => p.published).length === 0 ? (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16">
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <p className="text-gray-500 text-sm">No activity posts yet. Check back soon!</p>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {activityPosts
+                  .filter((p) => p.published)
+                  .map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Call to Action Bar */}
         <div className="mt-10 bg-gradient-to-r from-[#3447AA] to-[#202E7A] rounded-3xl p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
           <div className="space-y-1 text-center sm:text-left">
@@ -379,6 +435,98 @@ export default function AboutPage() {
       </main>
 
       <MobileBottomNav />
+    </div>
+  );
+}
+
+export default function AboutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+          <Spin size="large" />
+        </div>
+      }
+    >
+      <AboutContent />
+    </Suspense>
+  );
+}
+
+// ── PostCard ─────────────────────────────────────────────────────────────────
+function PostCard({ post }: { post: ActivityPost }) {
+  const [expanded, setExpanded] = React.useState(false);
+  const isLong = post.body.length > 280;
+
+  const socialLinks = [
+    { href: post.fbLink, icon: <FacebookOutlined />, label: 'Facebook', color: 'bg-blue-600 hover:bg-blue-700' },
+    { href: post.instagramLink, icon: <InstagramOutlined />, label: 'Instagram', color: 'bg-pink-500 hover:bg-pink-600' },
+    { href: post.youtubeLink, icon: <YoutubeOutlined />, label: 'YouTube', color: 'bg-red-600 hover:bg-red-700' },
+    {
+      href: post.xLink,
+      icon: <span className="font-black text-sm">𝕏</span>,
+      label: 'X',
+      color: 'bg-gray-900 hover:bg-black',
+    },
+  ].filter((s) => !!s.href);
+
+  return (
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition">
+      {/* Photo */}
+      {post.photoUrl && (
+        <div className="h-48 overflow-hidden">
+          <img
+            src={post.photoUrl}
+            alt={post.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
+      <div className="p-5 flex flex-col flex-1 space-y-3">
+        {/* Date badge */}
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#3447AA] bg-blue-50 px-2.5 py-1 rounded-full w-fit">
+          <CalendarOutlined />
+          {dayjs(post.postDate).format('DD MMMM YYYY')}
+        </span>
+
+        {/* Title */}
+        <h3 className="text-base font-black text-gray-900 leading-snug">{post.title}</h3>
+
+        {/* Body */}
+        <p className="text-sm text-gray-600 leading-relaxed">
+          {isLong && !expanded ? `${post.body.slice(0, 280)}…` : post.body}
+        </p>
+        {isLong && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="text-xs font-bold text-[#3447AA] hover:underline text-left"
+          >
+            {expanded ? 'Show less ↑' : 'Read more ↓'}
+          </button>
+        )}
+
+        {/* Social Links */}
+        {socialLinks.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {socialLinks.map((s) => (
+              <a
+                key={s.label}
+                href={s.href!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-bold transition ${s.color}`}
+              >
+                {s.icon}
+                {s.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
   UserOutlined,
   LockOutlined,
   MessageOutlined,
+  FileImageOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
@@ -62,6 +63,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
       icon: <MessageOutlined />,
       badge: unreadMessagesCount,
     },
+    { label: 'Activity Posts', href: '/admin/posts', icon: <FileImageOutlined /> },
     { label: 'Birthdays', href: '/admin/birthdays', icon: <GiftOutlined /> },
     { label: 'Reports', href: '/admin/reports', icon: <BarChartOutlined /> },
     { label: 'Activity Logs', href: '/admin/activity-logs', icon: <HistoryOutlined /> },

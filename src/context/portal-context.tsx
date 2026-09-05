@@ -9,6 +9,7 @@ import {
   ClubSettings,
   UserRole,
   ContactMessage,
+  ActivityPost,
 } from '@/types';
 import {
   INITIAL_MEMBERS,
@@ -60,6 +61,11 @@ interface PortalContextType {
   submitContactMessage: (data: Omit<ContactMessage, 'id' | 'createdAt' | 'read'>) => Promise<boolean>;
   markContactMessageAsRead: (id: string) => Promise<void>;
   deleteContactMessage: (id: string) => Promise<boolean>;
+  // Activity Posts
+  activityPosts: ActivityPost[];
+  createActivityPost: (data: Omit<ActivityPost, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ActivityPost | null>;
+  updateActivityPost: (id: string, data: Partial<ActivityPost>) => Promise<boolean>;
+  deleteActivityPost: (id: string) => Promise<boolean>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -150,6 +156,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
     return [];
   });
+
+  const [activityPosts, setActivityPosts] = useState<ActivityPost[]>([]);
 
   const [currentRole, setCurrentRole] = useState<UserRole | 'GUEST'>(() => {
     if (typeof window !== 'undefined') {
@@ -358,6 +366,31 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           createdAt: m.created_at,
         }));
         setContactMessages(mappedMsgs);
+      }
+
+      // 7. Fetch Activity Posts
+      const { data: dbPosts, error: pErr } = await supabase
+        .from('activity_posts')
+        .select('*')
+        .order('post_date', { ascending: false });
+
+      if (!pErr && dbPosts) {
+        const mappedPosts: ActivityPost[] = dbPosts.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          body: p.body,
+          photoUrl: p.photo_url || undefined,
+          postDate: p.post_date,
+          fbLink: p.fb_link || undefined,
+          instagramLink: p.instagram_link || undefined,
+          youtubeLink: p.youtube_link || undefined,
+          xLink: p.x_link || undefined,
+          published: p.published ?? true,
+          createdBy: p.created_by || undefined,
+          createdAt: p.created_at,
+          updatedAt: p.updated_at,
+        }));
+        setActivityPosts(mappedPosts);
       }
     } catch (err) {
       console.warn('Supabase fetch encountered an issue, using local cache:', err);
@@ -1109,6 +1142,107 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
+  // ── Activity Post CRUD ──────────────────────────────────────────────────────
+
+  const createActivityPost = async (
+    data: Omit<ActivityPost, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<ActivityPost | null> => {
+    try {
+      const { data: inserted, error } = await supabase
+        .from('activity_posts')
+        .insert({
+          title: data.title,
+          body: data.body,
+          photo_url: data.photoUrl || null,
+          post_date: data.postDate,
+          fb_link: data.fbLink || null,
+          instagram_link: data.instagramLink || null,
+          youtube_link: data.youtubeLink || null,
+          x_link: data.xLink || null,
+          published: data.published,
+          created_by: data.createdBy || null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newPost: ActivityPost = {
+        id: inserted.id,
+        title: inserted.title,
+        body: inserted.body,
+        photoUrl: inserted.photo_url || undefined,
+        postDate: inserted.post_date,
+        fbLink: inserted.fb_link || undefined,
+        instagramLink: inserted.instagram_link || undefined,
+        youtubeLink: inserted.youtube_link || undefined,
+        xLink: inserted.x_link || undefined,
+        published: inserted.published ?? true,
+        createdBy: inserted.created_by || undefined,
+        createdAt: inserted.created_at,
+        updatedAt: inserted.updated_at,
+      };
+
+      setActivityPosts((prev) =>
+        [newPost, ...prev].sort(
+          (a, b) => new Date(b.postDate).getTime() - new Date(a.postDate).getTime()
+        )
+      );
+      message.success('Activity post created successfully!');
+      return newPost;
+    } catch (err) {
+      console.warn('Error creating activity post:', err);
+      message.error('Failed to create post. Please try again.');
+      return null;
+    }
+  };
+
+  const updateActivityPost = async (id: string, data: Partial<ActivityPost>): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('activity_posts')
+        .update({
+          title: data.title,
+          body: data.body,
+          photo_url: data.photoUrl ?? null,
+          post_date: data.postDate,
+          fb_link: data.fbLink ?? null,
+          instagram_link: data.instagramLink ?? null,
+          youtube_link: data.youtubeLink ?? null,
+          x_link: data.xLink ?? null,
+          published: data.published,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setActivityPosts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...data } : p))
+      );
+      message.success('Post updated successfully!');
+      return true;
+    } catch (err) {
+      console.warn('Error updating activity post:', err);
+      message.error('Failed to update post.');
+      return false;
+    }
+  };
+
+  const deleteActivityPost = async (id: string): Promise<boolean> => {
+    setActivityPosts((prev) => prev.filter((p) => p.id !== id));
+    try {
+      const { error } = await supabase.from('activity_posts').delete().eq('id', id);
+      if (error) throw error;
+      message.success('Post deleted.');
+      return true;
+    } catch (err) {
+      console.warn('Error deleting activity post:', err);
+      message.error('Failed to delete post.');
+      return false;
+    }
+  };
+
   return (
     <PortalContext.Provider
       value={{
@@ -1140,6 +1274,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         submitContactMessage,
         markContactMessageAsRead,
         deleteContactMessage,
+        activityPosts,
+        createActivityPost,
+        updateActivityPost,
+        deleteActivityPost,
       }}
     >
       {children}

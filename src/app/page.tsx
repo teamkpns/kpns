@@ -20,17 +20,25 @@ import {
   SmileOutlined,
   CrownOutlined,
   GlobalOutlined,
+  CalendarOutlined,
+  FileImageOutlined,
+  NotificationOutlined,
+  FacebookOutlined,
+  InstagramOutlined,
+  YoutubeOutlined,
 } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
 import { KPNS_COLORS, SOCIAL_LINKS, MANAGING_COMMITTEE } from '@/lib/constants';
 
 export default function HomePage() {
-  const { members, clubSettings, currentUser } = usePortal();
+  const { members, clubSettings, currentUser, activityPosts } = usePortal();
 
   const totalMembers = members.length;
   const activeMembers = members.filter((m) => m.status === 'ACTIVE').length;
+  const publishedPosts = (activityPosts || []).filter((p) => p.published).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col pb-16 lg:pb-0">
@@ -252,6 +260,133 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Latest Activity Section */}
+      {publishedPosts.length > 0 && (
+        <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA] flex items-center gap-1.5">
+                <NotificationOutlined /> Latest Updates &amp; Programs
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">
+                Recent Activities
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500">
+                Glimpses of our ongoing social welfare, health camps, and cultural events.
+              </p>
+            </div>
+            <Link href="/about?tab=activity">
+              <Button
+                type="primary"
+                icon={<ArrowRightOutlined />}
+                className="bg-[#3447AA] font-bold text-xs h-10 px-5 rounded-xl"
+              >
+                View All Activities
+              </Button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {publishedPosts.map((post) => (
+              <div
+                key={post.id}
+                className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between"
+              >
+                <div>
+                  {post.photoUrl ? (
+                    <div className="h-44 overflow-hidden bg-gray-100">
+                      <img
+                        src={post.photoUrl}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition duration-300 hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-32 bg-blue-50/70 flex items-center justify-center text-blue-300">
+                      <FileImageOutlined className="text-4xl" />
+                    </div>
+                  )}
+
+                  <div className="p-5 space-y-2.5">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#3447AA] bg-blue-50 px-2.5 py-0.5 rounded-full">
+                      <CalendarOutlined />
+                      {dayjs(post.postDate).format('DD MMM YYYY')}
+                    </span>
+                    <h3 className="text-base font-bold text-gray-900 leading-snug line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
+                      {post.body}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="px-5 pb-5 pt-2 flex items-center justify-between border-t border-gray-50">
+                  {/* Social badges if present */}
+                  <div className="flex items-center gap-2">
+                    {post.fbLink && (
+                      <a
+                        href={post.fbLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-xs"
+                        title="Facebook"
+                      >
+                        <FacebookOutlined />
+                      </a>
+                    )}
+                    {post.instagramLink && (
+                      <a
+                        href={post.instagramLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-pink-500 hover:text-pink-700 text-xs"
+                        title="Instagram"
+                      >
+                        <InstagramOutlined />
+                      </a>
+                    )}
+                    {post.youtubeLink && (
+                      <a
+                        href={post.youtubeLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-red-600 hover:text-red-800 text-xs"
+                        title="YouTube"
+                      >
+                        <YoutubeOutlined />
+                      </a>
+                    )}
+                    {post.xLink && (
+                      <a
+                        href={post.xLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-800 hover:text-black text-[11px] font-bold"
+                        title="X"
+                      >
+                        𝕏
+                      </a>
+                    )}
+                  </div>
+
+                  <Link
+                    href="/about?tab=activity"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#3447AA] hover:underline"
+                  >
+                    <span>Read Details</span>
+                    <ArrowRightOutlined />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Contact & Social Links Section */}
       <section className="py-14 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

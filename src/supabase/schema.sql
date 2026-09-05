@@ -132,6 +132,23 @@ CREATE TABLE IF NOT EXISTS public.contact_messages (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 8. Create Activity Posts Table
+CREATE TABLE IF NOT EXISTS public.activity_posts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    photo_url TEXT,
+    post_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    fb_link TEXT,
+    instagram_link TEXT,
+    youtube_link TEXT,
+    x_link TEXT,
+    published BOOLEAN DEFAULT true,
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) CONFIGURATION
 -- ==============================================================================
@@ -143,6 +160,7 @@ ALTER TABLE public.activity_logs DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.club_settings DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_posts DISABLE ROW LEVEL SECURITY;
 
 
 -- ==============================================================================
@@ -222,5 +240,36 @@ INSERT INTO public.club_settings (
     true,
     true,
     'KPNS'
+)
+ON CONFLICT DO NOTHING;
+
+-- Seed Activity Posts
+INSERT INTO public.activity_posts (title, body, photo_url, post_date, fb_link, published, created_by) VALUES
+(
+    'Annual Health Camp 2026',
+    'KPNS successfully organised its Annual Free Medical & Eye Camp on 20th August 2026 at Khejurda. Specialist doctors from Contai District Hospital provided free checkups to over 200 villagers. Medicines were distributed free of cost to backward children. Ophthalmic surgeries were also conducted in collaboration with the Lions'' Club of Egra.',
+    NULL,
+    '2026-08-20',
+    NULL,
+    true,
+    'Admin'
+),
+(
+    'ICDS Nutrition Drive — August 2026',
+    'Our ICDS wing conducted a month-long nutrition awareness drive across 5 Anganwadi centres in Khejurda Block. Pre-school children were provided supplementary nutrition packs, and mothers were educated on balanced diet preparation. The program benefited over 120 children aged 0–6 years.',
+    NULL,
+    '2026-08-05',
+    NULL,
+    true,
+    'Admin'
+),
+(
+    'Sudhi Samman 2026 — Annual Literary Felicitation',
+    'The 88th Annual Sahitya Baasar of KPNS was held on 15th July 2026. Distinguished educators and literary personalities from Purba Medinipur were honoured with the prestigious Sudhi Samman award. The event also featured the release of the latest edition of our literary magazine "Saaraswat Arghya".',
+    NULL,
+    '2026-07-15',
+    NULL,
+    true,
+    'Admin'
 )
 ON CONFLICT DO NOTHING;
