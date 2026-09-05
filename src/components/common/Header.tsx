@@ -17,6 +17,8 @@ import {
   FileTextOutlined,
   TeamOutlined,
   GiftOutlined,
+  MailOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
 import { KPNSLogo } from './KPNSLogo';
 import { usePortal } from '@/context/portal-context';
@@ -69,6 +71,11 @@ export const Header: React.FC = () => {
             key: 'admin-members',
             icon: <TeamOutlined />,
             label: <Link href="/admin/members">Members Directory</Link>,
+          },
+          {
+            key: 'admin-messages',
+            icon: <MessageOutlined />,
+            label: <Link href="/admin/messages">Inquiries &amp; Messages</Link>,
           },
           {
             key: 'admin-settings',
@@ -162,6 +169,14 @@ export const Header: React.FC = () => {
             }`}
           >
             Team KPNS
+          </Link>
+          <Link
+            href="/contact"
+            className={`transition hover:text-[#3447AA] ${
+              pathname === '/contact' ? 'text-[#3447AA] font-semibold' : ''
+            }`}
+          >
+            Contact Us
           </Link>
           <Link
             href="/register"
@@ -310,6 +325,15 @@ export const Header: React.FC = () => {
           </Link>
 
           <Link
+            href="/contact"
+            onClick={() => setMobileDrawerOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
+          >
+            <MailOutlined className="text-base text-[#3447AA]" />
+            <span>Contact Us</span>
+          </Link>
+
+          <Link
             href="/register"
             onClick={() => setMobileDrawerOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
@@ -386,6 +410,14 @@ export const Header: React.FC = () => {
               >
                 <TeamOutlined className="text-base text-[#3447AA]" />
                 <span>Members Directory</span>
+              </Link>
+              <Link
+                href="/admin/messages"
+                onClick={() => setMobileDrawerOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
+              >
+                <MessageOutlined className="text-base text-[#3447AA]" />
+                <span>Inquiries &amp; Messages</span>
               </Link>
               <Link
                 href="/admin/birthdays"

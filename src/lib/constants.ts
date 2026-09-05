@@ -101,7 +101,7 @@ export const DEFAULT_CLUB_SETTINGS: ClubSettings = {
   tagline: 'একসাথে, এক পরিচয়ে, এক পরিবারের বন্ধনে',
   contactEmail: 'kpnsclub@gmail.com',
   contactPhone: '+91 94756 46111',
-  address: 'Vill: Khejurdaha, P.O: Khejurdaha, P.S: Khejuri, Dist: Purba Medinipur, West Bengal - 721401',
+  address: 'Vill & Post: Khejurda, P.S.: Egra, Dist: Purba Medinipur, State: West Bengal, Pin: 721422',
   logoUrl: '/img/logo.png',
   registrationOpen: true,
   autoGenerateMemberId: true,
@@ -110,8 +110,20 @@ export const DEFAULT_CLUB_SETTINGS: ClubSettings = {
 
 export const SOCIAL_LINKS = {
   facebook: 'http://www.facebook.com/kpns.club',
+  instagram: 'https://www.instagram.com/kpns.club',
   youtube: 'http://www.youtube.com/user/kpns1935',
-  twitter: 'https://twitter.com/KPNS_CLUB',
+  twitter: 'https://x.com/KPNS_CLUB',
+  x: 'https://x.com/KPNS_CLUB',
+};
+
+export const CLUB_COORDINATES = {
+  lat: '21.8986° N',
+  long: '87.5332° E',
+  latitudeNumber: 21.8986,
+  longitudeNumber: 87.5332,
+  formatted: '21.8986° N, 87.5332° E',
+  googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Khejurda+Egra+Purba+Medinipur+West+Bengal+721422',
+  embedUrl: 'https://maps.google.com/maps?q=Khejurda%2C+Egra%2C+Purba+Medinipur%2C+West+Bengal+721422&t=&z=14&ie=UTF8&iwloc=&output=embed',
 };
 
 export const COMMITTEE_ROLES = [

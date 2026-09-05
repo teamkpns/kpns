@@ -1,7 +1,15 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Member, Application, ActivityLog, NotificationItem, ClubSettings, UserRole } from '@/types';
+import {
+  Member,
+  Application,
+  ActivityLog,
+  NotificationItem,
+  ClubSettings,
+  UserRole,
+  ContactMessage,
+} from '@/types';
 import {
   INITIAL_MEMBERS,
   INITIAL_APPLICATIONS,
@@ -21,6 +29,7 @@ interface PortalContextType {
   notifications: NotificationItem[];
   activityLogs: ActivityLog[];
   clubSettings: ClubSettings;
+  contactMessages: ContactMessage[];
   isLoading: boolean;
   refreshData: () => Promise<void>;
   setCurrentUserRole: (role: UserRole | 'GUEST') => void;
@@ -48,6 +57,9 @@ interface PortalContextType {
   markAllNotificationsAsRead: () => void;
   updateClubSettings: (settings: Partial<ClubSettings>) => void;
   switchDemoUser: (target: 'MEMBER' | 'ADMIN') => void;
+  submitContactMessage: (data: Omit<ContactMessage, 'id' | 'createdAt' | 'read'>) => Promise<boolean>;
+  markContactMessageAsRead: (id: string) => Promise<void>;
+  deleteContactMessage: (id: string) => Promise<boolean>;
 }
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
@@ -123,6 +135,20 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     }
     return DEFAULT_CLUB_SETTINGS;
+  });
+
+  const [contactMessages, setContactMessages] = useState<ContactMessage[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('kpns_contact_messages');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          // fallback
+        }
+      }
+    }
+    return [];
   });
 
   const [currentRole, setCurrentRole] = useState<UserRole | 'GUEST'>(() => {
@@ -314,6 +340,25 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           memberIdPrefix: dbSettings.member_id_prefix || 'KPNS',
         });
       }
+
+      // 6. Fetch Contact Messages
+      const { data: dbMessages, error: cErr } = await supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!cErr && dbMessages) {
+        const mappedMsgs: ContactMessage[] = dbMessages.map((m: any) => ({
+          id: m.id,
+          name: m.name,
+          phone: m.phone,
+          email: m.email,
+          message: m.message,
+          read: m.read ?? false,
+          createdAt: m.created_at,
+        }));
+        setContactMessages(mappedMsgs);
+      }
     } catch (err) {
       console.warn('Supabase fetch encountered an issue, using local cache:', err);
     } finally {
@@ -333,8 +378,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       localStorage.setItem('kpns_notifications', JSON.stringify(notifications));
       localStorage.setItem('kpns_logs', JSON.stringify(activityLogs));
       localStorage.setItem('kpns_settings', JSON.stringify(clubSettings));
+      localStorage.setItem('kpns_contact_messages', JSON.stringify(contactMessages));
     }
-  }, [members, applications, notifications, activityLogs, clubSettings]);
+  }, [members, applications, notifications, activityLogs, clubSettings, contactMessages]);
 
   const addActivityLog = async (action: string, memberId?: string, details?: string) => {
     const userDisplay = currentUser?.userId || (currentRole === 'ADMIN' ? 'ADMIN' : 'SYSTEM');
@@ -988,6 +1034,81 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
   };
 
+  const submitContactMessage = async (
+    data: Omit<ContactMessage, 'id' | 'createdAt' | 'read'>
+  ): Promise<boolean> => {
+    const newMsg: ContactMessage = {
+      id: `msg-${Date.now()}`,
+      ...data,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    setContactMessages((prev) => [newMsg, ...prev]);
+
+    // Push to Supabase contact_messages table
+    (async () => {
+      try {
+        const { error } = await supabase.from('contact_messages').insert([
+          {
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            message: data.message,
+            read: false,
+          },
+        ]);
+        if (error) {
+          console.warn('Supabase contact message sync error:', error);
+        }
+      } catch (err) {
+        console.warn('Supabase contact message sync bypassed:', err);
+      }
+    })();
+
+    // Notify admin
+    const notif: NotificationItem = {
+      id: `notif-${Date.now()}`,
+      title: 'New Inquiry Received',
+      description: `Message from ${data.name} (${data.phone})`,
+      date: 'Just now',
+      read: false,
+      type: 'info',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+
+    addActivityLog(
+      `Contact Form Message from ${data.name}`,
+      undefined,
+      `Phone: ${data.phone}, Email: ${data.email}`
+    );
+
+    return true;
+  };
+
+  const markContactMessageAsRead = async (id: string): Promise<void> => {
+    setContactMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, read: true } : m))
+    );
+    try {
+      await supabase.from('contact_messages').update({ read: true }).eq('id', id);
+    } catch (err) {
+      console.warn('Error updating contact message in Supabase:', err);
+    }
+  };
+
+  const deleteContactMessage = async (id: string): Promise<boolean> => {
+    setContactMessages((prev) => prev.filter((m) => m.id !== id));
+    try {
+      await supabase.from('contact_messages').delete().eq('id', id);
+      message.success('Message deleted successfully.');
+      return true;
+    } catch (err) {
+      console.warn('Error deleting contact message from Supabase:', err);
+      return false;
+    }
+  };
+
   return (
     <PortalContext.Provider
       value={{
@@ -998,6 +1119,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         notifications,
         activityLogs,
         clubSettings,
+        contactMessages,
         isLoading,
         refreshData: loadFromSupabase,
         setCurrentUserRole: (role) => setCurrentRole(role),
@@ -1015,6 +1137,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         markAllNotificationsAsRead,
         updateClubSettings,
         switchDemoUser,
+        submitContactMessage,
+        markContactMessageAsRead,
+        deleteContactMessage,
       }}
     >
       {children}

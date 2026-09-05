@@ -347,6 +347,10 @@ export default function HomePage() {
               Team KPNS
             </Link>
             <span>•</span>
+            <Link href="/contact" className="hover:text-white transition">
+              Contact Us
+            </Link>
+            <span>•</span>
             <Link href="/register" className="hover:text-white transition">
               Membership
             </Link>

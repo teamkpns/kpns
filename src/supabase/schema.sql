@@ -112,13 +112,24 @@ CREATE TABLE IF NOT EXISTS public.club_settings (
     club_name_bengali TEXT NOT NULL DEFAULT 'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ',
     club_name_english TEXT NOT NULL DEFAULT 'Khejurdaha Pally Unnayan Narayan Sangha (KPNS)',
     tagline TEXT DEFAULT 'একসাথে, এক পরিচয়ে, এক পরিবারের বন্ধনে',
-    contact_email VARCHAR(255) DEFAULT 'contact@kpns.org.in',
-    contact_phone VARCHAR(50) DEFAULT '+91 98765 43210',
-    address TEXT DEFAULT 'Vill: Khejurdaha, P.O: Khejurdaha, Dist: Purba Medinipur, West Bengal - 721401',
+    contact_email VARCHAR(255) DEFAULT 'kpnsclub@gmail.com',
+    contact_phone VARCHAR(50) DEFAULT '+91 94756 46111',
+    address TEXT DEFAULT 'Vill & Post: Khejurda, P.S.: Egra, Dist: Purba Medinipur, State: West Bengal, Pin: 721422',
     logo_url TEXT DEFAULT '/img/logo.png',
     registration_open BOOLEAN DEFAULT true,
     auto_generate_member_id BOOLEAN DEFAULT true,
     member_id_prefix VARCHAR(20) DEFAULT 'KPNS'
+);
+
+-- 7. Create Contact Messages Table
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(150) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- ==============================================================================
@@ -131,6 +142,7 @@ ALTER TABLE public.applications DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.club_settings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_messages DISABLE ROW LEVEL SECURITY;
 
 
 -- ==============================================================================

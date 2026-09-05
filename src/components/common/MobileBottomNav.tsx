@@ -17,6 +17,8 @@ import {
   FileTextOutlined,
   LogoutOutlined,
   LoginOutlined,
+  MailOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
 import { usePortal } from '@/context/portal-context';
 import { KPNSLogo } from './KPNSLogo';
@@ -160,6 +162,14 @@ export const MobileBottomNav: React.FC = () => {
                 <span className="text-xs font-semibold text-gray-800">Team KPNS</span>
               </Link>
               <Link
+                href="/contact"
+                onClick={() => setMoreDrawerOpen(false)}
+                className="flex flex-col items-center p-3 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
+              >
+                <MailOutlined className="text-2xl text-[#3447AA] mb-1" />
+                <span className="text-xs font-semibold text-gray-800">Contact Us</span>
+              </Link>
+              <Link
                 href="/register"
                 onClick={() => setMoreDrawerOpen(false)}
                 className="flex flex-col items-center p-3 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
@@ -170,7 +180,7 @@ export const MobileBottomNav: React.FC = () => {
               <Link
                 href="/login"
                 onClick={() => setMoreDrawerOpen(false)}
-                className="flex flex-col items-center p-3 rounded-2xl bg-[#FBEAEB] text-[#3447AA] transition col-span-2 font-bold"
+                className="flex flex-col items-center p-3 rounded-2xl bg-[#FBEAEB] text-[#3447AA] transition font-bold"
               >
                 <LoginOutlined className="text-2xl mb-1" />
                 <span className="text-xs">Member Login</span>
@@ -230,6 +240,14 @@ export const MobileBottomNav: React.FC = () => {
                   <TeamOutlined className="text-2xl text-[#3447AA] mb-1" />
                   <span className="text-xs font-semibold text-gray-800">Team KPNS</span>
                 </Link>
+                <Link
+                  href="/contact"
+                  onClick={() => setMoreDrawerOpen(false)}
+                  className="flex flex-col items-center p-3 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition col-span-3"
+                >
+                  <MailOutlined className="text-2xl text-[#3447AA] mb-1" />
+                  <span className="text-xs font-semibold text-gray-800">Contact Us</span>
+                </Link>
               </div>
 
               <div className="pt-2 border-t border-gray-100">
@@ -279,6 +297,14 @@ export const MobileBottomNav: React.FC = () => {
                   <span className="text-[11px] font-semibold text-gray-800">Members</span>
                 </Link>
                 <Link
+                  href="/admin/messages"
+                  onClick={() => setMoreDrawerOpen(false)}
+                  className="flex flex-col items-center p-2.5 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
+                >
+                  <MessageOutlined className="text-xl text-[#3447AA] mb-1" />
+                  <span className="text-[11px] font-semibold text-gray-800">Messages</span>
+                </Link>
+                <Link
                   href="/admin/birthdays"
                   onClick={() => setMoreDrawerOpen(false)}
                   className="flex flex-col items-center p-2.5 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
@@ -313,12 +339,13 @@ export const MobileBottomNav: React.FC = () => {
                 <Link
                   href="/member/dashboard"
                   onClick={() => setMoreDrawerOpen(false)}
-                  className="flex flex-col items-center p-2.5 rounded-2xl bg-blue-50 text-[#3447AA] transition font-bold"
+                  className="flex flex-col items-center p-2.5 rounded-2xl bg-blue-50 text-[#3447AA] transition font-bold col-span-4"
                 >
                   <DashboardOutlined className="text-xl mb-1" />
                   <span className="text-[11px]">Member View</span>
                 </Link>
               </div>
+
 
               <div className="pt-2 border-t border-gray-100">
                 <Button

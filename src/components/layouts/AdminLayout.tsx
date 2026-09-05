@@ -16,6 +16,7 @@ import {
   LoadingOutlined,
   UserOutlined,
   LockOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
@@ -26,10 +27,11 @@ import { KPNS_COLORS } from '@/lib/constants';
 export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { currentUser, currentRole, isLoading, applications, logout, switchDemoUser } = usePortal();
+  const { currentUser, currentRole, isLoading, applications, contactMessages, logout, switchDemoUser } = usePortal();
 
   const isAdmin = currentRole === 'ADMIN' || currentRole === 'SUPERADMIN';
   const pendingAppsCount = applications.filter((a) => a.status === 'PENDING').length;
+  const unreadMessagesCount = contactMessages.filter((m) => !m.read).length;
 
   // Strict route protection for /admin/*
   useEffect(() => {
@@ -54,6 +56,12 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
       badge: pendingAppsCount,
     },
     { label: 'Members', href: '/admin/members', icon: <TeamOutlined /> },
+    {
+      label: 'Messages',
+      href: '/admin/messages',
+      icon: <MessageOutlined />,
+      badge: unreadMessagesCount,
+    },
     { label: 'Birthdays', href: '/admin/birthdays', icon: <GiftOutlined /> },
     { label: 'Reports', href: '/admin/reports', icon: <BarChartOutlined /> },
     { label: 'Activity Logs', href: '/admin/activity-logs', icon: <HistoryOutlined /> },

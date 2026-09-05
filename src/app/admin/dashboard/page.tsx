@@ -14,6 +14,7 @@ import {
   ArrowRightOutlined,
   GiftOutlined,
   HistoryOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { StatusTag } from '@/components/common/StatusTag';
@@ -22,12 +23,13 @@ import { formatDate } from '@/lib/utils';
 import { KPNS_COLORS } from '@/lib/constants';
 
 export default function AdminDashboardPage() {
-  const { members, applications, activityLogs } = usePortal();
+  const { members, applications, activityLogs, contactMessages } = usePortal();
 
   const totalMembers = 1240 + members.length;
   const activeMembers = 1175 + members.filter((m) => m.status === 'ACTIVE').length;
   const pendingApps = applications.filter((a) => a.status === 'PENDING').length;
   const incompleteProfiles = members.filter((m) => m.profileCompletion < 80).length + 84;
+  const unreadMessages = contactMessages.filter((m) => !m.read).length;
 
   const recentApplications = applications.slice(0, 5);
 
@@ -47,6 +49,14 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Link href="/admin/messages">
+              <Button
+                icon={<MessageOutlined />}
+                className="rounded-xl font-semibold text-xs h-9 border-gray-300"
+              >
+                Inquiries ({unreadMessages})
+              </Button>
+            </Link>
             <Link href="/admin/members/import">
               <Button
                 icon={<UploadOutlined />}
