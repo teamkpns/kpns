@@ -97,7 +97,7 @@ export interface CommitteeMember {
 
 export const DEFAULT_CLUB_SETTINGS: ClubSettings = {
   clubNameBengali: 'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ',
-  clubNameEnglish: 'Khejurdaha Pally Unnayan Narayan Sangha (KPNS)',
+  clubNameEnglish: 'KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA',
   tagline: 'একসাথে, এক পরিচয়ে, এক পরিবারের বন্ধনে',
   contactEmail: 'kpnsclub@gmail.com',
   contactPhone: '+91 94756 46111',
@@ -106,6 +106,8 @@ export const DEFAULT_CLUB_SETTINGS: ClubSettings = {
   registrationOpen: true,
   autoGenerateMemberId: true,
   memberIdPrefix: 'KPNS',
+  registrationNumber: 'SO168946',
+  registeredAct: 'West Bengal Societies Registration Act, 1961',
 };
 
 export const SOCIAL_LINKS = {
@@ -272,8 +274,8 @@ export const INITIAL_MEMBERS: Member[] = [
     bloodGroup: 'O+',
     dob: '1995-09-02', // Today is his birthday in 2026-09-02!
     houseNumber: 'KP-124',
-    villageTown: 'Khejurdaha',
-    postOffice: 'Khejurdaha',
+    villageTown: 'Khejurda',
+    postOffice: 'Khejurda',
     policeStation: 'Khejuri',
     city: 'Contai',
     district: 'Purba Medinipur',
@@ -303,8 +305,8 @@ export const INITIAL_MEMBERS: Member[] = [
     bloodGroup: 'A+',
     dob: '1988-04-14',
     houseNumber: 'H-01',
-    villageTown: 'Khejurdaha',
-    postOffice: 'Khejurdaha',
+    villageTown: 'Khejurda',
+    postOffice: 'Khejurda',
     policeStation: 'Khejuri',
     city: 'Contai',
     district: 'Purba Medinipur',
@@ -331,8 +333,8 @@ export const INITIAL_MEMBERS: Member[] = [
     email: 'raja.mukherjee@example.com',
     bloodGroup: 'B+',
     dob: '1992-09-05', // Birthday this week
-    villageTown: 'Khejurdaha',
-    postOffice: 'Khejurdaha',
+    villageTown: 'Khejurda',
+    postOffice: 'Khejurda',
     policeStation: 'Khejuri',
     city: 'Contai',
     district: 'Purba Medinipur',
@@ -358,7 +360,7 @@ export const INITIAL_MEMBERS: Member[] = [
     email: 'rani.ghosh@example.com',
     bloodGroup: 'AB+',
     dob: '1998-09-20', // Birthday this month
-    villageTown: 'Khejurdaha',
+    villageTown: 'Khejurda',
     district: 'Purba Medinipur',
     state: 'West Bengal',
     country: 'India',
@@ -409,8 +411,8 @@ export const INITIAL_APPLICATIONS: Application[] = [
     bloodGroup: 'O+',
     dob: '1996-03-15',
     houseNumber: '12-B',
-    villageTown: 'Khejurdaha',
-    postOffice: 'Khejurdaha',
+    villageTown: 'Khejurda',
+    postOffice: 'Khejurda',
     policeStation: 'Khejuri',
     city: 'Contai',
     district: 'Purba Medinipur',
@@ -447,8 +449,8 @@ export const INITIAL_APPLICATIONS: Application[] = [
     email: 'pintu.patra@example.com',
     bloodGroup: 'O+',
     dob: '1995-09-02',
-    villageTown: 'Khejurdaha',
-    postOffice: 'Khejurdaha',
+    villageTown: 'Khejurda',
+    postOffice: 'Khejurda',
     policeStation: 'Khejuri',
     city: 'Contai',
     district: 'Purba Medinipur',

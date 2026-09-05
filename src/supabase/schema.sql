@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 CREATE TABLE IF NOT EXISTS public.club_settings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     club_name_bengali TEXT NOT NULL DEFAULT 'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ',
-    club_name_english TEXT NOT NULL DEFAULT 'Khejurdaha Pally Unnayan Narayan Sangha (KPNS)',
+    club_name_english TEXT NOT NULL DEFAULT 'KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS)',
     tagline TEXT DEFAULT 'একসাথে, এক পরিচয়ে, এক পরিবারের বন্ধনে',
     contact_email VARCHAR(255) DEFAULT 'kpnsclub@gmail.com',
     contact_phone VARCHAR(50) DEFAULT '+91 94756 46111',
@@ -158,25 +158,25 @@ INSERT INTO public.members (
 (
     'KPNS75PP26', '75', 'PINTU75', 'MEMBER', 'ACTIVE', '2026-08-15',
     'Pintu Patra', 'Subhas Patra', '9876543210', '9123456780', 'pintu.patra@example.com',
-    '541278901234', 'O+', '1995-09-02', 'KP-124', 'Khejurdaha', 'Khejurdaha', 'Khejuri',
+    '541278901234', 'O+', '1995-09-02', 'KP-124', 'Khejurda', 'Khejurda', 'Khejuri',
     'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 90
 ),
 (
     'KPNS01AM20', '01', 'ADMIN_KPNS', 'ADMIN', 'ACTIVE', '2020-01-26',
     'Arup Maiti (Admin)', 'Nirod Maiti', '9832109876', '9434567890', 'admin@kpns.org.in',
-    '654321098765', 'A+', '1988-04-14', 'H-01', 'Khejurdaha', 'Khejurdaha', 'Khejuri',
+    '654321098765', 'A+', '1988-04-14', 'H-01', 'Khejurda', 'Khejurda', 'Khejuri',
     'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 100
 ),
 (
     'KPNS88RM25', '88', 'RAJA88', 'MEMBER', 'ACTIVE', '2025-11-10',
     'Raja Mukherjee', 'Bimal Mukherjee', '9830012345', NULL, 'raja.mukherjee@example.com',
-    NULL, 'B+', '1992-09-05', NULL, 'Khejurdaha', 'Khejurdaha', 'Khejuri',
+    NULL, 'B+', '1992-09-05', NULL, 'Khejurda', 'Khejurda', 'Khejuri',
     'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 95
 ),
 (
     'KPNS92RG26', '92', 'RANI92', 'MEMBER', 'ACTIVE', '2026-02-14',
     'Rani Ghosh', 'Gopal Ghosh', '9871122334', NULL, 'rani.ghosh@example.com',
-    NULL, 'AB+', '1998-09-20', NULL, 'Khejurdaha', NULL, NULL,
+    NULL, 'AB+', '1998-09-20', NULL, 'Khejurda', NULL, NULL,
     NULL, 'Purba Medinipur', 'West Bengal', 'India', '721401', 75
 ),
 (
@@ -196,7 +196,7 @@ INSERT INTO public.applications (
 (
     'KPNS-APP-2026-0001', 'PENDING', '2026-09-01', 'Debasish Jana', 'Bhabesh Jana',
     '9876501234', '9876501235', 'debasish.jana@example.com', '789012345678', 'O+',
-    '1996-03-15', '12-B', 'Khejurdaha', 'Khejurdaha', 'Khejuri', 'Contai',
+    '1996-03-15', '12-B', 'Khejurda', 'Khejurda', 'Khejuri', 'Contai',
     'Purba Medinipur', 'West Bengal', 'India', '721401'
 ),
 (
@@ -213,11 +213,11 @@ INSERT INTO public.club_settings (
     contact_phone, address, logo_url, registration_open, auto_generate_member_id, member_id_prefix
 ) VALUES (
     'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ',
-    'Khejurdaha Pally Unnayan Narayan Sangha (KPNS)',
+    'KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS)',
     'একসাথে, এক পরিচয়ে, এক পরিবারের বন্ধনে',
     'contact@kpns.org.in',
     '+91 98765 43210',
-    'Vill: Khejurdaha, P.O: Khejurdaha, Dist: Purba Medinipur, West Bengal - 721401',
+    'Vill & Post: Khejurda, P.S.: Egra, Dist: Purba Medinipur, West Bengal - 721422',
     '/img/logo.png',
     true,
     true,

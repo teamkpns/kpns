@@ -4,9 +4,9 @@ import { AntdProvider } from '@/components/theme/AntdProvider';
 import { PortalProvider } from '@/context/portal-context';
 
 export const metadata: Metadata = {
-  title: 'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ (KPNS) — Member Portal',
+  title: 'খেজুরদা পল্লীউন্নয়ন নারায়ণ সংঘ (KPNS) — KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA',
   description:
-    'Digital Member Management Portal for Khejurdaha Pally Unnayan Narayan Sangha (KPNS)',
+    'Official Portal for KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS) — Reg. No. SO168946 under West Bengal Societies Registration Act, 1961',
   icons: {
     icon: '/favicon.ico',
   },

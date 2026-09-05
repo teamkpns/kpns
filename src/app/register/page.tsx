@@ -46,7 +46,7 @@ export default function RegisterPage() {
     country: 'India',
     state: 'West Bengal',
     district: 'Purba Medinipur',
-    villageTown: 'Khejurdaha',
+    villageTown: 'Khejurda',
   });
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
 
@@ -204,7 +204,7 @@ export default function RegisterPage() {
               country: 'India',
               state: 'West Bengal',
               district: 'Purba Medinipur',
-              villageTown: 'Khejurdaha',
+              villageTown: 'Khejurda',
               pincode: '721401',
               bloodGroup: 'O+',
               dob: dayjs('1998-01-01'),
@@ -373,14 +373,14 @@ export default function RegisterPage() {
                     name="villageTown"
                     rules={[{ required: true, message: 'Please enter Village or Town' }]}
                   >
-                    <Input placeholder="e.g. Khejurdaha" size="large" className="rounded-xl" />
+                    <Input placeholder="e.g. Khejurda" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
                     label={<span className="text-xs font-bold text-gray-700">Post Office</span>}
                     name="postOffice"
                   >
-                    <Input placeholder="e.g. Khejurdaha" size="large" className="rounded-xl" />
+                    <Input placeholder="e.g. Khejurda" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item

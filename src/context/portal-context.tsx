@@ -896,7 +896,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         bloodGroup: item.bloodGroup || 'O+',
         dob: item.dob || '1990-01-01',
         houseNumber: item.houseNumber || '',
-        villageTown: item.villageTown || 'Khejurdaha',
+        villageTown: item.villageTown || 'Khejurda',
         postOffice: item.postOffice || '',
         policeStation: item.policeStation || '',
         city: item.city || '',

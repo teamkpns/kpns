@@ -68,7 +68,7 @@ export default function AboutPage() {
             &ldquo;{clubSettings.tagline}&rdquo;
           </p>
           <p className="text-xs sm:text-sm text-blue-100/90 max-w-2xl mx-auto leading-relaxed pt-2">
-            Founded in 1935 in the rural heartland of Khejurdaha, Purba Medinipur, KPNS has stood as
+            Founded in 1935 in the rural heartland of Khejurda, Purba Medinipur, KPNS has stood as
             a steadfast pillar of community development, public healthcare, child welfare, and
             cultural enlightenment for over nine decades.
           </p>
@@ -134,9 +134,9 @@ export default function AboutPage() {
                   Nine Decades of Voluntary Social Upliftment
                 </h2>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  <strong>Khejurdaha Pally Unnayan Narayan Sangha (KPNS)</strong> was established in{' '}
+                  <strong>KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS)</strong> was established in{' '}
                   <strong>1935</strong> by visionary community leaders to empower the rural
-                  dwellers of Khejurdaha, Egra, and neighboring villages of Purba Medinipur, West
+                  dwellers of Khejurda, Egra, and neighboring villages of Purba Medinipur, West
                   Bengal.
                 </p>
                 <p className="text-sm text-gray-600 leading-relaxed">

@@ -51,12 +51,21 @@ export default function HomePage() {
             {clubSettings.clubNameBengali}
           </h1>
 
+          <p className="text-base sm:text-xl font-bold text-pink-100 tracking-wide max-w-2xl mx-auto">
+            KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS)
+          </p>
+
           <p className="text-lg sm:text-2xl font-light text-pink-100 tracking-wide max-w-2xl mx-auto italic">
             &ldquo;{clubSettings.tagline}&rdquo;
           </p>
 
+          {/* Government Registration Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-400/20 border border-amber-300/40 text-xs font-semibold text-amber-100">
+            🏛️ Registered under West Bengal Societies Registration Act, 1961 &bull; Reg. No: SO168946
+          </div>
+
           <p className="text-sm sm:text-base text-blue-100/90 max-w-2xl mx-auto leading-relaxed">
-            Khejurdaha Pally Unnayan Narayan Sangha (KPNS) — Bridging community development,
+            KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS) — Bridging community development,
             pediatric healthcare, ICDS child nutrition, and cultural heritage across Purba Medinipur
             through our unified portal.
           </p>
@@ -330,8 +339,12 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-center sm:text-left">
           <div>
             <p className="text-white font-bold">{clubSettings.clubNameBengali}</p>
+            <p className="font-semibold text-gray-300 text-[11px] mt-0.5">KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS)</p>
             <p className="text-gray-400 text-[11px] mt-0.5">
-              KPNS &copy; 1935–{new Date().getFullYear()} • A Volunteer Organization • Khejurdaha, Purba Medinipur
+              KPNS &copy; 1935–{new Date().getFullYear()} • Reg. No: SO168946 • Khejurda, Purba Medinipur
+            </p>
+            <p className="text-gray-500 text-[10px] mt-0.5">
+              Registered under West Bengal Societies Registration Act, 1961
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">

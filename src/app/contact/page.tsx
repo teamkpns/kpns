@@ -68,7 +68,7 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="text-base sm:text-lg text-pink-100 font-light max-w-2xl mx-auto">
-            Have questions, feedback, or want to partner with us? Reach out to the Khejurda Pally Unnayan Narayan Sangha team.
+            Have questions, feedback, or want to partner with us? Reach out to the KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA team.
           </p>
         </div>
       </section>
@@ -298,7 +298,7 @@ export default function ContactPage() {
                   <div className="text-xs space-y-1">
                     <p className="font-bold text-sm text-green-900">Message Delivered Successfully!</p>
                     <p>
-                      Thank you for contacting Khejurda Pally Unnayan Narayan Sangha. Our administrative team will review your inquiry and get back to you soon.
+                      Thank you for contacting KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS). Our administrative team will review your inquiry and get back to you soon.
                     </p>
                     <Button
                       size="small"

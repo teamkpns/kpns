@@ -112,6 +112,8 @@ export interface ClubSettings {
   registrationOpen: boolean;
   autoGenerateMemberId: boolean;
   memberIdPrefix: string;
+  registrationNumber?: string;
+  registeredAct?: string;
 }
 
 export interface ContactMessage {
