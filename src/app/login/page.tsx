@@ -18,7 +18,8 @@ import { UserRole } from '@/types';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, switchDemoUser } = usePortal();
+  const { login } = usePortal();
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [roleType, setRoleType] = useState<UserRole>('MEMBER');
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
@@ -57,16 +58,6 @@ export default function LoginPage() {
         message.error('Invalid credentials. Please verify your User ID or Email.');
       }
     }, 400);
-  };
-
-  const handleQuickDemoLogin = (targetRole: 'MEMBER' | 'ADMIN') => {
-    setLoading(true);
-    setTimeout(() => {
-      switchDemoUser(targetRole);
-      setLoading(false);
-      const dest = getDestination(targetRole);
-      router.push(dest);
-    }, 300);
   };
 
   return (
@@ -171,13 +162,11 @@ export default function LoginPage() {
 
             {/* Login Form */}
             <Form
+              form={form}
               layout="vertical"
               onFinish={onFinish}
-              initialValues={{
-                identifier: roleType === 'ADMIN' ? 'admin@kpns.org.in' : 'PINTU75',
-                remember: true,
-              }}
               className="space-y-4"
+              autoComplete="off"
             >
               <Form.Item
                 label={<span className="text-xs font-bold text-gray-700">User ID / Email</span>}
@@ -189,6 +178,7 @@ export default function LoginPage() {
                   placeholder="e.g. PINTU75 or pintu@example.com"
                   size="large"
                   className="rounded-xl"
+                  autoComplete="off"
                 />
               </Form.Item>
 
@@ -196,13 +186,13 @@ export default function LoginPage() {
                 label={<span className="text-xs font-bold text-gray-700">Password</span>}
                 name="password"
                 rules={[{ required: true, message: 'Please enter your password' }]}
-                initialValue="kpns@2026"
               >
                 <Input.Password
                   prefix={<LockOutlined className="text-gray-400 mr-1" />}
                   placeholder="Enter your password"
                   size="large"
                   className="rounded-xl"
+                  autoComplete="new-password"
                   iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                 />
               </Form.Item>
@@ -230,29 +220,6 @@ export default function LoginPage() {
                 {roleType === 'ADMIN' ? 'LOGIN AS ADMIN' : 'LOGIN'}
               </Button>
             </Form>
-
-            {/* Quick Demo Login Preset Buttons */}
-            <div className="pt-2 border-t border-gray-100">
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider text-center mb-2">
-                Quick Demo Access
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin('MEMBER')}
-                  className="py-2 px-3 rounded-xl bg-[#FBEAEB] hover:bg-pink-100 text-[#3447AA] text-xs font-bold transition border border-pink-200 text-center"
-                >
-                  👤 Login as Pintu (Member)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin('ADMIN')}
-                  className="py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#3447AA] text-xs font-bold transition border border-blue-200 text-center"
-                >
-                  🛡️ Login as Admin
-                </button>
-              </div>
-            </div>
 
             {/* Register Link */}
             <div className="text-center pt-2">

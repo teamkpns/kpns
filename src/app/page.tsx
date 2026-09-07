@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button, Row, Col, Tag, Card } from 'antd';
+import { Button, Row, Col, Tag, Card, Avatar } from 'antd';
 import {
   UserAddOutlined,
   LoginOutlined,
@@ -31,7 +31,7 @@ import dayjs from 'dayjs';
 import { Header } from '@/components/common/Header';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
-import { KPNS_COLORS, SOCIAL_LINKS, MANAGING_COMMITTEE } from '@/lib/constants';
+import { KPNS_COLORS, SOCIAL_LINKS, COMMITTEE_ROLE_ORDER } from '@/lib/constants';
 
 export default function HomePage() {
   const { members, clubSettings, currentUser, activityPosts } = usePortal();
@@ -39,6 +39,24 @@ export default function HomePage() {
   const totalMembers = members.length;
   const activeMembers = members.filter((m) => m.status === 'ACTIVE').length;
   const publishedPosts = (activityPosts || []).filter((p) => p.published).slice(0, 3);
+
+  // Derive Leadership & Committee members from actual database members
+  const committeeMembers = (members || [])
+    .filter((m) => m.committeeRole && m.status === 'ACTIVE')
+    .sort((a, b) => {
+      const orderA = COMMITTEE_ROLE_ORDER[a.committeeRole!] ?? 99;
+      const orderB = COMMITTEE_ROLE_ORDER[b.committeeRole!] ?? 99;
+      return orderA - orderB;
+    });
+
+  // Display top leadership/committee members from DB; if fewer than 4, include active volunteer members
+  const activeVolunteers = (members || []).filter(
+    (m) => m.status === 'ACTIVE' && !m.committeeRole
+  );
+  const leadershipPreview =
+    committeeMembers.length >= 4
+      ? committeeMembers.slice(0, 4)
+      : [...committeeMembers, ...activeVolunteers].slice(0, 4);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col pb-16 lg:pb-0">
@@ -158,7 +176,7 @@ export default function HomePage() {
             </div>
             <div className="pt-6">
               <Link
-                href="/about"
+                href="/about?tab=icds"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3447AA] hover:underline"
               >
                 <span>Read ICDS Mission</span>
@@ -181,7 +199,7 @@ export default function HomePage() {
             </div>
             <div className="pt-6">
               <Link
-                href="/about"
+                href="/about?tab=health"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3447AA] hover:underline"
               >
                 <span>Healthcare Camps</span>
@@ -204,7 +222,7 @@ export default function HomePage() {
             </div>
             <div className="pt-6">
               <Link
-                href="/about"
+                href="/about?tab=culture"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3447AA] hover:underline"
               >
                 <span>Explore Heritage</span>
@@ -242,21 +260,63 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {MANAGING_COMMITTEE.slice(0, 4).map((person) => (
-              <div
-                key={person.id}
-                className="bg-[#F8FAFC] p-4 rounded-2xl border border-gray-200/80 text-center space-y-2 hover:bg-white hover:shadow-xs transition"
-              >
-                <div className="w-12 h-12 mx-auto rounded-full bg-[#3447AA] text-white flex items-center justify-center font-bold text-base">
-                  {person.name.charAt(0)}
-                </div>
-                <h4 className="text-sm font-bold text-gray-900">{person.name}</h4>
-                <p className="text-[11px] font-semibold text-[#3447AA]">{person.designation}</p>
-                <span className="inline-block px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 text-[10px] font-bold">
-                  Since {person.sinceYear}
-                </span>
+            {leadershipPreview.length > 0 ? (
+              leadershipPreview.map((person) => {
+                const designation =
+                  person.committeeRole ||
+                  (person.role === 'ADMIN' ? 'Administrator' : 'Active Member');
+                const admissionYear = person.admissionDate
+                  ? new Date(person.admissionDate).getFullYear()
+                  : '1935';
+
+                return (
+                  <div
+                    key={person.id}
+                    className="bg-[#F8FAFC] p-4 rounded-2xl border border-gray-200/80 text-center space-y-2 hover:bg-white hover:shadow-xs transition flex flex-col justify-between"
+                  >
+                    <div>
+                      {person.avatarUrl ? (
+                        <Avatar
+                          src={person.avatarUrl}
+                          size={48}
+                          className="mx-auto border-2 border-[#3447AA]"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 mx-auto rounded-full bg-[#3447AA] text-white flex items-center justify-center font-bold text-base shadow-xs">
+                          {person.name.charAt(0)}
+                        </div>
+                      )}
+                      <h4
+                        className="text-sm font-bold text-gray-900 mt-2 truncate"
+                        title={person.name}
+                      >
+                        {person.name}
+                      </h4>
+                      <p
+                        className="text-[11px] font-semibold text-[#3447AA] truncate"
+                        title={designation}
+                      >
+                        {designation}
+                      </p>
+                      {person.villageTown && (
+                        <p className="text-[10px] text-gray-500 truncate">
+                          {person.villageTown}
+                        </p>
+                      )}
+                    </div>
+                    <div className="pt-1">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-gray-200 text-gray-700 text-[10px] font-bold">
+                        Since {admissionYear}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-6 text-xs text-gray-400">
+                No active committee members found in database.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

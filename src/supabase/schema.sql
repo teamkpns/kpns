@@ -171,37 +171,37 @@ ALTER TABLE public.activity_posts DISABLE ROW LEVEL SECURITY;
 INSERT INTO public.members (
     member_id, from_no, user_id, role, status, admission_date, name, father_name,
     whatsapp, alt_mobile, email, aadhaar, blood_group, dob, house_number,
-    village_town, post_office, police_station, city, district, state, country, pincode, profile_completion
+    village_town, post_office, police_station, city, district, state, country, pincode, profile_completion, committee_role
 ) VALUES
 (
     'KPNS75PP26', '75', 'PINTU75', 'MEMBER', 'ACTIVE', '2026-08-15',
     'Pintu Patra', 'Subhas Patra', '9876543210', '9123456780', 'pintu.patra@example.com',
     '541278901234', 'O+', '1995-09-02', 'KP-124', 'Khejurda', 'Khejurda', 'Khejuri',
-    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 90
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 90, 'Treasurer'
 ),
 (
     'KPNS01AM20', '01', 'ADMIN_KPNS', 'ADMIN', 'ACTIVE', '2020-01-26',
     'Arup Maiti (Admin)', 'Nirod Maiti', '9832109876', '9434567890', 'admin@kpns.org.in',
     '654321098765', 'A+', '1988-04-14', 'H-01', 'Khejurda', 'Khejurda', 'Khejuri',
-    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 100
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 100, 'President'
 ),
 (
     'KPNS88RM25', '88', 'RAJA88', 'MEMBER', 'ACTIVE', '2025-11-10',
     'Raja Mukherjee', 'Bimal Mukherjee', '9830012345', NULL, 'raja.mukherjee@example.com',
     NULL, 'B+', '1992-09-05', NULL, 'Khejurda', 'Khejurda', 'Khejuri',
-    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 95
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 95, 'Sports Secretary'
 ),
 (
     'KPNS92RG26', '92', 'RANI92', 'MEMBER', 'ACTIVE', '2026-02-14',
     'Rani Ghosh', 'Gopal Ghosh', '9871122334', NULL, 'rani.ghosh@example.com',
     NULL, 'AB+', '1998-09-20', NULL, 'Khejurda', NULL, NULL,
-    NULL, 'Purba Medinipur', 'West Bengal', 'India', '721401', 75
+    NULL, 'Purba Medinipur', 'West Bengal', 'India', '721401', 75, 'Cultural Secretary'
 ),
 (
     'KPNS45SK24', '45', 'SOUMEN45', 'MEMBER', 'INACTIVE', '2024-05-01',
     'Soumen Karan', 'Tarapada Karan', '9733445566', NULL, 'soumen.k@example.com',
     NULL, 'O-', '1990-12-05', NULL, 'Bhograi', NULL, NULL,
-    'Jaleswar', 'Baleswar', 'Odisha', 'India', '756038', 85
+    'Jaleswar', 'Baleswar', 'Odisha', 'India', '756038', 85, NULL
 )
 ON CONFLICT (member_id) DO NOTHING;
 

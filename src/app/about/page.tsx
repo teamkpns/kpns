@@ -33,9 +33,9 @@ import { ActivityPost } from '@/types';
 function AboutContent() {
   const { clubSettings, activityPosts } = usePortal();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('activity');
 
-  // Allow direct deep-link to activity tab: /about?tab=activity
+  // Allow direct deep-link to any tab: e.g. /about?tab=overview or /about?tab=activity
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab) setActiveTab(tab);
@@ -100,6 +100,14 @@ function AboutContent() {
             centered
             items={[
               {
+                key: 'activity',
+                label: (
+                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
+                    <NotificationOutlined /> Recent Activity
+                  </span>
+                ),
+              },
+              {
                 key: 'overview',
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
@@ -131,19 +139,45 @@ function AboutContent() {
                   </span>
                 ),
               },
-              {
-                key: 'activity',
-                label: (
-                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <NotificationOutlined /> Recent Activity
-                  </span>
-                ),
-              },
             ]}
           />
         </div>
 
-        {/* TAB 1: OVERVIEW & LEGACY */}
+        {/* TAB 1: RECENT ACTIVITY (Default) */}
+        {activeTab === 'activity' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                News &amp; Programs
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Recent Activity</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Latest events, health camps, and community initiatives by KPNS.
+              </p>
+            </div>
+
+            {activityPosts.filter((p) => p.published).length === 0 ? (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16">
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <p className="text-gray-500 text-sm">No activity posts yet. Check back soon!</p>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {activityPosts
+                  .filter((p) => p.published)
+                  .map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2: OVERVIEW & LEGACY */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fade-in">
             {/* Story Grid */}
@@ -367,40 +401,6 @@ function AboutContent() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* TAB 5: RECENT ACTIVITY */}
-        {activeTab === 'activity' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="text-center mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                News &amp; Programs
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Recent Activity</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Latest events, health camps, and community initiatives by KPNS.
-              </p>
-            </div>
-
-            {activityPosts.filter((p) => p.published).length === 0 ? (
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16">
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={
-                    <p className="text-gray-500 text-sm">No activity posts yet. Check back soon!</p>
-                  }
-                />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {activityPosts
-                  .filter((p) => p.published)
-                  .map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-              </div>
-            )}
           </div>
         )}
 
