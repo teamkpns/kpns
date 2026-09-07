@@ -273,9 +273,18 @@ export default function AdminMembersPage() {
                     <span>From No: <strong>{member.fromNo || '—'}</strong></span>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-1">
+                  {/* Committee Role indicator on Mobile */}
+                  {member.committeeRole && (
+                    <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl text-xs text-amber-800 font-semibold">
+                      <CrownOutlined className="text-amber-600" />
+                      <span>Role: <strong>{member.committeeRole}</strong></span>
+                    </div>
+                  )}
+
+                  {/* Action Buttons: View, Edit, Set Role, Delete */}
+                  <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button
-                      block
+                      icon={<EyeOutlined />}
                       onClick={() => {
                         setSelectedMember(member);
                         setViewModalOpen(true);
@@ -286,12 +295,39 @@ export default function AdminMembersPage() {
                     </Button>
                     <Button
                       type="primary"
-                      block
+                      icon={<EditOutlined />}
                       onClick={() => handleOpenEdit(member)}
                       className="bg-[#3447AA] rounded-xl font-bold text-xs h-9"
                     >
                       Edit
                     </Button>
+                    <Button
+                      icon={<CrownOutlined />}
+                      onClick={() => handleOpenRoleModal(member)}
+                      className={`rounded-xl font-bold text-xs h-9 ${
+                        member.committeeRole
+                          ? 'bg-amber-50 text-amber-700 border-amber-300'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      {member.committeeRole ? 'Role: ' + member.committeeRole : 'Set Role'}
+                    </Button>
+                    <Popconfirm
+                      title="Delete Member"
+                      description={`Are you sure you want to delete ${member.name} (${member.memberId}) permanently?`}
+                      onConfirm={() => deleteMember(member.memberId)}
+                      okText="Yes, Delete"
+                      cancelText="Cancel"
+                      okButtonProps={{ danger: true, className: 'bg-red-600 font-bold' }}
+                    >
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        className="rounded-xl font-bold text-xs h-9"
+                      >
+                        Delete
+                      </Button>
+                    </Popconfirm>
                   </div>
                 </div>
               ))}
@@ -429,6 +465,22 @@ export default function AdminMembersPage() {
                 Delete Member
               </Button>
             </Popconfirm>,
+            <Button
+              key="role"
+              icon={<CrownOutlined />}
+              className={
+                selectedMember?.committeeRole
+                  ? 'bg-amber-50 text-amber-700 border-amber-300 font-bold'
+                  : 'font-bold'
+              }
+              onClick={() => {
+                if (selectedMember) {
+                  handleOpenRoleModal(selectedMember);
+                }
+              }}
+            >
+              {selectedMember?.committeeRole ? `Role: ${selectedMember.committeeRole}` : 'Set Role'}
+            </Button>,
             <Button
               key="edit"
               type="primary"
