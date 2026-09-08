@@ -19,6 +19,7 @@ import {
   GiftOutlined,
   MailOutlined,
   MessageOutlined,
+  FileImageOutlined,
 } from '@ant-design/icons';
 import { KPNSLogo } from './KPNSLogo';
 import { usePortal } from '@/context/portal-context';
@@ -418,6 +419,14 @@ export const Header: React.FC = () => {
               >
                 <MessageOutlined className="text-base text-[#3447AA]" />
                 <span>Inquiries &amp; Messages</span>
+              </Link>
+              <Link
+                href="/admin/posts"
+                onClick={() => setMobileDrawerOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
+              >
+                <FileImageOutlined className="text-base text-[#3447AA]" />
+                <span>Activity Posts</span>
               </Link>
               <Link
                 href="/admin/birthdays"

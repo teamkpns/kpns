@@ -45,19 +45,22 @@ export default function LoginPage() {
     return role === 'ADMIN' || role === 'SUPERADMIN' ? '/admin/dashboard' : '/member/dashboard';
   };
 
-  const onFinish = (values: { identifier: string; password?: string; remember?: boolean }) => {
+  const onFinish = async (values: { identifier: string; password?: string; remember?: boolean }) => {
     setLoading(true);
-    setTimeout(() => {
-      const success = login(values.identifier, roleType);
+    try {
+      const success = await login(values.identifier, values.password || '', roleType);
       setLoading(false);
       if (success) {
         message.success(`Welcome back! Logged in as ${roleType}`);
         const dest = getDestination(roleType);
         router.push(dest);
       } else {
-        message.error('Invalid credentials. Please verify your User ID or Email.');
+        message.error('Invalid credentials. User ID and Password must match your registered profile in database.');
       }
-    }, 400);
+    } catch {
+      setLoading(false);
+      message.error('An error occurred during login. Please try again.');
+    }
   };
 
   return (

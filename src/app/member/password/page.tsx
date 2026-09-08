@@ -17,11 +17,11 @@ export default function MemberPasswordPage() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [newPassword, setNewPassword] = useState('');
-  const { addActivityLog, currentUser } = usePortal();
+  const { changePassword, currentUser } = usePortal();
 
   const strength = evaluatePasswordStrength(newPassword);
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     if (values.newPassword !== values.confirmPassword) {
       message.error('New password and confirmation do not match!');
       return;
@@ -33,13 +33,20 @@ export default function MemberPasswordPage() {
     }
 
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await changePassword(values.currentPassword, values.newPassword);
       setLoading(false);
-      addActivityLog('Password Changed', currentUser?.memberId, 'Updated account security password');
-      message.success('Password changed successfully!');
-      form.resetFields();
-      setNewPassword('');
-    }, 600);
+      if (res.success) {
+        message.success(res.message);
+        form.resetFields();
+        setNewPassword('');
+      } else {
+        message.error(res.message);
+      }
+    } catch {
+      setLoading(false);
+      message.error('An error occurred while updating password. Please try again.');
+    }
   };
 
   return (

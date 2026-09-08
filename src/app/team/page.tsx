@@ -28,6 +28,7 @@ const { Option } = Select;
 // Role badge colour coding
 const roleBadgeClass = (role: string): string => {
   if (role === 'President') return 'bg-[#3447AA] text-white';
+  if (role === 'General Secretary') return 'bg-[#202E7A] text-white';
   if (role === 'Vice President') return 'bg-indigo-700 text-white';
   if (role.includes('Secretary')) return 'bg-indigo-100 text-indigo-900';
   if (role === 'Treasurer') return 'bg-green-100 text-green-800';
@@ -50,12 +51,19 @@ export default function TeamKPNSPage() {
       return orderA - orderB;
     });
 
-  // Group by role category for section headings
+  // Group by role category for section headings: Executive Leadership has President & General Secretary only
   const leadership = committeeMembers.filter((m) =>
-    ['President', 'Vice President'].includes(m.committeeRole!)
+    ['President', 'General Secretary'].includes(m.committeeRole!)
   );
   const officeBearers = committeeMembers.filter((m) =>
-    ['General Secretary', 'Assistant Secretary', 'Treasurer', 'Sports Secretary', 'Cultural Secretary', 'Information Technology Secretary'].includes(m.committeeRole!)
+    [
+      'Vice President',
+      'Assistant Secretary',
+      'Treasurer',
+      'Sports Secretary',
+      'Cultural Secretary',
+      'Information Technology Secretary',
+    ].includes(m.committeeRole!)
   );
   const executiveMembers = committeeMembers.filter(
     (m) => m.committeeRole === 'Executive Committee Member'
@@ -73,7 +81,7 @@ export default function TeamKPNSPage() {
   });
 
   const renderMemberCard = (member: Member) => {
-    const isLeader = ['President', 'Vice President'].includes(member.committeeRole ?? '');
+    const isLeader = ['President', 'General Secretary'].includes(member.committeeRole ?? '');
     return (
       <div
         key={member.id}
@@ -216,7 +224,7 @@ export default function TeamKPNSPage() {
                       <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
                         Executive Leadership
                       </span>
-                      <h2 className="text-xl font-black text-gray-900">President & Vice President</h2>
+                      <h2 className="text-xl font-black text-gray-900">President &amp; General Secretary</h2>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {leadership.map(renderMemberCard)}

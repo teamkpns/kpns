@@ -34,8 +34,9 @@ interface PortalContextType {
   isLoading: boolean;
   refreshData: () => Promise<void>;
   setCurrentUserRole: (role: UserRole | 'GUEST') => void;
-  login: (identifier: string, role?: UserRole) => boolean;
+  login: (identifier: string, passwordInput: string, role?: UserRole) => Promise<boolean>;
   logout: () => void;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   submitApplication: (data: Omit<Application, 'id' | 'status' | 'appliedDate'>) => Application;
   approveApplication: (
     applicationId: string,
@@ -222,6 +223,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           profileCompletion: m.profile_completion || 85,
           missingFields: [],
           committeeRole: m.committee_role || undefined,
+          password: m.password || 'kpns@2026',
           createdAt: m.created_at,
           updatedAt: m.updated_at,
         }));
@@ -447,55 +449,197 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const login = (identifier: string, role: UserRole = 'MEMBER'): boolean => {
-    const clean = identifier.trim().toLowerCase();
-    const found = members.find(
+  const login = async (
+    identifier: string,
+    passwordInput: string,
+    roleType: UserRole = 'MEMBER'
+  ): Promise<boolean> => {
+    const cleanId = (identifier || '').trim().toLowerCase();
+    const cleanPass = (passwordInput || '').trim();
+
+    if (!cleanId || !cleanPass) {
+      return false;
+    }
+
+    // 1. Search in-memory members state first
+    let found = members.find(
       (m) =>
-        m.userId.toLowerCase() === clean ||
-        m.email.toLowerCase() === clean ||
-        m.memberId.toLowerCase() === clean ||
-        m.whatsapp === clean
+        m.userId.toLowerCase() === cleanId ||
+        m.email.toLowerCase() === cleanId ||
+        m.memberId.toLowerCase() === cleanId ||
+        m.whatsapp === cleanId
     );
 
-    if (found) {
-      setCurrentUser(found);
-      setCurrentRole(found.role);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('kpns_auth_user_id', found.memberId);
-        localStorage.setItem('kpns_auth_role', found.role);
-        localStorage.setItem('kpns_auth_user', JSON.stringify(found));
+    // 2. If not found in-memory, query Supabase database
+    if (!found) {
+      try {
+        const { data, error } = await supabase
+          .from('members')
+          .select('*')
+          .or(`user_id.ilike.${cleanId},email.ilike.${cleanId},member_id.ilike.${cleanId},whatsapp.eq.${cleanId}`)
+          .maybeSingle();
+
+        if (!error && data) {
+          found = {
+            id: data.id,
+            memberId: data.member_id,
+            fromNo: data.from_no,
+            userId: data.user_id,
+            role: data.role || 'MEMBER',
+            status: data.status || 'ACTIVE',
+            admissionDate: data.admission_date,
+            avatarUrl: data.avatar_url,
+            name: data.name,
+            fatherName: data.father_name,
+            whatsapp: data.whatsapp,
+            altMobile: data.alt_mobile,
+            email: data.email,
+            aadhaar: data.aadhaar,
+            bloodGroup: data.blood_group,
+            dob: data.dob,
+            houseNumber: data.house_number,
+            villageTown: data.village_town,
+            postOffice: data.post_office,
+            policeStation: data.police_station,
+            city: data.city,
+            district: data.district || 'Purba Medinipur',
+            state: data.state || 'West Bengal',
+            country: data.country || 'India',
+            pincode: data.pincode,
+            profileCompletion: data.profile_completion || 85,
+            missingFields: [],
+            committeeRole: data.committee_role || undefined,
+            password: data.password || 'kpns@2026',
+            createdAt: data.created_at,
+            updatedAt: data.updated_at,
+          };
+        }
+      } catch (err) {
+        console.warn('Supabase member login query error:', err);
       }
-      addActivityLog('User Logged In', found.memberId, `Logged in with ${identifier}`);
-      return true;
     }
 
-    if (role === 'ADMIN' || clean.includes('admin')) {
-      const adminUser = members.find((m) => m.role === 'ADMIN') || members[1] || INITIAL_MEMBERS[1];
-      setCurrentUser(adminUser);
-      setCurrentRole('ADMIN');
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('kpns_auth_user_id', adminUser.memberId);
-        localStorage.setItem('kpns_auth_role', 'ADMIN');
-        localStorage.setItem('kpns_auth_user', JSON.stringify(adminUser));
-      }
-      addActivityLog('Admin Demo Login', adminUser?.memberId, `Logged in as Admin`);
-      return true;
+    // User ID / Email not found in database
+    if (!found) {
+      return false;
     }
 
-    if (role === 'MEMBER') {
-      const defaultMember = members.find((m) => m.role === 'MEMBER') || members[0] || INITIAL_MEMBERS[0];
-      setCurrentUser(defaultMember);
-      setCurrentRole('MEMBER');
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('kpns_auth_user_id', defaultMember.memberId);
-        localStorage.setItem('kpns_auth_role', 'MEMBER');
-        localStorage.setItem('kpns_auth_user', JSON.stringify(defaultMember));
+    // 3. Match password strictly against database
+    let memberPassword = found.password || 'kpns@2026';
+    try {
+      const { data: dbMem } = await supabase
+        .from('members')
+        .select('password')
+        .eq('member_id', found.memberId)
+        .maybeSingle();
+
+      if (dbMem && dbMem.password) {
+        memberPassword = dbMem.password;
+        found.password = dbMem.password;
       }
-      addActivityLog('Member Demo Login', defaultMember?.memberId, `Logged in as Member`);
-      return true;
+    } catch {
+      // fallback to state
     }
 
-    return false;
+    // Reject if password does not match
+    if (cleanPass !== memberPassword) {
+      return false;
+    }
+
+    // 4. Verify role authorization
+    if (roleType === 'ADMIN' && found.role !== 'ADMIN' && (found.role as string) !== 'SUPERADMIN') {
+      message.error('Access denied: Your account does not have Admin privileges.');
+      return false;
+    }
+
+    // 5. Successful login
+    setCurrentUser(found);
+    setCurrentRole(found.role);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kpns_auth_user_id', found.memberId);
+      localStorage.setItem('kpns_auth_role', found.role);
+      localStorage.setItem('kpns_auth_user', JSON.stringify(found));
+    }
+    addActivityLog('User Logged In', found.memberId, `Logged in with ${identifier}`);
+    return true;
+  };
+
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message: string }> => {
+    if (!currentUser) {
+      return { success: false, message: 'You must be logged in to change your password.' };
+    }
+
+    const memberId = currentUser.memberId;
+    const cleanCurrent = (currentPassword || '').trim();
+    const cleanNew = (newPassword || '').trim();
+
+    // 1. Fetch latest password from database for current user
+    let dbPassword = currentUser.password || 'kpns@2026';
+    try {
+      const { data: dbMem, error: fetchErr } = await supabase
+        .from('members')
+        .select('password')
+        .eq('member_id', memberId)
+        .maybeSingle();
+
+      if (!fetchErr && dbMem && dbMem.password) {
+        dbPassword = dbMem.password;
+      }
+    } catch (err) {
+      console.warn('Supabase password fetch check warning:', err);
+    }
+
+    // 2. Check if current password matches
+    if (cleanCurrent !== dbPassword) {
+      return {
+        success: false,
+        message: 'Current password does not match! Please enter your correct current password.',
+      };
+    }
+
+    if (cleanCurrent === cleanNew) {
+      return {
+        success: false,
+        message: 'New password cannot be the same as your current password.',
+      };
+    }
+
+    // 3. Save new password to database
+    try {
+      const { error: updateErr } = await supabase
+        .from('members')
+        .update({
+          password: cleanNew,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('member_id', memberId);
+
+      if (updateErr) {
+        console.warn('Supabase password update warning:', updateErr);
+      }
+    } catch (err) {
+      console.warn('Supabase password update error:', err);
+    }
+
+    // 4. Update local state and localStorage
+    const updatedUser = { ...currentUser, password: cleanNew };
+    setCurrentUser(updatedUser);
+    setMembers((prev) =>
+      prev.map((m) => (m.memberId === memberId ? { ...m, password: cleanNew } : m))
+    );
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kpns_auth_user', JSON.stringify(updatedUser));
+    }
+
+    addActivityLog('Password Changed', memberId, 'Updated account security password in database');
+    return {
+      success: true,
+      message: 'Password changed successfully and updated in database!',
+    };
   };
 
   const logout = () => {
@@ -673,6 +817,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       pincode: targetApp.pincode,
       profileCompletion: score,
       missingFields,
+      password: approvalData.initialPassword || 'kpns@2026',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -699,34 +844,43 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           console.warn('Supabase application update warning:', appErr);
         }
 
-        const { error: memErr } = await supabase.from('members').insert([
-          {
-            member_id: newMember.memberId,
-            from_no: newMember.fromNo,
-            user_id: newMember.userId,
-            role: newMember.role,
-            status: newMember.status,
-            admission_date: newMember.admissionDate,
-            name: newMember.name,
-            father_name: newMember.fatherName,
-            whatsapp: newMember.whatsapp,
-            alt_mobile: newMember.altMobile,
-            email: newMember.email,
-            aadhaar: newMember.aadhaar,
-            blood_group: newMember.bloodGroup,
-            dob: newMember.dob,
-            house_number: newMember.houseNumber,
-            village_town: newMember.villageTown,
-            post_office: newMember.postOffice,
-            police_station: newMember.policeStation,
-            city: newMember.city,
-            district: newMember.district,
-            state: newMember.state,
-            country: newMember.country,
-            pincode: newMember.pincode,
-            profile_completion: score,
-          },
-        ]);
+        const memberPayload: any = {
+          member_id: newMember.memberId,
+          from_no: newMember.fromNo,
+          user_id: newMember.userId,
+          role: newMember.role,
+          status: newMember.status,
+          admission_date: newMember.admissionDate,
+          name: newMember.name,
+          father_name: newMember.fatherName,
+          whatsapp: newMember.whatsapp,
+          alt_mobile: newMember.altMobile,
+          email: newMember.email,
+          aadhaar: newMember.aadhaar,
+          blood_group: newMember.bloodGroup,
+          dob: newMember.dob,
+          house_number: newMember.houseNumber,
+          village_town: newMember.villageTown,
+          post_office: newMember.postOffice,
+          police_station: newMember.policeStation,
+          city: newMember.city,
+          district: newMember.district,
+          state: newMember.state,
+          country: newMember.country,
+          pincode: newMember.pincode,
+          profile_completion: score,
+          password: newMember.password || 'kpns@2026',
+        };
+
+        let { error: memErr } = await supabase.from('members').insert([memberPayload]);
+
+        // If password column does not exist in Supabase yet, retry without password column
+        if (memErr && (memErr.message?.includes('password') || memErr.code === '42703')) {
+          console.warn('Supabase members table missing password column. Retrying insert without password...');
+          const { password: _p, ...payloadWithoutPassword } = memberPayload;
+          const retry = await supabase.from('members').insert([payloadWithoutPassword]);
+          memErr = retry.error;
+        }
 
         if (memErr) {
           console.error('Supabase members table insert error:', memErr);
@@ -1259,6 +1413,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setCurrentUserRole: (role) => setCurrentRole(role),
         login,
         logout,
+        changePassword,
         submitApplication,
         approveApplication,
         rejectApplication,

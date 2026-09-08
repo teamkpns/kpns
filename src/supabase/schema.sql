@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.members (
     -- Meta & Scores
     profile_completion INTEGER DEFAULT 85,
     committee_role VARCHAR(100) DEFAULT NULL,
+    password VARCHAR(255) DEFAULT 'kpns@2026',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     last_login TIMESTAMP WITH TIME ZONE
@@ -162,6 +163,10 @@ ALTER TABLE public.club_settings DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_posts DISABLE ROW LEVEL SECURITY;
 
+-- Migration helper for existing databases (adds password column if created previously without it)
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS password VARCHAR(255) DEFAULT 'kpns@2026';
+UPDATE public.members SET password = 'kpns@2026' WHERE password IS NULL OR password = '';
+
 
 -- ==============================================================================
 -- INITIAL SEED DATA
@@ -171,37 +176,43 @@ ALTER TABLE public.activity_posts DISABLE ROW LEVEL SECURITY;
 INSERT INTO public.members (
     member_id, from_no, user_id, role, status, admission_date, name, father_name,
     whatsapp, alt_mobile, email, aadhaar, blood_group, dob, house_number,
-    village_town, post_office, police_station, city, district, state, country, pincode, profile_completion, committee_role
+    village_town, post_office, police_station, city, district, state, country, pincode, profile_completion, committee_role, password
 ) VALUES
 (
     'KPNS75PP26', '75', 'PINTU75', 'MEMBER', 'ACTIVE', '2026-08-15',
     'Pintu Patra', 'Subhas Patra', '9876543210', '9123456780', 'pintu.patra@example.com',
     '541278901234', 'O+', '1995-09-02', 'KP-124', 'Khejurda', 'Khejurda', 'Khejuri',
-    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 90, 'Treasurer'
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 90, 'Treasurer', 'kpns@2026'
 ),
 (
     'KPNS01AM20', '01', 'ADMIN_KPNS', 'ADMIN', 'ACTIVE', '2020-01-26',
     'Arup Maiti (Admin)', 'Nirod Maiti', '9832109876', '9434567890', 'admin@kpns.org.in',
     '654321098765', 'A+', '1988-04-14', 'H-01', 'Khejurda', 'Khejurda', 'Khejuri',
-    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 100, 'President'
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 100, 'President', 'kpns@2026'
 ),
 (
     'KPNS88RM25', '88', 'RAJA88', 'MEMBER', 'ACTIVE', '2025-11-10',
     'Raja Mukherjee', 'Bimal Mukherjee', '9830012345', NULL, 'raja.mukherjee@example.com',
     NULL, 'B+', '1992-09-05', NULL, 'Khejurda', 'Khejurda', 'Khejuri',
-    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 95, 'Sports Secretary'
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 95, 'Sports Secretary', 'kpns@2026'
 ),
 (
     'KPNS92RG26', '92', 'RANI92', 'MEMBER', 'ACTIVE', '2026-02-14',
     'Rani Ghosh', 'Gopal Ghosh', '9871122334', NULL, 'rani.ghosh@example.com',
     NULL, 'AB+', '1998-09-20', NULL, 'Khejurda', NULL, NULL,
-    NULL, 'Purba Medinipur', 'West Bengal', 'India', '721401', 75, 'Cultural Secretary'
+    NULL, 'Purba Medinipur', 'West Bengal', 'India', '721401', 75, 'Cultural Secretary', 'kpns@2026'
 ),
 (
     'KPNS45SK24', '45', 'SOUMEN45', 'MEMBER', 'INACTIVE', '2024-05-01',
     'Soumen Karan', 'Tarapada Karan', '9733445566', NULL, 'soumen.k@example.com',
     NULL, 'O-', '1990-12-05', NULL, 'Bhograi', NULL, NULL,
-    'Jaleswar', 'Baleswar', 'Odisha', 'India', '756038', 85, NULL
+    'Jaleswar', 'Baleswar', 'Odisha', 'India', '756038', 85, NULL, 'kpns@2026'
+),
+(
+    'KPNS03AJ14', '03', 'AVIJIT03', 'MEMBER', 'ACTIVE', '2014-08-15',
+    'Avijit Jana', 'Biren Jana', '9876543210', NULL, 'secretary@kpns.org.in',
+    NULL, 'B+', '1982-05-10', 'H-03', 'Khejurda', 'Khejurda', 'Khejuri',
+    'Contai', 'Purba Medinipur', 'West Bengal', 'India', '721401', 100, 'General Secretary', 'kpns@2026'
 )
 ON CONFLICT (member_id) DO NOTHING;
 

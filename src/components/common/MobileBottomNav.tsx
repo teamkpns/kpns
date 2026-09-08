@@ -19,6 +19,7 @@ import {
   LoginOutlined,
   MailOutlined,
   MessageOutlined,
+  FileImageOutlined,
 } from '@ant-design/icons';
 import { usePortal } from '@/context/portal-context';
 import { KPNSLogo } from './KPNSLogo';
@@ -303,6 +304,14 @@ export const MobileBottomNav: React.FC = () => {
                 >
                   <MessageOutlined className="text-xl text-[#3447AA] mb-1" />
                   <span className="text-[11px] font-semibold text-gray-800">Messages</span>
+                </Link>
+                <Link
+                  href="/admin/posts"
+                  onClick={() => setMoreDrawerOpen(false)}
+                  className="flex flex-col items-center p-2.5 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
+                >
+                  <FileImageOutlined className="text-xl text-[#3447AA] mb-1" />
+                  <span className="text-[11px] font-semibold text-gray-800">Posts</span>
                 </Link>
                 <Link
                   href="/admin/birthdays"

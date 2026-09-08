@@ -39,6 +39,7 @@ export interface Member {
   profileCompletion: number; // 0 - 100
   missingFields: string[];
   committeeRole?: string; // e.g. 'President', 'General Secretary', etc.
+  password?: string;
   createdAt: string;
   updatedAt: string;
   lastLogin?: string;
