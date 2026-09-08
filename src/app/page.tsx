@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button, Row, Col, Tag, Card, Avatar } from 'antd';
 import {
@@ -26,6 +26,8 @@ import {
   FacebookOutlined,
   InstagramOutlined,
   YoutubeOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Header } from '@/components/common/Header';
@@ -57,6 +59,26 @@ export default function HomePage() {
     committeeMembers.length >= 4
       ? committeeMembers.slice(0, 4)
       : [...committeeMembers, ...activeVolunteers].slice(0, 4);
+
+  // ── Slideshow ────────────────────────────────────────────────────────────────
+  // Add more images to public/img/ and list them here. They will appear in the slideshow.
+  const slideshowImages = [
+    { src: '/img/logo.png', caption: 'KPNS — Serving the Community Since 1935' },
+    // Add more: { src: '/img/photo1.jpg', caption: 'Health Camp 2024' },
+    // Add more: { src: '/img/photo2.jpg', caption: 'Cultural Event' },
+  ];
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  useEffect(() => {
+    if (slideshowImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setSlideIndex((i) => (i + 1) % slideshowImages.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [slideshowImages.length]);
+
+  const prevSlide = () => setSlideIndex((i) => (i - 1 + slideshowImages.length) % slideshowImages.length);
+  const nextSlide = () => setSlideIndex((i) => (i + 1) % slideshowImages.length);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col pb-16 lg:pb-0">
@@ -144,6 +166,65 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Photo Slideshow ─────────────────────────────────────────────────── */}
+      <section className="w-full bg-[#1E2C78] py-0">
+        <div className="relative w-full max-w-6xl mx-auto overflow-hidden" style={{ height: '420px' }}>
+          {/* Slides */}
+          {slideshowImages.map((slide, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-700 ${idx === slideIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+            >
+              <img
+                src={slide.src}
+                alt={slide.caption}
+                className="w-full h-full object-contain bg-[#1E2C78]"
+              />
+              {/* Caption overlay */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-6 py-5 z-20">
+                <p className="text-white text-sm sm:text-base font-semibold drop-shadow text-center">
+                  {slide.caption}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Prev / Next arrows */}
+          {slideshowImages.length > 1 && (
+            <>
+              <button
+                onClick={prevSlide}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition"
+                aria-label="Previous slide"
+              >
+                <LeftOutlined />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition"
+                aria-label="Next slide"
+              >
+                <RightOutlined />
+              </button>
+            </>
+          )}
+
+          {/* Dot indicators */}
+          {slideshowImages.length > 1 && (
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+              {slideshowImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSlideIndex(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${idx === slideIndex ? 'bg-white scale-125' : 'bg-white/40'}`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -355,7 +436,7 @@ export default function HomePage() {
               >
                 <div>
                   {post.photoUrl ? (
-                    <div className="h-44 overflow-hidden bg-gray-100">
+                    <div className="h-56 overflow-hidden bg-gray-100">
                       <img
                         src={post.photoUrl}
                         alt={post.title}

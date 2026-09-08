@@ -474,7 +474,7 @@ function PostCard({ post }: { post: ActivityPost }) {
     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition">
       {/* Photo */}
       {post.photoUrl && (
-        <div className="h-48 overflow-hidden">
+        <div className="h-56 overflow-hidden">
           <img
             src={post.photoUrl}
             alt={post.title}
