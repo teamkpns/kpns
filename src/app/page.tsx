@@ -63,10 +63,10 @@ export default function HomePage() {
   // ── Slideshow ────────────────────────────────────────────────────────────────
   // Add more images to public/img/ and list them here. They will appear in the slideshow.
   const slideshowImages = [
-    { src: '/img/slideshow1.jpg', caption: 'KPNS — Serving the Community Since 1935' },
-    { src: '/img/slideshow2.jpg', caption: 'Health Camp 2024' },
-    { src: '/img/slideshow3.jpg', caption: 'Cultural Event' },
-    { src: '/img/slideshow4.jpg', caption: 'Cultural Event' },
+    { src: '/img/slideshow1.jpg', caption: 'Eye Checkup Camp' },
+    { src: '/img/slideshow2.jpg', caption: 'Our Abritti School Performance at Egra Mela' },
+    { src: '/img/slideshow3.jpg', caption: 'Sudhi Samman' },
+    { src: '/img/slideshow4.jpg', caption: 'HEALTH CHECK-UP CAMP' },
   ];
   const [slideIndex, setSlideIndex] = useState(0);
 
