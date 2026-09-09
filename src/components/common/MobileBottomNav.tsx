@@ -20,6 +20,7 @@ import {
   MailOutlined,
   MessageOutlined,
   FileImageOutlined,
+  WalletOutlined,
 } from '@ant-design/icons';
 import { usePortal } from '@/context/portal-context';
 import { KPNSLogo } from './KPNSLogo';
@@ -208,6 +209,14 @@ export const MobileBottomNav: React.FC = () => {
                 >
                   <UserOutlined className="text-2xl text-[#3447AA] mb-1" />
                   <span className="text-xs font-semibold text-gray-800">My Profile</span>
+                </Link>
+                <Link
+                  href="/member/transactions"
+                  onClick={() => setMoreDrawerOpen(false)}
+                  className="flex flex-col items-center p-3 rounded-2xl bg-gray-50 hover:bg-[#FBEAEB] transition"
+                >
+                  <WalletOutlined className="text-2xl text-[#3447AA] mb-1" />
+                  <span className="text-xs font-semibold text-gray-800">Transactions</span>
                 </Link>
                 <Link
                   href="/member/password"

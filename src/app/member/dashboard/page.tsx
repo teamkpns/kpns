@@ -13,6 +13,7 @@ import {
   CheckCircleFilled,
   RightOutlined,
   SafetyCertificateFilled,
+  WalletOutlined,
 } from '@ant-design/icons';
 import { MemberLayout } from '@/components/layouts/MemberLayout';
 import { ProfileCompletionCard } from '@/components/common/ProfileCompletionCard';
@@ -135,6 +136,17 @@ export default function MemberDashboardPage() {
               </div>
               <span className="text-xs sm:text-sm font-bold text-gray-900">Edit Profile</span>
               <span className="text-[10px] text-gray-400 mt-0.5">Update info</span>
+            </Link>
+
+            <Link
+              href="/member/transactions"
+              className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs hover:shadow-md hover:border-emerald-100 transition group flex flex-col items-center text-center"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition">
+                <WalletOutlined />
+              </div>
+              <span className="text-xs sm:text-sm font-bold text-gray-900">Transactions</span>
+              <span className="text-[10px] text-gray-400 mt-0.5">Dues &amp; Receipts</span>
             </Link>
 
             <Link

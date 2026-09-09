@@ -11,6 +11,7 @@ import {
   LogoutOutlined,
   LoadingOutlined,
   SwapOutlined,
+  WalletOutlined,
 } from '@ant-design/icons';
 import { Button, Avatar, Spin } from 'antd';
 import { Header } from '@/components/common/Header';
@@ -35,6 +36,7 @@ export const MemberLayout: React.FC<{ children: React.ReactNode }> = ({ children
   const navItems = [
     { label: 'Dashboard', href: '/member/dashboard', icon: <DashboardOutlined /> },
     { label: 'My Profile', href: '/member/profile', icon: <UserOutlined /> },
+    { label: 'Transactions', href: '/member/transactions', icon: <WalletOutlined /> },
     { label: 'Change Password', href: '/member/password', icon: <KeyOutlined /> },
     { label: 'Notifications', href: '/member/notifications', icon: <BellOutlined />, badge: unread },
   ];

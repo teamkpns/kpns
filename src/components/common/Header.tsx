@@ -20,6 +20,7 @@ import {
   MailOutlined,
   MessageOutlined,
   FileImageOutlined,
+  WalletOutlined,
 } from '@ant-design/icons';
 import { KPNSLogo } from './KPNSLogo';
 import { usePortal } from '@/context/portal-context';
@@ -100,6 +101,11 @@ export const Header: React.FC = () => {
             key: 'member-profile',
             icon: <UserOutlined />,
             label: <Link href="/member/profile">My Profile</Link>,
+          },
+          {
+            key: 'member-transactions',
+            icon: <WalletOutlined />,
+            label: <Link href="/member/transactions">My Transactions</Link>,
           },
           {
             key: 'member-password',
@@ -363,6 +369,14 @@ export const Header: React.FC = () => {
               >
                 <UserOutlined className="text-base text-[#3447AA]" />
                 <span>My Profile</span>
+              </Link>
+              <Link
+                href="/member/transactions"
+                onClick={() => setMobileDrawerOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-700 font-medium text-sm"
+              >
+                <WalletOutlined className="text-base text-[#3447AA]" />
+                <span>My Transactions &amp; Dues</span>
               </Link>
               <Link
                 href="/member/password"
