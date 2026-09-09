@@ -25,10 +25,10 @@ import { KPNS_COLORS } from '@/lib/constants';
 export default function AdminDashboardPage() {
   const { members, applications, activityLogs, contactMessages } = usePortal();
 
-  const totalMembers = 1240 + members.length;
-  const activeMembers = 1175 + members.filter((m) => m.status === 'ACTIVE').length;
+  const totalMembers = members.length;
+  const activeMembers = members.filter((m) => m.status === 'ACTIVE').length;
   const pendingApps = applications.filter((a) => a.status === 'PENDING').length;
-  const incompleteProfiles = members.filter((m) => m.profileCompletion < 80).length + 84;
+  const incompleteProfiles = members.filter((m) => m.profileCompletion < 80).length;
   const unreadMessages = contactMessages.filter((m) => !m.read).length;
 
   const recentApplications = applications.slice(0, 5);

@@ -24,10 +24,10 @@ export default function AdminReportsPage() {
   const [activeReportModal, setActiveReportModal] = useState<string | null>(null);
 
   // Aggregations
-  const totalCount = 1240 + members.length;
-  const activeCount = 1175 + members.filter((m) => m.status === 'ACTIVE').length;
+  const totalCount = members.length;
+  const activeCount = members.filter((m) => m.status === 'ACTIVE').length;
   const pendingCount = applications.filter((a) => a.status === 'PENDING').length;
-  const incompleteCount = members.filter((m) => m.profileCompletion < 80).length + 84;
+  const incompleteCount = members.filter((m) => m.profileCompletion < 80).length;
 
   // Blood group breakdown
   const bloodGroupsCount: Record<string, number> = {};
