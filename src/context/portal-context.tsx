@@ -261,6 +261,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             profileCompletion: m.profile_completion || comp.score,
             missingFields: comp.missingFields || [],
             committeeRole: m.committee_role || undefined,
+            committeeVision: m.committee_vision || undefined,
             password: m.password || 'kpns@2026',
             createdAt: m.created_at,
             updatedAt: m.updated_at,
@@ -597,6 +598,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             profileCompletion: data.profile_completion || 85,
             missingFields: [],
             committeeRole: data.committee_role || undefined,
+            committeeVision: data.committee_vision || undefined,
             password: data.password || 'kpns@2026',
             createdAt: data.created_at,
             updatedAt: data.updated_at,
@@ -1106,6 +1108,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (updatedFields.pincode) updatePayload.pincode = updatedFields.pincode;
         if (updatedFields.status) updatePayload.status = updatedFields.status;
         if (updatedFields.avatarUrl !== undefined) updatePayload.avatar_url = updatedFields.avatarUrl;
+        if (updatedFields.committeeVision !== undefined) updatePayload.committee_vision = updatedFields.committeeVision ?? null;
 
         await supabase.from('members').update(updatePayload).eq('member_id', memberId);
       } catch (err) {

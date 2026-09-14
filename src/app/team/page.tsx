@@ -85,7 +85,7 @@ export default function TeamKPNSPage() {
     return (
       <div
         key={member.id}
-        className={`bg-white rounded-3xl p-5 sm:p-6 border transition hover:shadow-md flex flex-col justify-between ${
+        className={`relative overflow-hidden bg-white rounded-3xl p-5 sm:p-6 border transition hover:shadow-md flex flex-col justify-between group ${
           isLeader
             ? 'border-pink-200 bg-gradient-to-b from-pink-50/50 to-white shadow-xs'
             : 'border-gray-100 shadow-xs'
@@ -99,11 +99,18 @@ export default function TeamKPNSPage() {
               icon={<UserOutlined />}
               className={`shrink-0 ${isLeader ? 'bg-[#3447AA] text-white' : 'bg-[#FBEAEB] text-[#3447AA]'}`}
             />
-            <span
-              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${roleBadgeClass(member.committeeRole!)}`}
-            >
-              {member.committeeRole}
-            </span>
+            <div className="flex flex-col items-end gap-1.5">
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${roleBadgeClass(member.committeeRole!)}`}
+              >
+                {member.committeeRole}
+              </span>
+              {member.committeeVision && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-50 text-[#3447AA] text-[10px] font-semibold border border-pink-200/60">
+                  ✨ Vision
+                </span>
+              )}
+            </div>
           </div>
 
           <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-snug">
@@ -138,6 +145,21 @@ export default function TeamKPNSPage() {
             </a>
           )}
         </div>
+
+        {/* Vision overlay — slides up on hover */}
+        {member.committeeVision && (
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-[#3447AA]/90 to-[#202E7A]/95 backdrop-blur-sm flex flex-col items-center justify-center px-5 py-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <svg className="w-8 h-8 text-pink-200 mb-3 opacity-70" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+            </svg>
+            <p className="text-white text-sm font-medium italic text-center leading-relaxed">
+              {member.committeeVision}
+            </p>
+            <span className="mt-4 text-pink-200 text-[11px] font-bold uppercase tracking-wider">
+              — {member.name}
+            </span>
+          </div>
+        )}
       </div>
     );
   };

@@ -40,6 +40,7 @@ export interface Member {
   profileCompletion: number; // 0 - 100
   missingFields: string[];
   committeeRole?: string; // e.g. 'President', 'General Secretary', etc.
+  committeeVision?: string; // Short vision/message for this club role
   password?: string;
   createdAt: string;
   updatedAt: string;

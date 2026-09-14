@@ -354,7 +354,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={person.id}
-                    className="bg-[#F8FAFC] p-4 rounded-2xl border border-gray-200/80 text-center space-y-2 hover:bg-white hover:shadow-xs transition flex flex-col justify-between"
+                    className="relative overflow-hidden bg-[#F8FAFC] p-4 rounded-2xl border border-gray-200/80 text-center space-y-2 hover:bg-white hover:shadow-xs transition flex flex-col justify-between group"
                   >
                     <div>
                       {person.avatarUrl ? (
@@ -386,13 +386,34 @@ export default function HomePage() {
                         </p>
                       )}
                     </div>
-                    <div className="pt-1">
+                    <div className="pt-1 flex items-center justify-center gap-1.5 flex-wrap">
                       <span className="inline-block px-2.5 py-0.5 rounded-full bg-gray-200 text-gray-700 text-[10px] font-bold">
                         Since {admissionYear}
                       </span>
+                      {person.committeeVision && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-50 text-[#3447AA] text-[10px] font-semibold border border-pink-200/60">
+                          ✨ Vision
+                        </span>
+                      )}
                     </div>
+
+                    {/* Vision overlay on hover */}
+                    {person.committeeVision && (
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#3447AA]/92 to-[#202E7A]/96 flex flex-col items-center justify-center px-4 py-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        <svg className="w-6 h-6 text-pink-200 mb-2 opacity-70 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                        </svg>
+                        <p className="text-white text-[11px] font-medium italic text-center leading-relaxed line-clamp-5">
+                          {person.committeeVision}
+                        </p>
+                        <span className="mt-2 text-pink-200 text-[10px] font-bold uppercase tracking-wider">
+                          — {person.name}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
+
               })
             ) : (
               <div className="col-span-full text-center py-6 text-xs text-gray-400">

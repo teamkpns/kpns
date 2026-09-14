@@ -68,6 +68,7 @@ export default function AdminMembersPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [pendingRole, setPendingRole] = useState<string | null>(null);
+  const [pendingVision, setPendingVision] = useState<string>('');
   const [editForm] = Form.useForm();
   const [resettingPassword, setResettingPassword] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -164,12 +165,17 @@ export default function AdminMembersPage() {
   const handleOpenRoleModal = (member: Member) => {
     setSelectedMember(member);
     setPendingRole(member.committeeRole ?? null);
+    setPendingVision(member.committeeVision ?? '');
     setRoleModalOpen(true);
   };
 
   const handleSaveRole = () => {
     if (!selectedMember) return;
     assignCommitteeRole(selectedMember.memberId, pendingRole);
+    // Also save the vision text
+    updateMemberProfile(selectedMember.memberId, {
+      committeeVision: pendingVision.trim() || undefined,
+    });
     if (pendingRole) {
       message.success(`${selectedMember.name} assigned as ${pendingRole} in Managing Committee.`);
     } else {
@@ -965,6 +971,26 @@ export default function AdminMembersPage() {
                 <p className="text-[11px] text-gray-400">
                   Clearing the selection will revert this member to a normal member with no committee
                   role.
+                </p>
+              </div>
+
+              {/* Vision field */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-700 block">
+                  Vision / Message for the Club{' '}
+                  <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <Input.TextArea
+                  value={pendingVision}
+                  onChange={(e) => setPendingVision(e.target.value)}
+                  placeholder={`Enter ${selectedMember?.name?.split(' ')[0] || 'their'}'s vision or message for KPNS…`}
+                  rows={3}
+                  maxLength={300}
+                  showCount
+                  className="rounded-xl text-sm"
+                />
+                <p className="text-[11px] text-gray-400">
+                  This message will appear on hover over their card on the Team page and home page.
                 </p>
               </div>
 
