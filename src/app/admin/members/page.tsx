@@ -500,25 +500,27 @@ export default function AdminMembersPage() {
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden lg:block bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-gray-50 text-gray-400 font-bold uppercase border-b border-gray-200">
+            <div className="hidden lg:block bg-white rounded-3xl border border-gray-100 shadow-sm overflow-x-auto">
+              <table className="w-full text-left text-xs min-w-[1080px]">
+                <thead className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-200">
                   <tr>
-                    <th className="py-3.5 px-4">Member ID</th>
-                    <th className="py-3.5 px-4">Member Name</th>
-                    <th className="py-3.5 px-4">From No.</th>
-                    <th className="py-3.5 px-4">Mobile / WhatsApp</th>
-                    <th className="py-3.5 px-4">Blood</th>
-                    <th className="py-3.5 px-4">Village</th>
-                    <th className="py-3.5 px-4">Profile %</th>
-                    <th className="py-3.5 px-4">Status</th>
-                    <th className="py-3.5 px-4 text-right">Actions</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Member ID</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap min-w-[180px]">Member Name</th>
+                    <th className="py-3.5 px-3 whitespace-nowrap">From No.</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Mobile / WhatsApp</th>
+                    <th className="py-3.5 px-3 whitespace-nowrap">Blood</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Village</th>
+                    <th className="py-3.5 px-3 whitespace-nowrap">Profile %</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap">Status</th>
+                    <th className="py-3.5 px-4 text-center whitespace-nowrap sticky right-0 bg-gray-50 z-10 shadow-[-6px_0_10px_-4px_rgba(0,0,0,0.06)] min-w-[280px]">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 font-medium">
                   {filteredMembers.map((member) => (
-                    <tr key={member.id} className="hover:bg-gray-50 transition">
-                      <td className="py-3.5 px-4 font-mono font-bold text-[#3447AA]">
+                    <tr key={member.id} className="group hover:bg-gray-50/80 transition">
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#3447AA] whitespace-nowrap">
                         {member.memberId}
                       </td>
                       <td className="py-3.5 px-4">
@@ -529,28 +531,28 @@ export default function AdminMembersPage() {
                             icon={<UserOutlined />}
                             className="bg-[#3447AA] text-white shrink-0"
                           />
-                          <div>
+                          <div className="min-w-0">
                             <div className="flex items-center gap-1.5 font-bold text-gray-900">
-                              <span>{member.name}</span>
+                              <span className="truncate">{member.name}</span>
                               {member.pendingAvatarUrl && (
-                                <Tag color="orange" className="text-[9px] font-bold px-1.5 py-0 leading-tight">
+                                <Tag color="orange" className="text-[9px] font-bold px-1.5 py-0 leading-tight shrink-0">
                                   Photo Pending
                                 </Tag>
                               )}
                             </div>
                             {member.fatherName && (
-                              <span className="text-[10px] text-gray-400 font-normal block">
+                              <span className="text-[10px] text-gray-400 font-normal block truncate">
                                 S/o {member.fatherName}
                               </span>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-gray-600">{member.fromNo || '—'}</td>
-                      <td className="py-3.5 px-4 text-gray-600">{member.whatsapp}</td>
-                      <td className="py-3.5 px-4 font-bold text-red-600">{member.bloodGroup}</td>
-                      <td className="py-3.5 px-4 text-gray-600">{member.villageTown}</td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-3 text-gray-600 whitespace-nowrap">{member.fromNo || '—'}</td>
+                      <td className="py-3.5 px-4 text-gray-600 whitespace-nowrap">{member.whatsapp}</td>
+                      <td className="py-3.5 px-3 font-bold text-red-600 whitespace-nowrap">{member.bloodGroup}</td>
+                      <td className="py-3.5 px-4 text-gray-600 whitespace-nowrap">{member.villageTown}</td>
+                      <td className="py-3.5 px-3 whitespace-nowrap">
                         <span
                           className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
                             member.profileCompletion >= 80
@@ -561,59 +563,61 @@ export default function AdminMembersPage() {
                           {member.profileCompletion}%
                         </span>
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <StatusTag status={member.status} />
                       </td>
-                      <td className="py-3.5 px-4 text-right space-x-2">
-                        <Button
-                          size="small"
-                          icon={<EyeOutlined />}
-                          onClick={() => {
-                            setSelectedMember(member);
-                            setViewModalOpen(true);
-                          }}
-                          className="rounded-lg text-xs"
-                        >
-                          View
-                        </Button>
-                        <Button
-                          size="small"
-                          type="primary"
-                          icon={<EditOutlined />}
-                          onClick={() => handleOpenEdit(member)}
-                          className="bg-[#3447AA] rounded-lg text-xs font-bold"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="small"
-                          icon={<CrownOutlined />}
-                          onClick={() => handleOpenRoleModal(member)}
-                          className={`rounded-lg text-xs font-bold ${
-                            member.committeeRole
-                              ? 'bg-amber-50 text-amber-700 border-amber-300'
-                              : 'text-gray-600'
-                          }`}
-                        >
-                          {member.committeeRole ? 'Role ✓' : 'Set Role'}
-                        </Button>
-                        <Popconfirm
-                          title="Delete Member"
-                          description={`Are you sure you want to delete ${member.name} (${member.memberId}) permanently?`}
-                          onConfirm={() => deleteMember(member.memberId)}
-                          okText="Yes, Delete"
-                          cancelText="Cancel"
-                          okButtonProps={{ danger: true, className: 'bg-red-600 font-bold' }}
-                        >
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap sticky right-0 bg-white group-hover:bg-gray-50/80 z-10 shadow-[-6px_0_10px_-4px_rgba(0,0,0,0.06)]">
+                        <div className="flex items-center justify-end gap-1.5">
                           <Button
                             size="small"
-                            danger
-                            icon={<DeleteOutlined />}
-                            className="rounded-lg text-xs font-semibold"
+                            icon={<EyeOutlined />}
+                            onClick={() => {
+                              setSelectedMember(member);
+                              setViewModalOpen(true);
+                            }}
+                            className="rounded-lg text-xs hover:border-[#3447AA] hover:text-[#3447AA]"
                           >
-                            Delete
+                            View
                           </Button>
-                        </Popconfirm>
+                          <Button
+                            size="small"
+                            type="primary"
+                            icon={<EditOutlined />}
+                            onClick={() => handleOpenEdit(member)}
+                            className="bg-[#3447AA] hover:bg-[#283887] rounded-lg text-xs font-bold"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="small"
+                            icon={<CrownOutlined />}
+                            onClick={() => handleOpenRoleModal(member)}
+                            className={`rounded-lg text-xs font-bold ${
+                              member.committeeRole
+                                ? 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'
+                                : 'text-gray-600 hover:text-gray-900'
+                            }`}
+                          >
+                            {member.committeeRole ? 'Role ✓' : 'Set Role'}
+                          </Button>
+                          <Popconfirm
+                            title="Delete Member"
+                            description={`Are you sure you want to delete ${member.name} (${member.memberId}) permanently?`}
+                            onConfirm={() => deleteMember(member.memberId)}
+                            okText="Yes, Delete"
+                            cancelText="Cancel"
+                            okButtonProps={{ danger: true, className: 'bg-red-600 font-bold' }}
+                          >
+                            <Button
+                              size="small"
+                              danger
+                              icon={<DeleteOutlined />}
+                              className="rounded-lg text-xs font-semibold"
+                            >
+                              Delete
+                            </Button>
+                          </Popconfirm>
+                        </div>
                       </td>
                     </tr>
                   ))}
