@@ -64,6 +64,7 @@ export const MemberLayout: React.FC<{ children: React.ReactNode }> = ({ children
               <div className="bg-[#FBEAEB] p-3.5 rounded-xl border border-pink-200/80">
                 <div className="flex items-center gap-2.5">
                   <Avatar
+                    src={currentUser?.avatarUrl}
                     style={{ backgroundColor: KPNS_COLORS.primary }}
                     icon={<UserOutlined />}
                     size="default"

@@ -95,6 +95,7 @@ export default function TeamKPNSPage() {
           <div className="flex items-start justify-between gap-3 mb-4">
             <Avatar
               size={60}
+              src={member.avatarUrl}
               icon={<UserOutlined />}
               className={`shrink-0 ${isLeader ? 'bg-[#3447AA] text-white' : 'bg-[#FBEAEB] text-[#3447AA]'}`}
             />
@@ -310,6 +311,7 @@ export default function TeamKPNSPage() {
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <Avatar
                           size={48}
+                          src={member.avatarUrl}
                           icon={<UserOutlined />}
                           className="bg-[#3447AA] text-white shrink-0"
                         />

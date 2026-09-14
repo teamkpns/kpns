@@ -13,6 +13,7 @@ import {
   Card,
   Tag,
   Alert,
+  Avatar,
 } from 'antd';
 import {
   IdcardOutlined,
@@ -22,10 +23,15 @@ import {
   LockOutlined,
   CheckCircleFilled,
   SafetyCertificateOutlined,
+  CameraOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import { MemberLayout } from '@/components/layouts/MemberLayout';
 import { StatusTag } from '@/components/common/StatusTag';
 import { AadhaarMask } from '@/components/common/AadhaarMask';
+import { ImageCropModal } from '@/components/common/ImageCropModal';
 import { usePortal } from '@/context/portal-context';
 import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
@@ -37,8 +43,16 @@ function ProfileContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || 'membership';
   const [activeTab, setActiveTab] = useState(initialTab);
-  const { currentUser, updateMemberProfile } = usePortal();
+  const {
+    currentUser,
+    updateMemberProfile,
+    photoRequests,
+    submitPhotoApprovalRequest,
+    cancelPhotoRequest,
+  } = usePortal();
   const [saving, setSaving] = useState(false);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [submittingPhoto, setSubmittingPhoto] = useState(false);
   const [personalForm] = Form.useForm();
   const [addressForm] = Form.useForm();
 
@@ -46,7 +60,7 @@ function ProfileContent() {
     memberId: 'KPNS75PP26',
     fromNo: '75',
     userId: 'PINTU75',
-    status: 'ACTIVE',
+    status: 'ACTIVE' as const,
     admissionDate: '2026-08-15',
     name: 'Pintu Patra',
     fatherName: 'Subhas Patra',
@@ -65,6 +79,9 @@ function ProfileContent() {
     state: 'West Bengal',
     country: 'India',
     pincode: '721401',
+    avatarUrl: undefined as string | undefined,
+    pendingAvatarUrl: undefined as string | undefined,
+    committeeRole: undefined as string | undefined,
   };
 
   const handleSavePersonal = async () => {
@@ -98,23 +115,147 @@ function ProfileContent() {
     }
   };
 
+  const pendingPhotoRequest = photoRequests.find(
+    (r) => (r.memberId === user.memberId || r.memberId === currentUser?.memberId) && r.status === 'PENDING'
+  );
+
+  const handleCropComplete = async (croppedDataUrl: string) => {
+    setSubmittingPhoto(true);
+    try {
+      await submitPhotoApprovalRequest(user.memberId, croppedDataUrl);
+      setIsCropModalOpen(false);
+    } catch {
+      message.error('Failed to submit photo. Please try again.');
+    } finally {
+      setSubmittingPhoto(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4">
-        <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-            Member Profile
-          </span>
-          <h1 className="text-2xl font-black text-gray-900">{user.name}</h1>
+      {/* Member Profile Hero / Avatar Card */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="relative group">
+            <Avatar
+              size={84}
+              src={user.avatarUrl}
+              icon={<UserOutlined />}
+              style={{ backgroundColor: KPNS_COLORS.primary }}
+              className="border-4 border-pink-100 shadow-md text-3xl font-bold"
+            />
+            <button
+              onClick={() => setIsCropModalOpen(true)}
+              className="absolute -bottom-1 -right-1 bg-[#3447AA] hover:bg-[#202E7A] text-white p-2 rounded-full shadow-md border-2 border-white transition flex items-center justify-center cursor-pointer"
+              title="Change Profile Photo"
+            >
+              <CameraOutlined className="text-xs" />
+            </button>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-gray-900 leading-tight">
+                {user.name}
+              </h1>
+              {user.committeeRole && (
+                <Tag color="gold" className="font-bold text-[10px] rounded-full uppercase">
+                  {user.committeeRole}
+                </Tag>
+              )}
+            </div>
+            <p className="text-xs font-mono font-bold text-[#3447AA] mt-0.5">{user.memberId}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Member since {formatDate(user.admissionDate)} &bull; {user.villageTown || 'Khejurda'}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
           <StatusTag status={user.status} />
-          <span className="font-mono text-xs font-bold bg-gray-100 px-3 py-1 rounded-full text-gray-700">
-            {user.memberId}
-          </span>
+          <Button
+            type="primary"
+            icon={<CameraOutlined />}
+            onClick={() => setIsCropModalOpen(true)}
+            className="bg-[#3447AA] hover:bg-[#283887] rounded-xl font-bold text-xs h-9 px-4"
+          >
+            Change Photo
+          </Button>
         </div>
       </div>
+
+      {/* Pending Photo Approval Alert Card (if waiting for admin review) */}
+      {(pendingPhotoRequest || user.pendingAvatarUrl) && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-5 shadow-xs">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-xl shrink-0 mt-0.5">
+                <ClockCircleOutlined />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-black text-amber-900 text-sm">
+                    New Profile Picture Pending Admin Approval
+                  </span>
+                  <Tag color="orange" className="font-bold text-[10px] rounded-md uppercase">
+                    Under Review
+                  </Tag>
+                </div>
+                <p className="text-xs text-amber-800 leading-relaxed max-w-2xl">
+                  You uploaded a new cropped profile picture on{' '}
+                  <strong>{pendingPhotoRequest?.requestedAt ? dayjs(pendingPhotoRequest.requestedAt).format('DD MMM YYYY, hh:mm A') : 'recent request'}</strong>.
+                  It is currently awaiting review by KPNS club administrators. Once approved, it will automatically update across your account, member dashboard, and the Team KPNS directory.
+                </p>
+              </div>
+            </div>
+
+            {/* Comparison Preview */}
+            <div className="flex items-center gap-3 bg-white/80 backdrop-blur-xs p-2.5 rounded-2xl border border-amber-200/60 self-stretch md:self-auto justify-around">
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Current</p>
+                <Avatar
+                  size={42}
+                  src={user.avatarUrl}
+                  icon={<UserOutlined />}
+                  className="border border-gray-200"
+                />
+              </div>
+
+              <div className="text-gray-300 font-bold text-xs">➔</div>
+
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-amber-600 uppercase mb-1">Requested</p>
+                <Avatar
+                  size={42}
+                  src={pendingPhotoRequest?.photoUrl || user.pendingAvatarUrl}
+                  icon={<UserOutlined />}
+                  className="border-2 border-amber-500 shadow-xs"
+                />
+              </div>
+
+              <div className="pl-2 border-l border-amber-200">
+                <Button
+                  size="small"
+                  onClick={() => setIsCropModalOpen(true)}
+                  className="text-[11px] font-bold rounded-lg block w-full mb-1"
+                >
+                  Re-Crop
+                </Button>
+                {pendingPhotoRequest && (
+                  <Button
+                    size="small"
+                    danger
+                    onClick={() => cancelPhotoRequest(pendingPhotoRequest.id, user.memberId)}
+                    className="text-[10px] font-bold rounded-lg block w-full"
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Profile Tabs */}
       <div className="bg-white rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm">
@@ -458,6 +599,14 @@ function ProfileContent() {
           ]}
         />
       </div>
+
+      {/* Interactive Image Crop Modal */}
+      <ImageCropModal
+        open={isCropModalOpen}
+        onCancel={() => setIsCropModalOpen(false)}
+        onCropComplete={handleCropComplete}
+        loading={submittingPhoto}
+      />
     </div>
   );
 }

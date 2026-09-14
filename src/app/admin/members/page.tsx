@@ -32,12 +32,16 @@ import {
   MinusCircleOutlined,
   DeleteOutlined,
   ReloadOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  CameraOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { StatusTag } from '@/components/common/StatusTag';
 import { AadhaarMask } from '@/components/common/AadhaarMask';
 import { usePortal } from '@/context/portal-context';
-import { Member } from '@/types';
+import { Member, PhotoApprovalRequest } from '@/types';
 import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS, COMMITTEE_ROLES } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import dayjs from 'dayjs';
@@ -45,7 +49,17 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 export default function AdminMembersPage() {
-  const { members, updateMemberProfile, deleteMember, addActivityLog, assignCommitteeRole, refreshData } = usePortal();
+  const {
+    members,
+    updateMemberProfile,
+    deleteMember,
+    addActivityLog,
+    assignCommitteeRole,
+    refreshData,
+    photoRequests,
+    approvePhotoRequest,
+    rejectPhotoRequest,
+  } = usePortal();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [bloodFilter, setBloodFilter] = useState<string>('ALL');
@@ -57,6 +71,28 @@ export default function AdminMembersPage() {
   const [editForm] = Form.useForm();
   const [resettingPassword, setResettingPassword] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [approvingPhotoId, setApprovingPhotoId] = useState<string | null>(null);
+  const [rejectingPhotoId, setRejectingPhotoId] = useState<string | null>(null);
+
+  const pendingPhotoRequests = photoRequests.filter((r) => r.status === 'PENDING');
+
+  const handleApprovePhoto = async (req: PhotoApprovalRequest) => {
+    setApprovingPhotoId(req.id);
+    try {
+      await approvePhotoRequest(req.id, req.memberId, req.photoUrl);
+    } finally {
+      setApprovingPhotoId(null);
+    }
+  };
+
+  const handleRejectPhoto = async (req: PhotoApprovalRequest, reason?: string) => {
+    setRejectingPhotoId(req.id);
+    try {
+      await rejectPhotoRequest(req.id, req.memberId, reason);
+    } finally {
+      setRejectingPhotoId(null);
+    }
+  };
 
   // Filters logic
   const filteredMembers = members.filter((m) => {
@@ -182,6 +218,115 @@ export default function AdminMembersPage() {
           </div>
         </div>
 
+        {/* Pending Photo Approvals Card */}
+        {pendingPhotoRequests.length > 0 && (
+          <div className="bg-gradient-to-r from-amber-500/10 via-pink-500/10 to-indigo-500/10 border-2 border-amber-300 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg font-bold shadow-xs">
+                  <CameraOutlined />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-black text-gray-900 leading-tight">
+                      Member Profile Photo Approvals
+                    </h2>
+                    <Tag color="gold" className="font-extrabold text-xs px-2 py-0.5 rounded-full">
+                      {pendingPhotoRequests.length} PENDING
+                    </Tag>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    Review and verify member submitted profile photos before they go live across the portal and Team KPNS page.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {pendingPhotoRequests.map((req) => {
+                const member = members.find((m) => m.memberId === req.memberId);
+                return (
+                  <div
+                    key={req.id}
+                    className="bg-white rounded-2xl p-4 border border-amber-200/80 shadow-xs flex flex-col justify-between space-y-3"
+                  >
+                    <div>
+                      {/* Header */}
+                      <div className="flex items-center justify-between border-b border-gray-100 pb-2.5 mb-3">
+                        <div>
+                          <p className="font-black text-gray-900 text-sm">{req.memberName}</p>
+                          <p className="font-mono text-xs font-bold text-[#3447AA]">{req.memberId}</p>
+                        </div>
+                        <span className="text-[10px] text-gray-400 font-semibold">
+                          {req.requestedAt ? dayjs(req.requestedAt).format('DD MMM, hh:mm A') : 'Recent'}
+                        </span>
+                      </div>
+
+                      {/* Photo Comparison: Current vs New */}
+                      <div className="flex items-center justify-around bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div className="text-center">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Current</p>
+                          <Avatar
+                            size={56}
+                            src={req.currentPhotoUrl || member?.avatarUrl}
+                            icon={<UserOutlined />}
+                            className="border border-gray-200"
+                          />
+                        </div>
+
+                        <div className="text-gray-300 font-black text-base">➔</div>
+
+                        <div className="text-center">
+                          <p className="text-[10px] font-extrabold text-amber-700 uppercase mb-1">
+                            New Crop
+                          </p>
+                          <Avatar
+                            size={56}
+                            src={req.photoUrl}
+                            icon={<UserOutlined />}
+                            className="border-2 border-green-500 shadow-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <Button
+                        type="primary"
+                        icon={<CheckCircleOutlined />}
+                        loading={approvingPhotoId === req.id}
+                        onClick={() => handleApprovePhoto(req)}
+                        className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl h-9 shadow-xs"
+                      >
+                        Approve
+                      </Button>
+
+                      <Popconfirm
+                        title="Reject Photo Request"
+                        description="Are you sure you want to reject this photo request?"
+                        onConfirm={() => handleRejectPhoto(req, 'Photo does not meet identity guidelines')}
+                        okText="Yes, Reject"
+                        cancelText="Cancel"
+                        okButtonProps={{ danger: true, className: 'bg-red-600 font-bold' }}
+                      >
+                        <Button
+                          danger
+                          icon={<CloseCircleOutlined />}
+                          loading={rejectingPhotoId === req.id}
+                          className="font-bold text-xs rounded-xl h-9"
+                        >
+                          Reject
+                        </Button>
+                      </Popconfirm>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Search & Filter Bar (Specification Section 20) */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-sm space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
@@ -247,17 +392,32 @@ export default function AdminMembersPage() {
                   key={member.id}
                   className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-3"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-black text-gray-900 text-base uppercase">
-                        {member.name}
-                      </h3>
-                      <p className="font-mono text-xs text-[#3447AA] font-bold mt-0.5">
-                        {member.memberId}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1 flex items-center gap-1.5">
-                        <PhoneOutlined /> {member.whatsapp}
-                      </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        size={44}
+                        src={member.avatarUrl}
+                        icon={<UserOutlined />}
+                        className="bg-[#3447AA] text-white shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="font-black text-gray-900 text-sm sm:text-base">
+                            {member.name}
+                          </h3>
+                          {member.pendingAvatarUrl && (
+                            <Tag color="orange" className="text-[9px] font-bold px-1.5 py-0">
+                              Photo Pending
+                            </Tag>
+                          )}
+                        </div>
+                        <p className="font-mono text-xs text-[#3447AA] font-bold mt-0.5">
+                          {member.memberId}
+                        </p>
+                        <p className="text-xs text-gray-600 mt-0.5 flex items-center gap-1.5">
+                          <PhoneOutlined /> {member.whatsapp}
+                        </p>
+                      </div>
                     </div>
                     <div className="text-right space-y-1">
                       <StatusTag status={member.status} />
@@ -355,7 +515,31 @@ export default function AdminMembersPage() {
                       <td className="py-3.5 px-4 font-mono font-bold text-[#3447AA]">
                         {member.memberId}
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-gray-900">{member.name}</td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-2.5">
+                          <Avatar
+                            size={32}
+                            src={member.avatarUrl}
+                            icon={<UserOutlined />}
+                            className="bg-[#3447AA] text-white shrink-0"
+                          />
+                          <div>
+                            <div className="flex items-center gap-1.5 font-bold text-gray-900">
+                              <span>{member.name}</span>
+                              {member.pendingAvatarUrl && (
+                                <Tag color="orange" className="text-[9px] font-bold px-1.5 py-0 leading-tight">
+                                  Photo Pending
+                                </Tag>
+                              )}
+                            </div>
+                            {member.fatherName && (
+                              <span className="text-[10px] text-gray-400 font-normal block">
+                                S/o {member.fatherName}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
                       <td className="py-3.5 px-4 text-gray-600">{member.fromNo || '—'}</td>
                       <td className="py-3.5 px-4 text-gray-600">{member.whatsapp}</td>
                       <td className="py-3.5 px-4 font-bold text-red-600">{member.bloodGroup}</td>
@@ -499,6 +683,29 @@ export default function AdminMembersPage() {
         >
           {selectedMember && (
             <div className="space-y-4 py-2 text-xs">
+              {/* Profile Avatar & Member Header */}
+              <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <Avatar
+                  size={72}
+                  src={selectedMember.avatarUrl}
+                  icon={<UserOutlined />}
+                  style={{ backgroundColor: KPNS_COLORS.primary }}
+                  className="shadow-sm border-2 border-white shrink-0 text-2xl font-bold"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-black text-gray-900">{selectedMember.name}</h3>
+                    <StatusTag status={selectedMember.status} />
+                  </div>
+                  <p className="text-xs font-mono font-bold text-[#3447AA] mt-0.5">{selectedMember.memberId}</p>
+                  {selectedMember.committeeRole && (
+                    <Tag color="gold" className="text-[10px] font-bold mt-1">
+                      {selectedMember.committeeRole}
+                    </Tag>
+                  )}
+                </div>
+              </div>
+
               {/* Membership info */}
               <div className="bg-[#FBEAEB] p-4 rounded-2xl border border-pink-200">
                 <h4 className="font-bold text-[#3447AA] uppercase tracking-wider text-[11px] mb-2">

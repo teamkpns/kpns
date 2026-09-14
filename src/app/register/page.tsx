@@ -45,6 +45,8 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState<any>({
     country: 'India',
     state: 'West Bengal',
+    postOffice: 'Khejurda',
+    policeStation: 'Egra',
     district: 'Purba Medinipur',
     villageTown: 'Khejurda',
   });
@@ -205,7 +207,7 @@ export default function RegisterPage() {
               state: 'West Bengal',
               district: 'Purba Medinipur',
               villageTown: 'Khejurda',
-              pincode: '721401',
+              pincode: '721422',
               bloodGroup: 'O+',
               dob: dayjs('1998-01-01'),
             }}
@@ -222,28 +224,29 @@ export default function RegisterPage() {
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">
                     Please provide your authentic identification details.
+                    All fields marked with a red star (*) are mandatory and must be filled in before submitting the form.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">Member Name *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">Member Name</span>}
                     name="name"
                     rules={[{ required: true, message: 'Please enter your full name' }]}
                   >
-                    <Input placeholder="e.g. Pintu Patra" size="large" className="rounded-xl" />
+                    <Input placeholder="Your Name" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">Father's Name *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">Father's Name</span>}
                     name="fatherName"
                     rules={[{ required: true, message: "Please enter father's name" }]}
                   >
-                    <Input placeholder="e.g. Subhas Patra" size="large" className="rounded-xl" />
+                    <Input placeholder="Your Farther's Name" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">WhatsApp Number *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">WhatsApp Number</span>}
                     name="whatsapp"
                     rules={[
                       { required: true, message: 'Please enter 10-digit WhatsApp number' },
@@ -271,7 +274,7 @@ export default function RegisterPage() {
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">Email ID *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">Email ID</span>}
                     name="email"
                     rules={[
                       { required: true, message: 'Please enter your email' },
@@ -279,7 +282,7 @@ export default function RegisterPage() {
                     ]}
                   >
                     <Input
-                      placeholder="e.g. pintu.patra@example.com"
+                      placeholder="youremail@example.com"
                       size="large"
                       className="rounded-xl"
                     />
@@ -304,7 +307,7 @@ export default function RegisterPage() {
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">Blood Group *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">Blood Group</span>}
                     name="bloodGroup"
                     rules={[{ required: true, message: 'Please select blood group' }]}
                   >
@@ -318,7 +321,7 @@ export default function RegisterPage() {
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">Date of Birth *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">Date of Birth</span>}
                     name="dob"
                     rules={[{ required: true, message: 'Please select date of birth' }]}
                   >
@@ -357,6 +360,7 @@ export default function RegisterPage() {
                   </h2>
                   <p className="text-xs text-gray-500 mt-1">
                     Enter your permanent / communication residential address.
+                    All fields marked with a red star (*) are mandatory and must be filled in before submitting the form.
                   </p>
                 </div>
 
@@ -365,36 +369,36 @@ export default function RegisterPage() {
                     label={<span className="text-xs font-bold text-gray-700">House Number</span>}
                     name="houseNumber"
                   >
-                    <Input placeholder="e.g. KP-124" size="large" className="rounded-xl" />
+                    <Input placeholder="KP-124" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
-                    label={<span className="text-xs font-bold text-gray-700">Village / Town *</span>}
+                    label={<span className="text-xs font-bold text-gray-700">Village / Town</span>}
                     name="villageTown"
                     rules={[{ required: true, message: 'Please enter Village or Town' }]}
                   >
-                    <Input placeholder="e.g. Khejurda" size="large" className="rounded-xl" />
+                    <Input placeholder="Your Village Name" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
                     label={<span className="text-xs font-bold text-gray-700">Post Office</span>}
                     name="postOffice"
                   >
-                    <Input placeholder="e.g. Khejurda" size="large" className="rounded-xl" />
+                    <Input placeholder="Your Post Office Name" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
                     label={<span className="text-xs font-bold text-gray-700">Police Station</span>}
                     name="policeStation"
                   >
-                    <Input placeholder="e.g. Khejuri" size="large" className="rounded-xl" />
+                    <Input placeholder="Your Police Station Name" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
                     label={<span className="text-xs font-bold text-gray-700">City / Block</span>}
                     name="city"
                   >
-                    <Input placeholder="e.g. Contai" size="large" className="rounded-xl" />
+                    <Input placeholder="Your City Name" size="large" className="rounded-xl" />
                   </Form.Item>
 
                   <Form.Item
@@ -447,7 +451,7 @@ export default function RegisterPage() {
                     rules={[{ required: true, message: 'Please enter 6-digit Pincode' }]}
                   >
                     <Input
-                      placeholder="e.g. 721401"
+                      placeholder="e.g. 721422"
                       maxLength={6}
                       size="large"
                       className="rounded-xl"

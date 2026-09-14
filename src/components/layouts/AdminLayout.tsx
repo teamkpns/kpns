@@ -95,6 +95,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
               <div className="bg-gradient-to-r from-[#3447AA] to-[#202E7A] p-3.5 rounded-xl text-white">
                 <div className="flex items-center gap-2.5">
                   <Avatar
+                    src={currentUser?.avatarUrl}
                     style={{ backgroundColor: '#FFFFFF', color: '#3447AA' }}
                     icon={<UserOutlined />}
                     size="default"

@@ -38,11 +38,12 @@ export default function MemberDashboardPage() {
     memberId: 'KPNS75PP26',
     fromNo: '75',
     userId: 'PINTU75',
-    status: 'ACTIVE',
+    status: 'ACTIVE' as const,
     admissionDate: '2026-08-15',
     bloodGroup: 'O+',
     profileCompletion: 85,
     missingFields: ['City missing', 'Police Station missing'],
+    avatarUrl: undefined as string | undefined,
   };
 
   return (
@@ -66,6 +67,7 @@ export default function MemberDashboardPage() {
             <div className="hidden sm:flex items-center gap-2">
               <Avatar
                 size={64}
+                src={user.avatarUrl}
                 style={{ backgroundColor: KPNS_COLORS.primary }}
                 icon={<UserOutlined />}
                 className="shadow-md border-2 border-white"

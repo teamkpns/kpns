@@ -248,6 +248,7 @@ export const Header: React.FC = () => {
             <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
               <button className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition border border-gray-200">
                 <Avatar
+                  src={currentUser?.avatarUrl}
                   style={{ backgroundColor: KPNS_COLORS.primary }}
                   icon={<UserOutlined />}
                   size="small"
@@ -285,6 +286,7 @@ export const Header: React.FC = () => {
             <div className="bg-[#FBEAEB] p-4 rounded-2xl mb-3 border border-pink-200">
               <div className="flex items-center gap-3">
                 <Avatar
+                  src={currentUser?.avatarUrl}
                   style={{ backgroundColor: KPNS_COLORS.primary }}
                   size="large"
                   icon={<UserOutlined />}

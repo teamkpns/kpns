@@ -172,13 +172,13 @@ export default function LoginPage() {
               autoComplete="off"
             >
               <Form.Item
-                label={<span className="text-xs font-bold text-gray-700">User ID / Email</span>}
+                label={<span className="text-xs font-bold text-gray-700">Member ID / Email</span>}
                 name="identifier"
-                rules={[{ required: true, message: 'Please enter your User ID or Email' }]}
+                rules={[{ required: true, message: 'Please enter your Member ID or Email' }]}
               >
                 <Input
                   prefix={<UserOutlined className="text-gray-400 mr-1" />}
-                  placeholder="e.g. PINTU75 or pintu@example.com"
+                  placeholder="member@example.com"
                   size="large"
                   className="rounded-xl"
                   autoComplete="off"

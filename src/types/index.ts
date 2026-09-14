@@ -13,6 +13,7 @@ export interface Member {
   status: MembershipStatus;
   admissionDate: string; // YYYY-MM-DD
   avatarUrl?: string;
+  pendingAvatarUrl?: string;
 
   // Personal Information
   name: string;
@@ -141,4 +142,15 @@ export interface ActivityPost {
   createdBy?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PhotoApprovalRequest {
+  id: string;
+  memberId: string;
+  memberName: string;
+  photoUrl: string; // The pending new photo data URL
+  currentPhotoUrl?: string;
+  requestedAt: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
 }

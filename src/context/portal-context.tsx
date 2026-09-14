@@ -10,6 +10,7 @@ import {
   UserRole,
   ContactMessage,
   ActivityPost,
+  PhotoApprovalRequest,
 } from '@/types';
 import {
   INITIAL_MEMBERS,
@@ -62,6 +63,12 @@ interface PortalContextType {
   submitContactMessage: (data: Omit<ContactMessage, 'id' | 'createdAt' | 'read'>) => Promise<boolean>;
   markContactMessageAsRead: (id: string) => Promise<void>;
   deleteContactMessage: (id: string) => Promise<boolean>;
+  // Photo Approval Requests
+  photoRequests: PhotoApprovalRequest[];
+  submitPhotoApprovalRequest: (memberId: string, photoDataUrl: string) => Promise<boolean>;
+  approvePhotoRequest: (requestId: string, memberId: string, photoUrl: string) => Promise<boolean>;
+  rejectPhotoRequest: (requestId: string, memberId: string, reason?: string) => Promise<boolean>;
+  cancelPhotoRequest: (requestId: string, memberId: string) => Promise<boolean>;
   // Activity Posts
   activityPosts: ActivityPost[];
   createActivityPost: (data: Omit<ActivityPost, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ActivityPost | null>;
@@ -159,6 +166,19 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   });
 
   const [activityPosts, setActivityPosts] = useState<ActivityPost[]>([]);
+  const [photoRequests, setPhotoRequests] = useState<PhotoApprovalRequest[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('kpns_photo_requests');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          // fallback
+        }
+      }
+    }
+    return [];
+  });
 
   const [currentRole, setCurrentRole] = useState<UserRole | 'GUEST'>(() => {
     if (typeof window !== 'undefined') {
@@ -194,39 +214,58 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         .order('admission_date', { ascending: false });
 
       if (!mErr && dbMembers && dbMembers.length > 0) {
-        const mapped: Member[] = dbMembers.map((m: any) => ({
-          id: m.id,
-          memberId: m.member_id,
-          fromNo: m.from_no,
-          userId: m.user_id,
-          role: m.role || 'MEMBER',
-          status: m.status || 'ACTIVE',
-          admissionDate: m.admission_date,
-          avatarUrl: m.avatar_url,
-          name: m.name,
-          fatherName: m.father_name,
-          whatsapp: m.whatsapp,
-          altMobile: m.alt_mobile,
-          email: m.email,
-          aadhaar: m.aadhaar,
-          bloodGroup: m.blood_group,
-          dob: m.dob,
-          houseNumber: m.house_number,
-          villageTown: m.village_town,
-          postOffice: m.post_office,
-          policeStation: m.police_station,
-          city: m.city,
-          district: m.district || 'Purba Medinipur',
-          state: m.state || 'West Bengal',
-          country: m.country || 'India',
-          pincode: m.pincode,
-          profileCompletion: m.profile_completion || 85,
-          missingFields: [],
-          committeeRole: m.committee_role || undefined,
-          password: m.password || 'kpns@2026',
-          createdAt: m.created_at,
-          updatedAt: m.updated_at,
-        }));
+        const mapped: Member[] = dbMembers.map((m: any) => {
+          const comp = calculateProfileCompletion({
+            name: m.name,
+            fatherName: m.father_name,
+            whatsapp: m.whatsapp,
+            email: m.email,
+            bloodGroup: m.blood_group,
+            dob: m.dob,
+            aadhaar: m.aadhaar,
+            villageTown: m.village_town,
+            district: m.district || 'Purba Medinipur',
+            postOffice: m.post_office,
+            policeStation: m.police_station,
+            city: m.city,
+            state: m.state || 'West Bengal',
+            pincode: m.pincode,
+          });
+
+          return {
+            id: m.id,
+            memberId: m.member_id,
+            fromNo: m.from_no,
+            userId: m.user_id,
+            role: m.role || 'MEMBER',
+            status: m.status || 'ACTIVE',
+            admissionDate: m.admission_date,
+            avatarUrl: m.avatar_url,
+            name: m.name,
+            fatherName: m.father_name,
+            whatsapp: m.whatsapp,
+            altMobile: m.alt_mobile,
+            email: m.email,
+            aadhaar: m.aadhaar,
+            bloodGroup: m.blood_group,
+            dob: m.dob,
+            houseNumber: m.house_number,
+            villageTown: m.village_town,
+            postOffice: m.post_office,
+            policeStation: m.police_station,
+            city: m.city,
+            district: m.district || 'Purba Medinipur',
+            state: m.state || 'West Bengal',
+            country: m.country || 'India',
+            pincode: m.pincode,
+            profileCompletion: m.profile_completion || comp.score,
+            missingFields: comp.missingFields || [],
+            committeeRole: m.committee_role || undefined,
+            password: m.password || 'kpns@2026',
+            createdAt: m.created_at,
+            updatedAt: m.updated_at,
+          };
+        });
         setMembers(mapped);
 
         // Keep current user updated if logged in
@@ -310,15 +349,17 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActivityLogs(mappedLogs);
       }
 
-      // 4. Fetch Notifications
+      // 4. Fetch Notifications & Photo Requests
       const { data: dbNotifs, error: nErr } = await supabase
         .from('notifications')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(30);
+        .limit(100);
 
       if (!nErr && dbNotifs && dbNotifs.length > 0) {
-        const mappedNotifs: NotificationItem[] = dbNotifs.map((n: any) => ({
+        // Standard user notifications (excluding raw photo_request payload)
+        const regularNotifs = dbNotifs.filter((n: any) => n.type !== 'photo_request');
+        const mappedNotifs: NotificationItem[] = regularNotifs.map((n: any) => ({
           id: n.id,
           title: n.title,
           description: n.description,
@@ -327,6 +368,52 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           type: n.type || 'info',
         }));
         setNotifications(mappedNotifs);
+
+        // Photo approval requests
+        const photoNotifs = dbNotifs.filter((n: any) => n.type === 'photo_request');
+        const mappedRequests: PhotoApprovalRequest[] = photoNotifs
+          .map((n: any) => {
+            try {
+              const parsed = typeof n.description === 'string' ? JSON.parse(n.description) : n.description;
+              return {
+                id: n.id,
+                memberId: parsed.memberId,
+                memberName: parsed.memberName,
+                photoUrl: parsed.photoUrl,
+                currentPhotoUrl: parsed.currentPhotoUrl,
+                requestedAt: parsed.requestedAt || n.created_at,
+                status: parsed.status || (n.read ? 'APPROVED' : 'PENDING'),
+                rejectionReason: parsed.rejectionReason,
+              };
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean) as PhotoApprovalRequest[];
+
+        setPhotoRequests(mappedRequests);
+
+        // Update pendingAvatarUrl on members
+        const pendingMap = new Map<string, string>();
+        mappedRequests.forEach((req) => {
+          if (req.status === 'PENDING' && req.photoUrl) {
+            pendingMap.set(req.memberId, req.photoUrl);
+          }
+        });
+
+        if (pendingMap.size > 0) {
+          setMembers((prev) =>
+            prev.map((m) => {
+              const pending = pendingMap.get(m.memberId);
+              return pending !== m.pendingAvatarUrl ? { ...m, pendingAvatarUrl: pending } : m;
+            })
+          );
+          setCurrentUser((prev) => {
+            if (!prev) return null;
+            const pending = pendingMap.get(prev.memberId);
+            return pending !== prev.pendingAvatarUrl ? { ...prev, pendingAvatarUrl: pending } : prev;
+          });
+        }
       }
 
       // 5. Fetch Club Settings
@@ -414,8 +501,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       localStorage.setItem('kpns_logs', JSON.stringify(activityLogs));
       localStorage.setItem('kpns_settings', JSON.stringify(clubSettings));
       localStorage.setItem('kpns_contact_messages', JSON.stringify(contactMessages));
+      localStorage.setItem('kpns_photo_requests', JSON.stringify(photoRequests));
     }
-  }, [members, applications, notifications, activityLogs, clubSettings, contactMessages]);
+  }, [members, applications, notifications, activityLogs, clubSettings, contactMessages, photoRequests]);
 
   const addActivityLog = async (action: string, memberId?: string, details?: string) => {
     const userDisplay = currentUser?.userId || (currentRole === 'ADMIN' ? 'ADMIN' : 'SYSTEM');
@@ -1017,6 +1105,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (updatedFields.state !== undefined) updatePayload.state = updatedFields.state;
         if (updatedFields.pincode) updatePayload.pincode = updatedFields.pincode;
         if (updatedFields.status) updatePayload.status = updatedFields.status;
+        if (updatedFields.avatarUrl !== undefined) updatePayload.avatar_url = updatedFields.avatarUrl;
 
         await supabase.from('members').update(updatePayload).eq('member_id', memberId);
       } catch (err) {
@@ -1296,6 +1385,254 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
+  // ── Member Photo Approval Requests ──────────────────────────────────────────
+
+  const submitPhotoApprovalRequest = async (
+    memberId: string,
+    photoDataUrl: string
+  ): Promise<boolean> => {
+    const member = members.find((m) => m.memberId === memberId || m.id === memberId);
+    const memberName = member?.name || currentUser?.name || 'Member';
+    const currentPhoto = member?.avatarUrl || currentUser?.avatarUrl;
+
+    const requestPayload = {
+      memberId,
+      memberName,
+      photoUrl: photoDataUrl,
+      currentPhotoUrl: currentPhoto || null,
+      requestedAt: new Date().toISOString(),
+      status: 'PENDING',
+    };
+
+    let newRequestId = `photo-req-${Date.now()}`;
+
+    try {
+      // 1. Insert into Supabase notifications table
+      const { data, error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: 'ADMIN',
+          title: 'PHOTO_APPROVAL_REQUEST',
+          description: JSON.stringify(requestPayload),
+          type: 'photo_request',
+          read: false,
+        })
+        .select();
+
+      if (error) {
+        console.warn('Supabase photo request insert error:', error);
+      } else if (data && data[0]) {
+        newRequestId = data[0].id;
+      }
+    } catch (err) {
+      console.warn('Network error inserting photo request:', err);
+    }
+
+    const newReq: PhotoApprovalRequest = {
+      id: newRequestId,
+      memberId,
+      memberName,
+      photoUrl: photoDataUrl,
+      currentPhotoUrl: currentPhoto,
+      requestedAt: requestPayload.requestedAt,
+      status: 'PENDING',
+    };
+
+    setPhotoRequests((prev) => [newReq, ...prev.filter((r) => r.memberId !== memberId || r.status !== 'PENDING')]);
+
+    setMembers((prev) =>
+      prev.map((m) => {
+        if (m.memberId === memberId || m.id === memberId) {
+          return { ...m, pendingAvatarUrl: photoDataUrl };
+        }
+        return m;
+      })
+    );
+
+    if (currentUser && (currentUser.memberId === memberId || currentUser.id === memberId)) {
+      setCurrentUser((prev) => (prev ? { ...prev, pendingAvatarUrl: photoDataUrl } : null));
+    }
+
+    addActivityLog(
+      `Submitted profile photo for approval`,
+      memberId,
+      `Member requested new profile picture (awaiting admin review)`
+    );
+
+    message.success('Photo submitted for admin approval!');
+    return true;
+  };
+
+  const approvePhotoRequest = async (
+    requestId: string,
+    memberId: string,
+    photoUrl: string
+  ): Promise<boolean> => {
+    try {
+      // 1. Update member's avatar_url in Supabase
+      const { error: memErr } = await supabase
+        .from('members')
+        .update({ avatar_url: photoUrl })
+        .eq('member_id', memberId);
+
+      if (memErr) {
+        console.error('Error updating member avatar in DB:', memErr);
+        message.error('Failed to update member photo in database.');
+        return false;
+      }
+
+      // 2. Update notification in Supabase
+      const req = photoRequests.find((r) => r.id === requestId);
+      const updatedDesc = JSON.stringify({
+        ...(req || { memberId }),
+        status: 'APPROVED',
+      });
+      await supabase
+        .from('notifications')
+        .update({ read: true, description: updatedDesc })
+        .eq('id', requestId);
+
+      // 3. Send approval notification to member
+      await supabase.from('notifications').insert({
+        user_id: memberId,
+        title: 'Profile Photo Approved ✓',
+        description: 'Your new profile photo has been verified by KPNS Administration and is now live across the portal and Team KPNS page.',
+        type: 'success',
+        read: false,
+      });
+
+      // 4. Update local state
+      setPhotoRequests((prev) =>
+        prev.map((r) => (r.id === requestId ? { ...r, status: 'APPROVED' } : r))
+      );
+
+      setMembers((prev) =>
+        prev.map((m) => {
+          if (m.memberId === memberId || m.id === memberId) {
+            return { ...m, avatarUrl: photoUrl, pendingAvatarUrl: undefined };
+          }
+          return m;
+        })
+      );
+
+      if (currentUser && (currentUser.memberId === memberId || currentUser.id === memberId)) {
+        setCurrentUser((prev) =>
+          prev ? { ...prev, avatarUrl: photoUrl, pendingAvatarUrl: undefined } : null
+        );
+      }
+
+      const mem = members.find((m) => m.memberId === memberId || m.id === memberId);
+      addActivityLog(
+        `Approved profile photo for ${mem?.name || memberId}`,
+        memberId,
+        'Admin verified and published member profile picture'
+      );
+
+      message.success(`Profile photo approved for ${mem?.name || memberId}!`);
+      return true;
+    } catch (err) {
+      console.error('approvePhotoRequest error:', err);
+      message.error('Failed to approve photo request.');
+      return false;
+    }
+  };
+
+  const rejectPhotoRequest = async (
+    requestId: string,
+    memberId: string,
+    reason?: string
+  ): Promise<boolean> => {
+    try {
+      const req = photoRequests.find((r) => r.id === requestId);
+      const updatedDesc = JSON.stringify({
+        ...(req || { memberId }),
+        status: 'REJECTED',
+        rejectionReason: reason || 'Photo did not meet guidelines',
+      });
+      await supabase
+        .from('notifications')
+        .update({ read: true, description: updatedDesc })
+        .eq('id', requestId);
+
+      // Send rejection notification to member
+      await supabase.from('notifications').insert({
+        user_id: memberId,
+        title: 'Profile Photo Update',
+        description: `Your profile photo request was reviewed. Reason: ${reason || 'Does not meet official identification guidelines'}. You may crop and upload another picture anytime.`,
+        type: 'warning',
+        read: false,
+      });
+
+      setPhotoRequests((prev) =>
+        prev.map((r) =>
+          r.id === requestId
+            ? { ...r, status: 'REJECTED', rejectionReason: reason }
+            : r
+        )
+      );
+
+      setMembers((prev) =>
+        prev.map((m) => {
+          if (m.memberId === memberId || m.id === memberId) {
+            return { ...m, pendingAvatarUrl: undefined };
+          }
+          return m;
+        })
+      );
+
+      if (currentUser && (currentUser.memberId === memberId || currentUser.id === memberId)) {
+        setCurrentUser((prev) =>
+          prev ? { ...prev, pendingAvatarUrl: undefined } : null
+        );
+      }
+
+      addActivityLog(
+        `Rejected profile photo for ${memberId}`,
+        memberId,
+        `Reason: ${reason || 'Not specified'}`
+      );
+
+      message.info('Photo request rejected.');
+      return true;
+    } catch (err) {
+      console.error('rejectPhotoRequest error:', err);
+      message.error('Failed to reject photo request.');
+      return false;
+    }
+  };
+
+  const cancelPhotoRequest = async (
+    requestId: string,
+    memberId: string
+  ): Promise<boolean> => {
+    try {
+      await supabase.from('notifications').delete().eq('id', requestId);
+
+      setPhotoRequests((prev) => prev.filter((r) => r.id !== requestId));
+
+      setMembers((prev) =>
+        prev.map((m) => {
+          if (m.memberId === memberId || m.id === memberId) {
+            return { ...m, pendingAvatarUrl: undefined };
+          }
+          return m;
+        })
+      );
+
+      if (currentUser && (currentUser.memberId === memberId || currentUser.id === memberId)) {
+        setCurrentUser((prev) =>
+          prev ? { ...prev, pendingAvatarUrl: undefined } : null
+        );
+      }
+
+      message.success('Photo request cancelled.');
+      return true;
+    } catch (err) {
+      console.error('cancelPhotoRequest error:', err);
+      return false;
+    }
+  };
+
   // ── Activity Post CRUD ──────────────────────────────────────────────────────
 
   const createActivityPost = async (
@@ -1429,6 +1766,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         submitContactMessage,
         markContactMessageAsRead,
         deleteContactMessage,
+        photoRequests,
+        submitPhotoApprovalRequest,
+        approvePhotoRequest,
+        rejectPhotoRequest,
+        cancelPhotoRequest,
         activityPosts,
         createActivityPost,
         updateActivityPost,

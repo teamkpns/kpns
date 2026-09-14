@@ -58,6 +58,7 @@ export default function AdminBirthdaysPage() {
         <div className="relative mb-3">
           <Avatar
             size={72}
+            src={member.avatarUrl}
             style={{
               backgroundColor: isToday ? KPNS_COLORS.primary : '#94A3B8',
             }}
