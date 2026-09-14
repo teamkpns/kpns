@@ -60,6 +60,15 @@ interface EventRecord {
   event_date: string;
 }
 
+interface EventDueRecord {
+  id: number;
+  event_id: number;
+  member_id: number;
+  amount: number;
+  paid_amount: number | null;
+  status: string | null;
+}
+
 interface BackendMemberRecord {
   id: number;
   form_no: string | null;
@@ -79,6 +88,9 @@ export default function MemberTransactionsPage() {
   const [backendMember, setBackendMember] = useState<BackendMemberRecord | null>(null);
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
   const [events, setEvents] = useState<EventRecord[]>([]);
+  const [eventDues, setEventDues] = useState<EventDueRecord[]>([]);
+  // Set of event IDs that have ANY event_dues rows in the system (assignment-based events)
+  const [allDuesEventIds, setAllDuesEventIds] = useState<Set<number>>(new Set());
   
   // Filtering & search
   const [searchTerm, setSearchTerm] = useState('');
@@ -139,6 +151,16 @@ export default function MemberTransactionsPage() {
           setEvents(eventsData || []);
         }
 
+        // 2b. Fetch distinct event_ids that have any event_dues rows (assignment-based events)
+        const { data: allDuesData } = await transactionsSupabase
+          .from('event_dues')
+          .select('event_id');
+
+        if (allDuesData && allDuesData.length > 0) {
+          const ids = new Set<number>(allDuesData.map((d: { event_id: number }) => d.event_id));
+          setAllDuesEventIds(ids);
+        }
+
         if (matchedMember) {
           setBackendMember(matchedMember);
 
@@ -154,6 +176,14 @@ export default function MemberTransactionsPage() {
           }
 
           setTransactions(txData || []);
+
+          // 4. Fetch event_dues assignments for this member
+          const { data: duesData } = await transactionsSupabase
+            .from('event_dues')
+            .select('*')
+            .eq('member_id', matchedMember.id);
+
+          setEventDues(duesData || []);
         } else {
           setBackendMember(null);
           setTransactions([]);
@@ -176,83 +206,114 @@ export default function MemberTransactionsPage() {
     return map;
   }, [events]);
 
-  // Financial Calculations (Paid, Due, Advance)
+  // Financial Calculations
   const financialSummary = useMemo(() => {
     const totalPaid = transactions.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
     const admissionDate = backendMember?.date_of_admission
       ? dayjs(backendMember.date_of_admission)
       : null;
 
-    let totalDue = 0;
-    let totalAdvance = 0;
+    // Which events is this member assigned to (via event_dues)?
+    const assignedEventIds = new Set(eventDues.map((d) => d.event_id));
 
-    // Evaluate each event with a mandatory fee
+    // Which events does the member have any transaction for?
+    const memberTxEventIds = new Set(
+      transactions.filter((t) => t.event_id !== null).map((t) => t.event_id as number)
+    );
+
+    let totalDue = 0;
+    let totalDonation = 0;
+
     const eventBreakdown = events
       .filter((ev) => ev.contribution_amount > 0)
+      .filter((ev) => {
+        // Always show if the member paid something for this event
+        if (memberTxEventIds.has(ev.id)) return true;
+        // Always show if formally assigned via event_dues
+        if (assignedEventIds.has(ev.id)) return true;
+        // If the event has event_dues rows in the system (it's assignment-based) but
+        // this member is NOT assigned and has no transaction → hide (not their event)
+        if (allDuesEventIds.has(ev.id)) return false;
+        // Universal mandatory events: apply admission-year filter
+        const evYear = dayjs(ev.event_date).year();
+        if (admissionDate && evYear < admissionDate.year()) return false;
+        return true;
+      })
       .map((ev) => {
-        const evDate = dayjs(ev.event_date);
-        const paidForEvent = transactions
-          .filter((t) => t.event_id === ev.id)
-          .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
-
+        const evYear = dayjs(ev.event_date).year();
         const reqAmount = Number(ev.contribution_amount) || 0;
 
-        // Skip  New Member Registration Fee if member admitted before event year
+        const eventTxs = transactions.filter((t) => t.event_id === ev.id);
+        const totalPaidForEvent = eventTxs.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+        // Split fee payments vs explicit donation transactions for this event
+        const feePaidAmt = eventTxs
+          .filter((t) => t.type === 'member_payment')
+          .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+        const donationAmt = eventTxs
+          .filter((t) => t.type === 'member_donation')
+          .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+        // Determine whether this event fee applies to this member
         const isRegFee = ev.title.toLowerCase().includes('registration fee');
-        const evYear = evDate.year();
         let isApplicable = true;
 
         if (isRegFee) {
-          // If admitted before that year and did not pay for it, it is not applicable
-          if (admissionDate && admissionDate.year() !== evYear && paidForEvent === 0) {
+          // Registration fee only applies for the year the member joined
+          if (admissionDate && admissionDate.year() !== evYear && feePaidAmt === 0) {
             isApplicable = false;
           }
         }
 
-        // Only events occurring on or after member admission year are charged
-        if (admissionDate && evYear < admissionDate.year() && paidForEvent === 0) {
+        if (admissionDate && evYear < admissionDate.year() && totalPaidForEvent === 0) {
           isApplicable = false;
         }
 
-        const balance = paidForEvent - (isApplicable ? reqAmount : 0);
-        let status: 'PAID' | 'DUE' | 'ADVANCE' | 'NOT_APPLICABLE' = 'PAID';
+        // Effective balance: total paid minus the required fee amount
+        const effectiveBalance = totalPaidForEvent - (isApplicable ? reqAmount : 0);
+
+        let status: 'PAID' | 'DUE' | 'DONATION' | 'NOT_APPLICABLE' = 'PAID';
 
         if (!isApplicable) {
           status = 'NOT_APPLICABLE';
-        } else if (balance === 0) {
-          status = 'PAID';
-        } else if (balance > 0) {
-          status = 'ADVANCE';
-          totalAdvance += balance;
-        } else {
+        } else if (effectiveBalance < 0) {
+          // Short-paid — still owing
           status = 'DUE';
-          totalDue += Math.abs(balance);
+          totalDue += Math.abs(effectiveBalance);
+        } else if (donationAmt > 0 || effectiveBalance > 0) {
+          // Paid required fee plus a voluntary extra (either tagged as donation, or just overpaid)
+          status = 'DONATION';
+          // Count only the genuine extra as donation
+          totalDonation += donationAmt > 0 ? donationAmt : effectiveBalance;
+        } else {
+          status = 'PAID';
         }
 
         return {
           eventId: ev.id,
           title: ev.title,
           date: ev.event_date,
-          required: reqAmount,
-          paid: paidForEvent,
-          balance,
+          required: isApplicable ? reqAmount : 0,
+          paid: totalPaidForEvent,
+          feePaid: feePaidAmt,
+          donationAmt: donationAmt > 0 ? donationAmt : (effectiveBalance > 0 ? effectiveBalance : 0),
+          balance: effectiveBalance,
           status,
         };
       });
 
-    // Also include donations/general development fund in advance/surplus
-    const donationTotal = transactions
-      .filter((t) => t.type === 'member_donation')
+    // Stand-alone donations not linked to any event (e.g. general development fund donations)
+    const standaloneDonations = transactions
+      .filter((t) => t.type === 'member_donation' && t.event_id === null)
       .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
     return {
       totalPaid,
       totalDue,
-      totalAdvance: totalAdvance + donationTotal,
-      donationTotal,
+      totalDonation: totalDonation + standaloneDonations,
       eventBreakdown,
     };
-  }, [transactions, events, backendMember]);
+  }, [transactions, events, eventDues, allDuesEventIds, backendMember]);
 
   // Filtered transactions for table
   const filteredTransactions = useMemo(() => {
@@ -411,17 +472,17 @@ export default function MemberTransactionsPage() {
                 </div>
               </div>
 
-              {/* Advance / Surplus */}
+              {/* Donations */}
               <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-xs flex items-center justify-between">
                 <div>
                   <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400">
-                    ADVANCE &amp; DONATIONS
+                    DONATIONS
                   </p>
                   <p className="text-2xl sm:text-3xl font-black text-[#3447AA] mt-1">
-                    ₹{financialSummary.totalAdvance.toLocaleString('en-IN')}
+                    ₹{financialSummary.totalDonation.toLocaleString('en-IN')}
                   </p>
                   <p className="text-[11px] text-gray-500 mt-0.5">
-                    Surplus advance &amp; special donations
+                    Extra contributions &amp; special donations
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-[#FBEAEB] text-[#3447AA] flex items-center justify-center text-xl">
@@ -621,10 +682,17 @@ export default function MemberTransactionsPage() {
                           dataIndex: 'paid',
                           key: 'paid',
                           align: 'right',
-                          render: (val) => (
-                            <span className="text-xs font-bold text-green-700">
-                              ₹{val.toLocaleString('en-IN')}
-                            </span>
+                          render: (val, record) => (
+                            <div className="text-right">
+                              <span className="text-xs font-bold text-green-700">
+                                ₹{val.toLocaleString('en-IN')}
+                              </span>
+                              {record.donationAmt > 0 && (
+                                <p className="text-[10px] text-amber-600 font-semibold">
+                                  incl. ₹{record.donationAmt.toLocaleString('en-IN')} donation
+                                </p>
+                              )}
+                            </div>
                           ),
                         },
                         {
@@ -643,16 +711,16 @@ export default function MemberTransactionsPage() {
                                 </Tag>
                               );
                             }
-                            if (status === 'ADVANCE') {
+                            if (status === 'DONATION') {
                               return (
-                                <Tag color="blue" className="font-bold text-[10px] rounded-md">
-                                  +₹{record.balance} Advance
+                                <Tag color="gold" className="font-bold text-[10px] rounded-md">
+                                  ✓ Paid + 🎁 ₹{record.donationAmt > 0 ? record.donationAmt.toLocaleString('en-IN') : record.balance.toLocaleString('en-IN')} Donation
                                 </Tag>
                               );
                             }
                             return (
                               <Tag color="error" className="font-bold text-[10px] rounded-md">
-                                Due: ₹{Math.abs(record.balance)}
+                                Due: ₹{Math.abs(record.balance).toLocaleString('en-IN')}
                               </Tag>
                             );
                           },
