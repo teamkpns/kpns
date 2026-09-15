@@ -169,7 +169,7 @@ export default function LoginPage() {
               >
                 <Input
                   prefix={<UserOutlined className="text-gray-400 mr-1" />}
-                  placeholder="e.g. KPNS01AM20 or user@example.com"
+                  placeholder="KPNS01AB20 or user@example.com"
                   size="large"
                   className="rounded-xl text-sm h-11"
                   autoComplete="username"
