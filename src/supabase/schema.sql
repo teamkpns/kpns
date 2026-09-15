@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.members (
     -- Meta & Scores
     profile_completion INTEGER DEFAULT 85,
     committee_role VARCHAR(100) DEFAULT NULL,
+    committee_vision TEXT DEFAULT NULL,
     password VARCHAR(255) DEFAULT 'kpns@2026',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
