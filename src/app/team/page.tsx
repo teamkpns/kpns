@@ -16,6 +16,7 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
+import { Footer } from '@/components/common/Footer';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { StatusTag } from '@/components/common/StatusTag';
 import { usePortal } from '@/context/portal-context';
@@ -405,6 +406,8 @@ export default function TeamKPNSPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
 
       <MobileBottomNav />
     </div>

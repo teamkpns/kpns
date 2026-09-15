@@ -25,6 +25,7 @@ import {
   NotificationOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
+import { Footer } from '@/components/common/Footer';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
 import { SOCIAL_LINKS } from '@/lib/constants';
@@ -433,6 +434,8 @@ function AboutContent() {
           </div>
         </div>
       </main>
+
+      <Footer />
 
       <MobileBottomNav />
     </div>

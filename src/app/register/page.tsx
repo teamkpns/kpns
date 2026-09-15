@@ -27,6 +27,7 @@ import {
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
+import { Footer } from '@/components/common/Footer';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
 import { BLOOD_GROUPS, INDIAN_STATES, WEST_BENGAL_DISTRICTS, KPNS_COLORS } from '@/lib/constants';
@@ -640,6 +641,8 @@ export default function RegisterPage() {
           </Form>
         </div>
       </main>
+
+      <Footer />
 
       <MobileBottomNav />
     </div>
