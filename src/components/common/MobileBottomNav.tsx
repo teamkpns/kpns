@@ -130,7 +130,7 @@ export const MobileBottomNav: React.FC = () => {
       <Drawer
         title={<KPNSLogo size="sm" />}
         placement="bottom"
-        height="auto"
+        size="auto"
         onClose={() => setMoreDrawerOpen(false)}
         open={moreDrawerOpen}
         className="rounded-t-3xl"

@@ -42,6 +42,7 @@ export default function TeamKPNSPage() {
   const [activeTab, setActiveTab] = useState('committee');
   const [memberSearch, setMemberSearch] = useState('');
   const [bloodFilter, setBloodFilter] = useState('ALL');
+  const [activeVisionId, setActiveVisionId] = useState<string | null>(null);
 
   // Derive committee members from actual member data
   const committeeMembers = members
@@ -83,10 +84,18 @@ export default function TeamKPNSPage() {
 
   const renderMemberCard = (member: Member) => {
     const isLeader = ['President', 'General Secretary'].includes(member.committeeRole ?? '');
+    const isVisionActive = activeVisionId === member.id;
     return (
       <div
         key={member.id}
+        onClick={() => {
+          if (member.committeeVision) {
+            setActiveVisionId(isVisionActive ? null : member.id);
+          }
+        }}
         className={`relative overflow-hidden bg-white rounded-3xl p-5 sm:p-6 border transition hover:shadow-md flex flex-col justify-between group ${
+          member.committeeVision ? 'cursor-pointer' : ''
+        } ${
           isLeader
             ? 'border-pink-200 bg-gradient-to-b from-pink-50/50 to-white shadow-xs'
             : 'border-gray-100 shadow-xs'
@@ -107,9 +116,20 @@ export default function TeamKPNSPage() {
                 {member.committeeRole}
               </span>
               {member.committeeVision && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-50 text-[#3447AA] text-[10px] font-semibold border border-pink-200/60">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveVisionId(isVisionActive ? null : member.id);
+                  }}
+                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition active:scale-95 cursor-pointer ${
+                    isVisionActive
+                      ? 'bg-[#3447AA] text-white border-[#3447AA] shadow-xs'
+                      : 'bg-pink-50 hover:bg-pink-100 text-[#3447AA] border-pink-200/60'
+                  }`}
+                >
                   ✨ Vision
-                </span>
+                </button>
               )}
             </div>
           </div>
@@ -130,6 +150,7 @@ export default function TeamKPNSPage() {
               href={`https://wa.me/91${member.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 font-semibold transition"
             >
               <WhatsAppOutlined />
@@ -139,6 +160,7 @@ export default function TeamKPNSPage() {
           {member.email && (
             <a
               href={`mailto:${member.email}`}
+              onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold transition"
             >
               <MailOutlined />
@@ -147,9 +169,19 @@ export default function TeamKPNSPage() {
           )}
         </div>
 
-        {/* Vision overlay — slides up on hover */}
+        {/* Vision overlay — Mobile (tap) & Desktop (hover) */}
         {member.committeeVision && (
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-[#3447AA]/90 to-[#202E7A]/95 backdrop-blur-sm flex flex-col items-center justify-center px-5 py-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveVisionId(null);
+            }}
+            className={`absolute inset-0 rounded-3xl bg-gradient-to-b from-[#3447AA]/95 to-[#202E7A]/98 backdrop-blur-sm flex flex-col items-center justify-center px-5 py-6 transition-all duration-300 ${
+              isVisionActive
+                ? 'opacity-100 pointer-events-auto z-20'
+                : 'opacity-0 pointer-events-none lg:group-hover:opacity-100 lg:group-hover:pointer-events-auto z-10'
+            }`}
+          >
             <svg className="w-8 h-8 text-pink-200 mb-3 opacity-70" fill="currentColor" viewBox="0 0 24 24">
               <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
             </svg>
@@ -158,6 +190,9 @@ export default function TeamKPNSPage() {
             </p>
             <span className="mt-4 text-pink-200 text-[11px] font-bold uppercase tracking-wider">
               — {member.name}
+            </span>
+            <span className="mt-3 text-[10px] text-pink-100/70 bg-white/10 px-2.5 py-0.5 rounded-full lg:hidden">
+              Tap to close
             </span>
           </div>
         )}

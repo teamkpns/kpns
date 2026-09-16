@@ -279,7 +279,7 @@ export const Header: React.FC = () => {
         placement="left"
         onClose={() => setMobileDrawerOpen(false)}
         open={mobileDrawerOpen}
-        width={290}
+        size={290}
       >
         <div className="flex flex-col gap-2 py-2">
           {isAuth && (

@@ -98,6 +98,7 @@ export default function HomePage() {
 
   const [slideIndex, setSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [activeVisionId, setActiveVisionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (slideshowImages.length <= 1 || isPaused) return;
@@ -233,21 +234,21 @@ export default function HomePage() {
                     className="relative z-10 w-full h-full object-contain"
                   />
 
-                  {/* Sleek bottom gradient overlay */}
-                  <div className="absolute inset-0 z-15 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
+                  {/* Subtle bottom gradient overlay */}
+                  <div className="absolute inset-0 z-15 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
-                  {/* Floating Glassmorphism Caption Card */}
+                  {/* Floating Glassmorphism Caption Card (Ultra Transparent Glass) */}
                   <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-auto z-20 max-w-md">
-                    <div className="backdrop-blur-md bg-black/45 border border-white/20 rounded-2xl p-3.5 sm:p-5 text-white shadow-lg space-y-1">
+                    <div className="backdrop-blur-md bg-black/20 hover:bg-black/25 border border-white/25 rounded-2xl p-3.5 sm:p-5 text-white shadow-2xl space-y-1 transition-all duration-300">
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#3447AA]/80 text-pink-100 text-[10px] font-extrabold uppercase tracking-wider">
+                        <span className="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-xs text-pink-100 text-[10px] font-extrabold uppercase tracking-wider border border-white/20">
                           Gallery &bull; {idx + 1}/{slideshowImages.length}
                         </span>
                       </div>
-                      <h3 className="text-base sm:text-xl font-bold text-white leading-snug drop-shadow-sm">
+                      <h3 className="text-base sm:text-xl font-bold text-white leading-snug drop-shadow-md">
                         {slide.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-gray-200 line-clamp-2 font-light">
+                      <p className="text-xs sm:text-sm text-gray-100 line-clamp-2 font-light drop-shadow-sm">
                         {slide.caption}
                       </p>
                     </div>
@@ -416,10 +417,19 @@ export default function HomePage() {
                   ? new Date(person.admissionDate).getFullYear()
                   : '1935';
 
+                const isVisionActive = activeVisionId === person.id;
+
                 return (
                   <div
                     key={person.id}
-                    className="relative overflow-hidden bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-gray-200/80 text-center space-y-2 hover:bg-white hover:shadow-md transition duration-200 flex flex-col justify-between group"
+                    onClick={() => {
+                      if (person.committeeVision) {
+                        setActiveVisionId(isVisionActive ? null : person.id);
+                      }
+                    }}
+                    className={`relative overflow-hidden bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-gray-200/80 text-center space-y-2 hover:bg-white hover:shadow-md transition duration-200 flex flex-col justify-between group ${
+                      person.committeeVision ? 'cursor-pointer' : ''
+                    }`}
                   >
                     <div>
                       {person.avatarUrl ? (
@@ -457,15 +467,36 @@ export default function HomePage() {
                         Since {admissionYear}
                       </span>
                       {person.committeeVision && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-50 text-[#3447AA] text-[10px] font-semibold border border-pink-200/60">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveVisionId(isVisionActive ? null : person.id);
+                          }}
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition active:scale-95 cursor-pointer ${
+                            isVisionActive
+                              ? 'bg-[#3447AA] text-white border-[#3447AA] shadow-xs'
+                              : 'bg-pink-50 hover:bg-pink-100 text-[#3447AA] border-pink-200/60'
+                          }`}
+                        >
                           ✨ Vision
-                        </span>
+                        </button>
                       )}
                     </div>
 
-                    {/* Vision overlay on hover */}
+                    {/* Vision overlay: Works on Mobile (tap) and Desktop (hover) */}
                     {person.committeeVision && (
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#3447AA]/95 to-[#202E7A]/98 flex flex-col items-center justify-center px-4 py-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveVisionId(null);
+                        }}
+                        className={`absolute inset-0 rounded-2xl bg-gradient-to-b from-[#3447AA]/95 to-[#202E7A]/98 flex flex-col items-center justify-center px-4 py-5 transition-all duration-300 ${
+                          isVisionActive
+                            ? 'opacity-100 pointer-events-auto z-20'
+                            : 'opacity-0 pointer-events-none lg:group-hover:opacity-100 lg:group-hover:pointer-events-auto z-10'
+                        }`}
+                      >
                         <svg
                           className="w-6 h-6 text-pink-200 mb-2 opacity-80 shrink-0"
                           fill="currentColor"
@@ -478,6 +509,9 @@ export default function HomePage() {
                         </p>
                         <span className="mt-2 text-pink-200 text-[10px] font-bold uppercase tracking-wider">
                           — {person.name}
+                        </span>
+                        <span className="mt-2.5 text-[9px] text-pink-100/70 bg-white/10 px-2 py-0.5 rounded-full lg:hidden">
+                          Tap to close
                         </span>
                       </div>
                     )}
