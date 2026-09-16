@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Button,
   Modal,
@@ -11,6 +11,7 @@ import {
   Popconfirm,
   Tag,
   Empty,
+  message,
 } from 'antd';
 import {
   PlusOutlined,
@@ -24,11 +25,14 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
   ReloadOutlined,
+  CameraOutlined,
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import { usePortal } from '@/context/portal-context';
 import { ActivityPost } from '@/types';
+import { ImageCropModal } from '@/components/common/ImageCropModal';
 
 const { TextArea } = Input;
 
@@ -46,6 +50,10 @@ export default function AdminPostsPage() {
   const [editingPost, setEditingPost] = useState<ActivityPost | null>(null);
   const [saving, setSaving] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropLoading, setCropLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [form] = Form.useForm();
 
   const handleRefresh = async () => {
@@ -56,6 +64,7 @@ export default function AdminPostsPage() {
 
   const openCreateModal = () => {
     setEditingPost(null);
+    setPhotoPreview(null);
     form.resetFields();
     form.setFieldsValue({ published: true, postDate: dayjs() });
     setModalOpen(true);
@@ -63,10 +72,10 @@ export default function AdminPostsPage() {
 
   const openEditModal = (post: ActivityPost) => {
     setEditingPost(post);
+    setPhotoPreview(post.photoUrl || null);
     form.setFieldsValue({
       title: post.title,
       postDate: dayjs(post.postDate),
-      photoUrl: post.photoUrl || '',
       body: post.body,
       fbLink: post.fbLink || '',
       instagramLink: post.instagramLink || '',
@@ -77,6 +86,17 @@ export default function AdminPostsPage() {
     setModalOpen(true);
   };
 
+  const handleCropComplete = async (croppedDataUrl: string) => {
+    setCropLoading(true);
+    try {
+      setPhotoPreview(croppedDataUrl);
+      setCropModalOpen(false);
+      message.success('Photo cropped and attached!');
+    } finally {
+      setCropLoading(false);
+    }
+  };
+
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
@@ -85,7 +105,7 @@ export default function AdminPostsPage() {
       const postData = {
         title: values.title.trim(),
         body: values.body.trim(),
-        photoUrl: values.photoUrl?.trim() || undefined,
+        photoUrl: photoPreview || undefined,
         postDate: values.postDate.format('YYYY-MM-DD'),
         fbLink: values.fbLink?.trim() || undefined,
         instagramLink: values.instagramLink?.trim() || undefined,
@@ -102,6 +122,7 @@ export default function AdminPostsPage() {
       }
 
       setModalOpen(false);
+      setPhotoPreview(null);
     } catch {
       // validation error
     } finally {
@@ -175,7 +196,7 @@ export default function AdminPostsPage() {
             description={
               <div className="text-center space-y-2">
                 <p className="text-gray-500 font-semibold">No activity posts yet</p>
-                <p className="text-xs text-gray-400">Click &quot;New Post&quot; to create your first update.</p>
+                <p className="text-xs text-gray-400">Click "New Post" to create your first update.</p>
               </div>
             }
           />
@@ -257,7 +278,7 @@ export default function AdminPostsPage() {
                 </Button>
                 <Popconfirm
                   title="Delete this post?"
-                  description="This cannot be undone."
+                  description="This will permanently delete the post and its photo from the database. This cannot be undone."
                   onConfirm={() => deleteActivityPost(post.id)}
                   okText="Delete"
                   okButtonProps={{ danger: true }}
@@ -285,7 +306,10 @@ export default function AdminPostsPage() {
             {editingPost ? 'Edit Post' : 'Create Activity Post'}
           </span>
         }
-        onCancel={() => setModalOpen(false)}
+        onCancel={() => {
+          setModalOpen(false);
+          setPhotoPreview(null);
+        }}
         footer={null}
         width={680}
         destroyOnClose
@@ -312,16 +336,79 @@ export default function AdminPostsPage() {
             />
           </Form.Item>
 
+          {/* Photo Upload with Crop */}
           <Form.Item
-            label={<span className="text-xs font-bold text-gray-700">Photo URL (optional)</span>}
-            name="photoUrl"
-            extra={
-              <span className="text-[11px] text-gray-400">
-                Paste a direct image link (e.g. from Google Drive public link, Imgur, or Supabase Storage).
-              </span>
-            }
+            label={<span className="text-xs font-bold text-gray-700">Activity Photo (optional)</span>}
           >
-            <Input placeholder="https://example.com/photo.jpg" size="large" className="rounded-xl" />
+            {photoPreview ? (
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                <div className="relative group">
+                  <img
+                    src={photoPreview}
+                    alt="Activity photo preview"
+                    className="w-full object-cover"
+                    style={{ aspectRatio: '16/9', maxHeight: 220 }}
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <Button
+                      size="small"
+                      icon={<CameraOutlined />}
+                      onClick={() => setCropModalOpen(true)}
+                      className="rounded-lg text-xs font-semibold bg-white/90 border-0 text-gray-800"
+                    >
+                      Change / Recrop
+                    </Button>
+                    <Button
+                      size="small"
+                      danger
+                      icon={<CloseCircleOutlined />}
+                      onClick={() => setPhotoPreview(null)}
+                      className="rounded-lg text-xs font-semibold"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-t border-gray-100">
+                  <span className="text-[11px] text-green-600 font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+                    Photo attached · 16:9 crop
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      size="small"
+                      icon={<CameraOutlined />}
+                      onClick={() => setCropModalOpen(true)}
+                      className="rounded-lg text-[11px]"
+                    >
+                      Recrop
+                    </Button>
+                    <Button
+                      size="small"
+                      danger
+                      icon={<CloseCircleOutlined />}
+                      onClick={() => setPhotoPreview(null)}
+                      className="rounded-lg text-[11px]"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => setCropModalOpen(true)}
+                className="w-full border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/40 hover:bg-blue-50 hover:border-[#3447AA] transition-all cursor-pointer flex flex-col items-center justify-center gap-2 py-8"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#3447AA]/10 flex items-center justify-center text-[#3447AA] text-xl">
+                  <CameraOutlined />
+                </div>
+                <p className="text-sm font-bold text-gray-700">Click to upload &amp; crop photo</p>
+                <p className="text-[11px] text-gray-400">
+                  16:9 aspect ratio · JPG, PNG, WebP · Max 10 MB
+                </p>
+              </div>
+            )}
           </Form.Item>
 
           <Form.Item
@@ -341,7 +428,7 @@ export default function AdminPostsPage() {
           {/* Social Links */}
           <div className="bg-gray-50 rounded-2xl p-4 mb-4 space-y-3">
             <p className="text-xs font-bold text-gray-700">
-              Social Media Links <span className="font-normal text-gray-400">(optional - leave blank to hide)</span>
+              Social Media Links <span className="font-normal text-gray-400">(optional – leave blank to hide)</span>
             </p>
             <Form.Item name="fbLink" className="mb-2">
               <Input
@@ -382,7 +469,13 @@ export default function AdminPostsPage() {
           </Form.Item>
 
           <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
-            <Button onClick={() => setModalOpen(false)} className="rounded-xl font-semibold">
+            <Button
+              onClick={() => {
+                setModalOpen(false);
+                setPhotoPreview(null);
+              }}
+              className="rounded-xl font-semibold"
+            >
               Cancel
             </Button>
             <Button
@@ -396,6 +489,20 @@ export default function AdminPostsPage() {
           </div>
         </Form>
       </Modal>
+
+      {/* Hidden file input (fallback) */}
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" />
+
+      {/* Image Crop Modal */}
+      <ImageCropModal
+        open={cropModalOpen}
+        onCancel={() => setCropModalOpen(false)}
+        onCropComplete={handleCropComplete}
+        loading={cropLoading}
+        aspectRatio="16:9"
+        title="Crop Activity Photo"
+        submitText="Crop & Attach Photo"
+      />
     </AdminLayout>
   );
 }

@@ -17,6 +17,9 @@ interface ImageCropModalProps {
   onCancel: () => void;
   onCropComplete: (croppedDataUrl: string) => Promise<void> | void;
   loading?: boolean;
+  aspectRatio?: '1:1' | '16:9';
+  title?: string;
+  submitText?: string;
 }
 
 export function ImageCropModal({
@@ -24,7 +27,19 @@ export function ImageCropModal({
   onCancel,
   onCropComplete,
   loading = false,
+  aspectRatio = '1:1',
+  title,
+  submitText,
 }: ImageCropModalProps) {
+  const is16by9 = aspectRatio === '16:9';
+
+  // Sizing definitions
+  const CANVAS_WIDTH = is16by9 ? 380 : 360;
+  const CANVAS_HEIGHT = is16by9 ? 240 : 360;
+  const CROP_WIDTH = is16by9 ? 320 : 280;
+  const CROP_HEIGHT = is16by9 ? 180 : 280;
+  const CROP_RADIUS = 140; // used for 1:1 circle
+
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
@@ -36,9 +51,6 @@ export function ImageCropModal({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const CANVAS_SIZE = 360;
-  const CROP_RADIUS = 140; // 280px diameter circle for crop area
 
   // Reset state when modal opens or closes
   useEffect(() => {
@@ -90,22 +102,23 @@ export function ImageCropModal({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    const centerX = CANVAS_WIDTH / 2;
+    const centerY = CANVAS_HEIGHT / 2;
 
     if (imageRef.current && imageLoaded) {
       const img = imageRef.current;
-      const centerX = CANVAS_SIZE / 2;
-      const centerY = CANVAS_SIZE / 2;
 
       ctx.save();
       ctx.translate(centerX + offset.x, centerY + offset.y);
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.scale(zoom, zoom);
 
-      // Scale image to cover the crop circle
+      // Scale image to cover the crop box
       const baseScale = Math.max(
-        (CROP_RADIUS * 2) / img.width,
-        (CROP_RADIUS * 2) / img.height
+        CROP_WIDTH / img.width,
+        CROP_HEIGHT / img.height
       );
       const drawWidth = img.width * baseScale;
       const drawHeight = img.height * baseScale;
@@ -114,36 +127,77 @@ export function ImageCropModal({
       ctx.restore();
     }
 
-    // Draw darkened mask outside the crop circle
+    // Draw darkened mask outside the crop area
     ctx.save();
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
-    ctx.beginPath();
-    ctx.rect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CROP_RADIUS, 0, Math.PI * 2, true);
-    ctx.fill();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
 
-    // Draw circular guideline border
-    ctx.beginPath();
-    ctx.arc(CANVAS_SIZE / 2, CANVAS_SIZE / 2, CROP_RADIUS, 0, Math.PI * 2);
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 2.5;
-    ctx.setLineDash([6, 6]);
-    ctx.stroke();
+    if (is16by9) {
+      // Draw rectangular cutout mask
+      const cropLeft = (CANVAS_WIDTH - CROP_WIDTH) / 2;
+      const cropTop = (CANVAS_HEIGHT - CROP_HEIGHT) / 2;
 
-    // Draw subtle crosshair in the center
-    ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.lineWidth = 1;
-    const center = CANVAS_SIZE / 2;
-    ctx.beginPath();
-    ctx.moveTo(center - 10, center);
-    ctx.lineTo(center + 10, center);
-    ctx.moveTo(center, center - 10);
-    ctx.lineTo(center, center + 10);
-    ctx.stroke();
+      ctx.beginPath();
+      // Outer full canvas clockwise
+      ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      // Inner crop window counter-clockwise to form a cutout
+      ctx.rect(cropLeft + CROP_WIDTH, cropTop, -CROP_WIDTH, CROP_HEIGHT);
+      ctx.fill();
+
+      // Draw dashed border around crop rectangle
+      ctx.beginPath();
+      ctx.rect(cropLeft, cropTop, CROP_WIDTH, CROP_HEIGHT);
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+
+      // Draw rule-of-thirds grid
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 1;
+
+      // Vertical lines
+      ctx.moveTo(cropLeft + CROP_WIDTH / 3, cropTop);
+      ctx.lineTo(cropLeft + CROP_WIDTH / 3, cropTop + CROP_HEIGHT);
+      ctx.moveTo(cropLeft + (CROP_WIDTH * 2) / 3, cropTop);
+      ctx.lineTo(cropLeft + (CROP_WIDTH * 2) / 3, cropTop + CROP_HEIGHT);
+
+      // Horizontal lines
+      ctx.moveTo(cropLeft, cropTop + CROP_HEIGHT / 3);
+      ctx.lineTo(cropLeft + CROP_WIDTH, cropTop + CROP_HEIGHT / 3);
+      ctx.moveTo(cropLeft, cropTop + (CROP_HEIGHT * 2) / 3);
+      ctx.lineTo(cropLeft + CROP_WIDTH, cropTop + (CROP_HEIGHT * 2) / 3);
+      ctx.stroke();
+    } else {
+      // Circular crop for profile avatar (1:1)
+      ctx.beginPath();
+      ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctx.arc(centerX, centerY, CROP_RADIUS, 0, Math.PI * 2, true);
+      ctx.fill();
+
+      // Draw circular guideline border
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, CROP_RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+
+      // Center crosshair
+      ctx.setLineDash([]);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(centerX - 10, centerY);
+      ctx.lineTo(centerX + 10, centerY);
+      ctx.moveTo(centerX, centerY - 10);
+      ctx.lineTo(centerX, centerY + 10);
+      ctx.stroke();
+    }
 
     ctx.restore();
-  }, [imageLoaded, offset, rotation, zoom]);
+  }, [CANVAS_WIDTH, CANVAS_HEIGHT, CROP_WIDTH, CROP_HEIGHT, CROP_RADIUS, imageLoaded, is16by9, offset, rotation, zoom]);
 
   useEffect(() => {
     drawCanvas();
@@ -188,7 +242,7 @@ export function ImageCropModal({
     setIsDragging(false);
   };
 
-  // Perform Final Crop Output (400x400 JPEG)
+  // Perform Final Crop Output
   const handleCropAndSubmit = async () => {
     if (!imageRef.current || !imageLoaded) {
       message.warning('Please select an image first.');
@@ -197,33 +251,32 @@ export function ImageCropModal({
 
     try {
       const outputCanvas = document.createElement('canvas');
-      const OUTPUT_SIZE = 400;
-      outputCanvas.width = OUTPUT_SIZE;
-      outputCanvas.height = OUTPUT_SIZE;
+      const OUTPUT_WIDTH = is16by9 ? 800 : 400;
+      const OUTPUT_HEIGHT = is16by9 ? 450 : 400;
+      outputCanvas.width = OUTPUT_WIDTH;
+      outputCanvas.height = OUTPUT_HEIGHT;
       const ctx = outputCanvas.getContext('2d');
       if (!ctx) return;
 
       const img = imageRef.current;
-      const scaleFactor = OUTPUT_SIZE / (CROP_RADIUS * 2);
+      const scaleFactor = OUTPUT_WIDTH / CROP_WIDTH;
 
-      // Fill with clean background in case of transparent PNG
+      // Fill with white background
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+      ctx.fillRect(0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
 
       ctx.save();
-      // Center on output canvas
-      ctx.translate(OUTPUT_SIZE / 2, OUTPUT_SIZE / 2);
+      ctx.translate(OUTPUT_WIDTH / 2, OUTPUT_HEIGHT / 2);
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.scale(zoom * scaleFactor, zoom * scaleFactor);
 
       const baseScale = Math.max(
-        (CROP_RADIUS * 2) / img.width,
-        (CROP_RADIUS * 2) / img.height
+        CROP_WIDTH / img.width,
+        CROP_HEIGHT / img.height
       );
       const drawWidth = img.width * baseScale;
       const drawHeight = img.height * baseScale;
 
-      // Adjust offset by scaleFactor
       const offsetX = offset.x / zoom;
       const offsetY = offset.y / zoom;
 
@@ -236,7 +289,7 @@ export function ImageCropModal({
       );
       ctx.restore();
 
-      // Export as crisp, optimized JPEG (~35KB)
+      // Export as crisp, web-optimized JPEG (~40-60KB)
       const croppedDataUrl = outputCanvas.toDataURL('image/jpeg', 0.85);
       await onCropComplete(croppedDataUrl);
     } catch (err) {
@@ -245,18 +298,21 @@ export function ImageCropModal({
     }
   };
 
+  const modalTitle = title || (is16by9 ? 'Crop Activity Photo' : 'Change Profile Picture');
+  const actionButtonText = submitText || (is16by9 ? 'Crop & Attach Photo' : 'Submit for Approval');
+
   return (
     <Modal
       title={
         <div className="flex items-center gap-2">
           <CameraOutlined className="text-[#3447AA]" />
-          <span className="font-bold text-gray-900 text-base">Change Profile Picture</span>
+          <span className="font-bold text-gray-900 text-base">{modalTitle}</span>
         </div>
       }
       open={open}
       onCancel={onCancel}
       footer={null}
-      width={440}
+      width={CANVAS_WIDTH + 60}
       centered
       className="rounded-3xl overflow-hidden"
     >
@@ -272,11 +328,14 @@ export function ImageCropModal({
 
         {/* Canvas / Crop Area */}
         <div className="flex flex-col items-center justify-center">
-          <div className="relative w-[360px] h-[360px] bg-slate-950 rounded-2xl overflow-hidden shadow-inner border border-gray-200">
+          <div
+            style={{ width: `${CANVAS_WIDTH}px`, height: `${CANVAS_HEIGHT}px` }}
+            className="relative bg-slate-950 rounded-2xl overflow-hidden shadow-inner border border-gray-200"
+          >
             <canvas
               ref={canvasRef}
-              width={CANVAS_SIZE}
-              height={CANVAS_SIZE}
+              width={CANVAS_WIDTH}
+              height={CANVAS_HEIGHT}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -293,7 +352,7 @@ export function ImageCropModal({
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 text-white cursor-pointer hover:bg-slate-900/70 transition p-6 text-center space-y-3"
               >
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-2xl text-pink-200 border border-white/20">
+                <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-2xl text-pink-200 border border-white/20">
                   <UploadOutlined />
                 </div>
                 <div>
@@ -302,7 +361,7 @@ export function ImageCropModal({
                 </div>
                 <Button
                   type="primary"
-                  className="bg-[#3447AA] rounded-xl font-bold text-xs mt-2"
+                  className="bg-[#3447AA] rounded-xl font-bold text-xs mt-1"
                 >
                   Browse Device
                 </Button>
@@ -312,7 +371,9 @@ export function ImageCropModal({
 
           <p className="text-[11px] text-gray-400 mt-2 text-center">
             {imageLoaded
-              ? '🖐️ Drag to adjust position within circular crop frame'
+              ? `🖐️ Drag to adjust position within the ${is16by9 ? '16:9 banner' : 'circular'} crop frame`
+              : is16by9
+              ? 'Widescreen photo for activity post display on About & Home pages'
               : 'Official member identification photo for KPNS records'}
           </p>
         </div>
@@ -384,7 +445,7 @@ export function ImageCropModal({
             disabled={!imageLoaded}
             className="bg-[#3447AA] hover:bg-[#283887] rounded-xl font-bold text-xs h-9 px-5"
           >
-            Submit for Approval
+            {actionButtonText}
           </Button>
         </div>
       </div>

@@ -1724,11 +1724,17 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const deleteActivityPost = async (id: string): Promise<boolean> => {
+    const targetPost = activityPosts.find((p) => p.id === id);
     setActivityPosts((prev) => prev.filter((p) => p.id !== id));
     try {
       const { error } = await supabase.from('activity_posts').delete().eq('id', id);
       if (error) throw error;
-      message.success('Post deleted.');
+      addActivityLog(
+        'Deleted Activity Post',
+        id,
+        `Deleted activity post "${targetPost?.title || id}" and removed photo from database`
+      );
+      message.success('Post and photo deleted from database.');
       return true;
     } catch (err) {
       console.warn('Error deleting activity post:', err);
