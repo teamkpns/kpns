@@ -76,7 +76,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center items-center">
         <Spin indicator={<LoadingOutlined style={{ fontSize: 36, color: '#3447AA' }} spin />} />
         <p className="mt-4 text-xs font-semibold text-gray-500">
-          {!currentUser ? 'Checking admin session...' : 'Verifying admin authorization...'}
+          Loading admin panel...
         </p>
       </div>
     );
