@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Badge, Drawer, Dropdown, MenuProps, Button, Avatar } from 'antd';
@@ -37,10 +37,12 @@ export const Header: React.FC = () => {
     switchDemoUser,
   } = usePortal();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const isAuth = !!currentUser;
-  const isAdmin = currentRole === 'ADMIN';
+  const isAuth = mounted && !!currentUser;
+  const isAdmin = mounted && currentRole === 'ADMIN';
 
   const userMenuItems: MenuProps['items'] = [
     {
