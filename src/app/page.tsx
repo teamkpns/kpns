@@ -143,8 +143,10 @@ export default function HomePage() {
           )}
 
           {/* Government Registration Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/15 border border-amber-300/30 text-[11px] sm:text-xs font-medium text-amber-100 max-w-full truncate">
-            <span>🏛️ Reg. Under West Bengal Societies Registration Act, 1961 &bull; Reg. No: SO168946</span>
+          <div className="inline-flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2 px-4 py-2 rounded-2xl bg-amber-400/15 border border-amber-300/30 text-[11px] sm:text-xs font-medium text-amber-100 text-center max-w-xs sm:max-w-full">
+            <span>🏛️ Reg. Under West Bengal Societies Registration Act, 1961</span>
+            <span className="hidden sm:inline text-amber-300/60">&bull;</span>
+            <span>Reg. No: SO168946</span>
           </div>
 
           <p className="text-xs sm:text-sm md:text-base text-blue-100/90 max-w-2xl mx-auto leading-relaxed font-light">
