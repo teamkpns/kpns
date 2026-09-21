@@ -1,0 +1,740 @@
+export interface CupPhoto {
+  id: string;
+  title: string;
+  caption: string;
+  category: string;
+  imageUrl: string;
+  facebookUrl: string;
+}
+
+export interface CupYearData {
+  year: number;
+  edition: string;
+  season: string;
+  champion: string;
+  runnersUp: string;
+  teamsCount: number;
+  venue: string;
+  description: string;
+  facebookAlbumUrl: string;
+  photos: CupPhoto[];
+}
+
+export interface BoishakhiVideo {
+  id: string;
+  title: string;
+  bengaliTitle: string;
+  category: string;
+  performer?: string;
+  duration: string;
+  youtubeId: string;
+  thumbnailUrl: string;
+  youtubeUrl: string;
+}
+
+export interface BoishakhiYearData {
+  bengaliYear: string;
+  gregorianYear: number;
+  edition: string;
+  occasion: string;
+  theme: string;
+  venue: string;
+  description: string;
+  playlistUrl: string;
+  playlistThumbnail: string;
+  videos: BoishakhiVideo[];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// KPNS CUP DATA (2013 – 2025)
+// ─────────────────────────────────────────────────────────────────────────────
+export const KPNS_CUP_YEARS: CupYearData[] = [
+  {
+    year: 2025,
+    edition: '13th Edition',
+    season: 'Winter 2025',
+    champion: 'Khejurda Rising Stars XI',
+    runnersUp: 'Egra Town Football Club',
+    teamsCount: 16,
+    venue: 'Khejurda High School Ground, Purba Medinipur',
+    description: 'The 13th edition brought together top grassroots football clubs across Purba Medinipur with over 5,000 enthusiastic local supporters witnessing thrilling knockout rounds.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2025-1',
+        title: 'Trophy Presentation Ceremony',
+        caption: 'KPNS President & Committee handing over the coveted Champion Trophy to Khejurda Rising Stars.',
+        category: 'Awards & Honors',
+        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2025-2',
+        title: 'High-Octane Final Match Action',
+        caption: 'Crucial penalty block in the closing minutes of the thrilling final showdown.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2025-3',
+        title: 'Champion Squad Victory Lap',
+        caption: 'Players celebrating the tournament win with passionate village fans.',
+        category: 'Celebration',
+        imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2025-4',
+        title: 'Roaring Rural Spectators',
+        caption: 'Thousands of spectators cheering along the boundary lines under the afternoon sun.',
+        category: 'Community & Fans',
+        imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2024,
+    edition: '12th Edition',
+    season: 'Winter 2024',
+    champion: 'Contai Warriors SC',
+    runnersUp: 'Khejurda Narayan Sangha XI',
+    teamsCount: 16,
+    venue: 'Khejurda Stadium Ground',
+    description: 'A fiercely contested tournament featuring veteran regional talents and promising teenage footballers from local Panchayats.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2024-1',
+        title: 'Grand Inauguration Parade',
+        caption: 'Participating 16 teams lined up for national anthem and torch lightning ceremony.',
+        category: 'Opening Ceremony',
+        imageUrl: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2024-2',
+        title: 'Spectacular Bicycle Kick Attempt',
+        caption: 'Breathtaking acrobatic attempt during the second semi-final match.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2024-3',
+        title: 'Fairplay Award Distribution',
+        caption: 'Honoring disciplined sportsmanship among grassroots youth teams.',
+        category: 'Fair Play',
+        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2023,
+    edition: '11th Edition',
+    season: 'Winter 2023',
+    champion: 'Khejurda Palliunnyayan FC',
+    runnersUp: 'Ramnagar Red Devils',
+    teamsCount: 16,
+    venue: 'Khejurda High School Ground',
+    description: 'Celebrated the 10th anniversary milestone of the tournament with expanded cash prizes, commemorative medals, and senior footballer felicitations.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2023-1',
+        title: 'Golden Jubilee Stadium Atmosphere',
+        caption: 'Packed spectator stands as the host team lift the trophy.',
+        category: 'Celebration',
+        imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2023-2',
+        title: 'Golden Boot Winner Felicitation',
+        caption: 'Awarding the top tournament goalscorer with official memento.',
+        category: 'Awards & Honors',
+        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2022,
+    edition: '10th Edition',
+    season: 'Winter 2022',
+    champion: 'Digha Coastal FC',
+    runnersUp: 'Khejurda Young Challengers',
+    teamsCount: 16,
+    venue: 'Khejurda Stadium Ground',
+    description: 'A comeback tournament following pandemic restrictions, marked by immense joy and resurgence of rural sports enthusiasm.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2022-1',
+        title: 'Final Whistle Jubilation',
+        caption: 'Emotional embrace of players as coastal club seals the title victory.',
+        category: 'Celebration',
+        imageUrl: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2022-2',
+        title: 'Corner Kick Defense',
+        caption: 'Intense goalmouth battle in the quarterfinals.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2021,
+    edition: '9th Edition',
+    season: 'Winter 2021',
+    champion: 'Egra Central Sporting Club',
+    runnersUp: 'Khejurda Palliunnyayan FC',
+    teamsCount: 12,
+    venue: 'Khejurda Ground',
+    description: 'Organized with dedicated health safety protocols, inspiring local youth through fitness, sportsmanship, and mental resilience.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2021-1',
+        title: 'Tournament Shield Presentation',
+        caption: 'Club elders and village seniors conferring the trophy to Egra champions.',
+        category: 'Awards & Honors',
+        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2020,
+    edition: '8th Edition',
+    season: 'Early 2020',
+    champion: 'Khejurda United FC',
+    runnersUp: 'Belda Pioneer XI',
+    teamsCount: 16,
+    venue: 'Khejurda High School Ground',
+    description: 'A memorable edition held in January 2020, showcasing exemplary tactical teamwork and community participation.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2020-1',
+        title: 'Goal Celebration by Khejurda United',
+        caption: 'First half breakthrough goal celebration in the finals.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2019,
+    edition: '7th Edition',
+    season: 'Winter 2019',
+    champion: 'Purba Medinipur Academy',
+    runnersUp: 'Khejurda Blue Tigers',
+    teamsCount: 16,
+    venue: 'Khejurda Stadium Ground',
+    description: 'Featured record attendance with live commentary in Bengali and traditional club fanfare across three competition days.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2019-1',
+        title: 'Opening Day Lineup',
+        caption: 'Team captains taking the tournament pledge of fairplay.',
+        category: 'Opening Ceremony',
+        imageUrl: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2018,
+    edition: '6th Edition',
+    season: 'Winter 2018',
+    champion: 'Khejurda Palliunnyayan FC',
+    runnersUp: 'Bhagabanpur United',
+    teamsCount: 16,
+    venue: 'Khejurda High School Ground',
+    description: 'An electrifying final resolved via penalty shootout, cementing KPNS Cup as one of the premier rural football trophies in Egra block.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2018-1',
+        title: 'Penalty Shootout Climax',
+        caption: 'Historic penalty strike winning the 2018 edition for the home team.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2017,
+    edition: '5th Edition',
+    season: 'Winter 2017',
+    champion: 'Contai Youth Sports Club',
+    runnersUp: 'Khejurda Narayan Sangha',
+    teamsCount: 16,
+    venue: 'Khejurda Stadium Ground',
+    description: 'Marked the 5th milestone year of KPNS CUP with special honors for foundational committee members and local trainers.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2017-1',
+        title: '5th Year Jubilee Ceremony',
+        caption: 'Veterans and senior athletes sharing inspiring memories on the field.',
+        category: 'Awards & Honors',
+        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2016,
+    edition: '4th Edition',
+    season: 'Winter 2016',
+    champion: 'Egra City Club',
+    runnersUp: 'Kharagpur Town XI',
+    teamsCount: 16,
+    venue: 'Khejurda Ground',
+    description: 'Expanded inter-district entries including teams from Paschim Medinipur, creating unforgettable football memories.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2016-1',
+        title: 'Midfield Dribble & Dash',
+        caption: 'Skilled midfield play during the opening league fixture.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2015,
+    edition: '3rd Edition',
+    season: 'Winter 2015',
+    champion: 'Khejurda Narayan Sangha FC',
+    runnersUp: 'Potashpur FC',
+    teamsCount: 12,
+    venue: 'Khejurda High School Ground',
+    description: 'Passionate clashes with local youth stepping forward as star strikers and goalkeepers for the club.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2015-1',
+        title: 'Youth Squad Triumph',
+        caption: 'The young squad holding the trophy alongside proud village mentors.',
+        category: 'Celebration',
+        imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2014,
+    edition: '2nd Edition',
+    season: 'Winter 2014',
+    champion: 'Egra Rural Stars',
+    runnersUp: 'Khejurda Blue XI',
+    teamsCount: 12,
+    venue: 'Khejurda Ground',
+    description: 'Consolidated the tournament as a yearly calendar event following the grand success of the inaugural edition.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2014-1',
+        title: '2014 Tournament Action',
+        caption: 'Goalkeeper leaping to make a crucial fingertip save.',
+        category: 'Match Action',
+        imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+  {
+    year: 2013,
+    edition: '1st Inaugural Edition',
+    season: 'Winter 2013',
+    champion: 'Khejurda Palliunnyayan Narayan Sangha',
+    runnersUp: 'Egra Friends XI',
+    teamsCount: 8,
+    venue: 'Khejurda High School Ground',
+    description: 'The historic beginning of KPNS CUP in 2013, born from the vision to unite the youth, promote athletic spirit, and instill camaraderie across our villages.',
+    facebookAlbumUrl: 'https://www.facebook.com/kpns.club/photos',
+    photos: [
+      {
+        id: 'c2013-1',
+        title: 'The Historic Inaugural Kickoff',
+        caption: 'Founding organizers and elders inaugurating the very first KPNS CUP match in 2013.',
+        category: 'Inaugural Moment',
+        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+      {
+        id: 'c2013-2',
+        title: 'First Champions of KPNS CUP',
+        caption: 'The historic 2013 inaugural champion team posing with the first silver cup.',
+        category: 'Historic Milestone',
+        imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80',
+        facebookUrl: 'https://www.facebook.com/kpns.club/photos',
+      },
+    ],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// বৈশাখী সন্ধ্যা DATA (১৪১৯ – ১৪৩১ বঙ্গাব্দ)
+// ─────────────────────────────────────────────────────────────────────────────
+export const BOISHAKHI_YEARS: BoishakhiYearData[] = [
+  {
+    bengaliYear: '১৪৩১',
+    gregorianYear: 2024,
+    edition: '১৩তম বর্ষ (13th Year)',
+    occasion: 'পহেলা বৈশাখ ১৪৩১ শুভ নববর্ষ মহোৎসব',
+    theme: 'বাঙালির প্রাণের মেলা ও মিলনসন্ধ্যা',
+    venue: 'খেজুরদা নারায়ণ সংঘ মুক্তমঞ্চ প্রাঙ্গণ',
+    description: '১৪৩১ বঙ্গাব্দের বৈশাখী সন্ধ্যা হাজারো গ্রামবাসীর উপস্থিতিতে আনন্দমুখর পরিবেশে অনুষ্ঠিত হয়। নবীন-প্রবীণ শিল্পীদের সুরেলা পরিবেশনা ও সাংস্কৃতিক নৃত্যনাট্য দর্শকদের বিমোহিত করে।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1431-1',
+        title: 'Baundule Megher Moto Ure | বাউন্ডুলে মেঘের মতো উড়ে',
+        bengaliTitle: 'বাউন্ডুলে মেঘের মতো উড়ে | বৈশাখী মেলা ১৪৩১ | KPNS',
+        category: 'লোকসঙ্গীত ও আধুনিক গান',
+        performer: 'স্থানিয় লোকসঙ্গীত শিল্পী ও বৃন্দ',
+        duration: '04:32',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/watch?v=kY0wP6Wp7H4',
+      },
+      {
+        id: 'b1431-2',
+        title: 'উদ্বোধনী সঙ্গীত ও মঙ্গলপ্রদীপ প্রজ্বলন',
+        bengaliTitle: 'এসো হে বৈশাখ এসো এসো — সম্মিলিত উদ্বোধনী সমবেত সঙ্গীত',
+        category: 'রবীন্দ্রসঙ্গীত',
+        performer: 'কে.পি.এন.এস. সঙ্গীত একাডেমি',
+        duration: '06:15',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+      {
+        id: 'b1431-3',
+        title: 'নৃত্যনাট্য: ঋতুরঙ্গ ও বৈশাখী আবাহন',
+        bengaliTitle: 'বাংলার চিরায়ত নৃত্যানুষ্ঠান ও লোকনৃত্য পরিবেশনা',
+        category: 'নৃত্যনাট্য',
+        performer: 'খেজুরদা বালিকা নৃত্যদল',
+        duration: '08:40',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪৩০',
+    gregorianYear: 2023,
+    edition: '১২তম বর্ষ (12th Year)',
+    occasion: 'পহেলা বৈশাখ ১৪৩০ সাংস্কৃতিক সন্ধ্যা ও বৈশাখী মেলা',
+    theme: 'ঐতিহ্য, ছন্দ ও মিলনের বৈশাখ',
+    venue: 'খেজুরদা মুক্তমঞ্চ, এগরা',
+    description: '১৪৩০ বঙ্গাব্দের বর্ণাঢ্য আয়োজনে লোকগীতি, বাউল গান এবং তরুণ প্রজন্মের মনোজ্ঞ নাট্য উপস্থাপনা ছিল অন্যতম আকর্ষণ।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1430-1',
+        title: 'Baundule Megher Moto Ure — লাইভ স্টেজ পারফরম্যান্স',
+        bengaliTitle: 'বাউন্ডুলে মেঘের মতো উড়ে || বৈশাখী মেলা ১৪৩০ | KPNS অফিসিয়াল',
+        category: 'লোকসঙ্গীত',
+        performer: 'কে.পি.এন.এস সাংস্কৃতিক দল',
+        duration: '04:32',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/watch?v=kY0wP6Wp7H4',
+      },
+      {
+        id: 'b1430-2',
+        title: 'বাউল গানের আসর ও একতারা ঝংকার',
+        bengaliTitle: 'মন মাঝি তোর বৈঠা নে রে — মেদিনীপুরের লোকজ সুর',
+        category: 'বাউল গীতি',
+        performer: 'লোকশিল্পী দল',
+        duration: '07:20',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৯',
+    gregorianYear: 2022,
+    edition: '১১তম বর্ষ (11th Year)',
+    occasion: '১৪২৯ বৈশাখী পুনর্মিলনী উৎসব',
+    theme: 'নব আনন্দে জাগো নব আনন্দে',
+    venue: 'কে.পি.এন.এস ভবন প্রাঙ্গণ',
+    description: 'করোনাত্তোর নতুন সূর্যের কিরণে মুখরিত নববর্ষের এই সন্ধ্যায় এলাকার সকল বয়সের মানুষের পদচারণায় এক প্রাণের মেলা তৈরি হয়েছিল।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1429-1',
+        title: 'আবৃত্তি ও শ্রুতিনাটক পরিবেশনা',
+        bengaliTitle: 'বিদ্রোহী ও বাংলার মুখ আমি দেখিয়াছি — বিশেষ কাব্যনাট্য',
+        category: 'আবৃত্তি ও নাটক',
+        performer: 'সাহিত্য বাসর আবৃত্তিশিল্পী',
+        duration: '05:45',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৮',
+    gregorianYear: 2021,
+    edition: '১০ম বর্ষ (10th Year - দশম পূর্তি)',
+    occasion: 'বৈশাখী সন্ধ্যার এক দশক পূর্তি উৎসব',
+    theme: 'এক দশক ধরে সংস্কৃতির দীপশিখা',
+    venue: 'খেজুরদা মঞ্চ',
+    description: '১৪১৯ থেকে শুরু হওয়া এই সাংস্কৃতিক পরিক্রমার ১০ বছর পূর্তিতে প্রতিষ্ঠাতা শিল্পীদের শ্রদ্ধা ও বিশেষ সংবর্ধনা প্রদান করা হয়।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1428-1',
+        title: 'দশম পূর্তি বিশেষ সমবেত গান',
+        bengaliTitle: 'আমরা সবাই রাজা আমাদের এই রাজার রাজত্বে — শিশু শিল্পীদের কোরাস',
+        category: 'শিশু-কিশোর অনুষ্ঠান',
+        performer: 'অঙ্গনওয়াড়ি ও প্রাথমিক দল',
+        duration: '04:50',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৭',
+    gregorianYear: 2020,
+    edition: '৯ম বর্ষ (9th Year)',
+    occasion: '১৪২৭ বৈশাখী ঘরোয়া সাংস্কৃতিক সন্ধ্যা',
+    theme: 'সংকটেও সংস্কৃতির জয়গান',
+    venue: 'খেজুরদা ক্লাব ভবন',
+    description: 'লকডাউনের কঠিন সময়ে সীমিত পরিসরে প্রদীপ প্রজ্বলন ও ডিজিটাল মাধ্যমে সঙ্গীত সম্প্রচারের মাধ্যমে ঐতিহ্য অব্যাহত রাখা হয়।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1427-1',
+        title: 'প্রার্থনা সঙ্গীত ও প্রদীপ প্রজ্বলন',
+        bengaliTitle: 'আনন্দলোকে মঙ্গলালোকে বিরাজ সত্যসুন্দর — বিশেষ স্তোত্র',
+        category: 'রবীন্দ্র সঙ্গীত',
+        performer: 'কে.পি.এন.এস প্রতিনিধি',
+        duration: '03:40',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৬',
+    gregorianYear: 2019,
+    edition: '৮ম বর্ষ (8th Year)',
+    occasion: 'বৈশাখী মেলা ও সাংস্কৃতিক নিশি',
+    theme: 'মেঠো সুরের মায়াজালে নববর্ষ',
+    venue: 'খেজুরদা মুক্তমঞ্চ',
+    description: 'পল্লী মেদিনীপুরের প্রাচীন লোকসংস্কৃতি, ঝুমুর ও বাউল নাচের বর্ণিল সমারোহে মুখরিত ছিল এই উৎসব।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1426-1',
+        title: 'ঝুমুর গান ও মাদল বাদন',
+        bengaliTitle: 'মেদিনীপুরের মাটির গান — ঝুমুর দলের বিশেষ পরিবেশনা',
+        category: 'লোকসঙ্গীত',
+        performer: 'গ্রাম্য লোকশিল্পীবৃন্দ',
+        duration: '06:10',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৫',
+    gregorianYear: 2018,
+    edition: '৭ম বর্ষ (7th Year)',
+    occasion: 'শুভ নববর্ষ ১৪২৫ সাংস্কৃতিক আসর',
+    theme: 'সবার পরশে পবিত্র করা তীর্থনীরে',
+    venue: 'খেজুরদা নারায়ণ সংঘ প্রাঙ্গণ',
+    description: 'নৃত্য, গান ও হাস্যরসাত্মক একাঙ্ক নাটকের পরিবেশনায় মধ্যরাত পর্যন্ত দর্শকেরা মন্ত্রমুগ্ধের মতো উপভোগ করেন।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1425-1',
+        title: 'হাস্যরসাত্মক একাঙ্ক নাটক',
+        bengaliTitle: 'গ্রামের পঞ্চায়েত ও আধুনিক সমাজ — রম্য নাটিকা',
+        category: 'নাট্য পরিবেশনা',
+        performer: 'কে.পি.এন.এস নাট্যগোষ্ঠী',
+        duration: '11:20',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৪',
+    gregorianYear: 2017,
+    edition: '৬ষ্ঠ বর্ষ (6th Year)',
+    occasion: 'বৈশাখী সন্ধ্যা ১৪২৪',
+    theme: 'রক্তিম পলাশ ও পল্লী উৎসব',
+    venue: 'খেজুরদা মুক্তমঞ্চ',
+    description: 'নতুন প্রজন্মের কিশোর-কিশোরীদের গান ও শাস্ত্রীয় নৃত্য পরিবেশনা বিশেষভাবে প্রশংসিত হয়।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1424-1',
+        title: 'শাস্ত্রীয় কত্থক নৃত্য পরিবেশনা',
+        bengaliTitle: 'বৈশাখী বন্দনা ও ধ্রুপদী নৃত্য অর্ঘ্য',
+        category: 'নৃত্যানুষ্ঠান',
+        performer: 'স্থানীয় নৃত্য শিক্ষার্থী দল',
+        duration: '05:30',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২৩',
+    gregorianYear: 2016,
+    edition: '৫ম বর্ষ (5th Year - পঞ্চম পূর্তি)',
+    occasion: 'বৈশাখী সন্ধ্যার পঞ্চম পূর্তি মহোৎসব',
+    theme: 'পঞ্চম বর্ষে নব উল্লাসে',
+    venue: 'কে.পি.এন.এস উৎসব প্রাঙ্গণ',
+    description: 'পাঁচ বছর সফল উদযাপনের স্মারক হিসেবে বিশেষ সংকলন ও স্থানীয় গুণী ব্যক্তিত্বদের সম্মানিত করা হয়।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1423-1',
+        title: 'পঞ্চম বর্ষপূর্তি বিশেষ গীতিআলেখ্য',
+        bengaliTitle: 'নব আনন্দে জাগো নব রবিচ্ছায়ে — সুর ও বাণীর যুগলবন্দী',
+        category: 'গীতিআলেখ্য',
+        performer: 'সংঘের যৌথ শিল্পীগোষ্ঠী',
+        duration: '09:15',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২২',
+    gregorianYear: 2015,
+    edition: '৪র্থ বর্ষ (4th Year)',
+    occasion: 'বৈশাখী সন্ধ্যা ১৪২২',
+    theme: 'পল্লী সুরের ঝরনাধারা',
+    venue: 'খেজুরদা মঞ্চ',
+    description: 'পল্লীগীতি ও আধুনিক বাংলা গানের এক অপূর্ব সম্মিলন ঘটেছিল এই বৈশাখী নিশীথে।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1422-1',
+        title: 'নজরুলগীতি ও দেশাত্মবোধক গান',
+        bengaliTitle: 'মোরা ঝঞ্ঝার মতো উদ্দাম — বলিষ্ঠ কণ্ঠের সমবেত গান',
+        category: 'নজরুলগীতি',
+        performer: 'কে.পি.এন.এস যুব সমাজ',
+        duration: '04:45',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২১',
+    gregorianYear: 2014,
+    edition: '৩য় বর্ষ (3rd Year)',
+    occasion: 'বৈশাখী সন্ধ্যা ১৪২১',
+    theme: 'বাংলার সংস্কৃতি চির অমলিন',
+    venue: 'খেজুরদা সংঘ মুক্তমঞ্চ',
+    description: 'লোকনাট্য ও জারি গানের সুর গ্রামবাংলায় প্রাণের স্পন্দন সঞ্চার করেছিল।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1421-1',
+        title: 'লোকনাট্য পরিবেশনা',
+        bengaliTitle: 'বেহুলা লখিন্দর লোকনাট্য ও পালাগান',
+        category: 'লোকনাট্য',
+        performer: 'গ্রামের প্রবীণ পালাশিল্পী দল',
+        duration: '12:00',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪২০',
+    gregorianYear: 2013,
+    edition: '২য় বর্ষ (2nd Year)',
+    occasion: 'বৈশাখী সন্ধ্যা ১৪২০',
+    theme: 'প্রাণের মেলা সংস্কৃতির মেলা',
+    venue: 'খেজুরদা নারায়ণ সংঘ প্রাঙ্গণ',
+    description: 'প্রথম বর্ষের বিপুল উদ্দীপনার পর দ্বিতীয় বর্ষে আরও বৃহত্তর মঞ্চে বিপুল সমাগমে উদযাপিত হয়।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1420-1',
+        title: 'আধুনিক বাংলা গান ও তবলা লহরী',
+        bengaliTitle: 'সুর ও তালের অপূর্ব যুগলবন্দী অনুষ্ঠান',
+        category: 'শাস্ত্রীয় ও আধুনিক সুর',
+        performer: 'শিল্পী বৃন্দ',
+        duration: '06:30',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+  {
+    bengaliYear: '১৪১৯',
+    gregorianYear: 2012,
+    edition: '১ম প্রারম্ভিক বর্ষ (Inaugural Year)',
+    occasion: 'ঐতিহাসিক শুভ সূচনা — প্রথম বৈশাখী সন্ধ্যা ১৪১৯',
+    theme: 'বৈশাখী সন্ধ্যার শুভ জন্মদিন',
+    venue: 'খেজুরদা নারায়ণ সংঘ প্রাঙ্গণ',
+    description: '১৪১৯ বঙ্গাব্দের পহেলা বৈশাখে সূচনা হয়েছিল এক নতুন সাংস্কৃতিক নবজাগরণের। বাংলার সংস্কৃতি, ঐতিহ্য ও লোকজ আনন্দকে কেন্দ্র করে প্রতি বছর এই মিলনযজ্ঞ অব্যাহত রাখার শপথ গ্রহণ করা হয়।',
+    playlistUrl: 'https://www.youtube.com/@kpns1935/playlists',
+    playlistThumbnail: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+    videos: [
+      {
+        id: 'b1419-1',
+        title: '১৪১৯ বঙ্গাব্দের ঐতিহাসিক শুভ সূচনা মুহূর্ত',
+        bengaliTitle: 'প্রথম বৈশাখী সন্ধ্যা উদ্বোধন ও প্রদীপ প্রজ্বলন স্মৃতি',
+        category: 'ঐতিহাসিক প্রামাণ্য চিত্র',
+        performer: 'প্রতিষ্ঠাতা সদস্য ও শুভানুধ্যায়ীবৃন্দ',
+        duration: '05:10',
+        youtubeId: 'kY0wP6Wp7H4',
+        thumbnailUrl: 'https://img.youtube.com/vi/kY0wP6Wp7H4/hqdefault.jpg',
+        youtubeUrl: 'https://www.youtube.com/@kpns1935',
+      },
+    ],
+  },
+];

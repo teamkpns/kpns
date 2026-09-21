@@ -128,10 +128,10 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
+            <h1 suppressHydrationWarning className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
               {clubSettings.clubNameBengali}
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-bold text-pink-100 tracking-wide uppercase">
+            <p suppressHydrationWarning className="text-sm sm:text-base md:text-lg font-bold text-pink-100 tracking-wide uppercase">
               {clubSettings.clubNameEnglish || 'Khejurda Palliunnyayan Narayan Sangha'}
             </p>
           </div>

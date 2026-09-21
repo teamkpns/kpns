@@ -207,280 +207,296 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const loadFromSupabase = useCallback(async () => {
     setIsLoading(true);
     try {
-      // 1. Fetch Members
-      const { data: dbMembers, error: mErr } = await supabase
-        .from('members')
-        .select('*')
-        .order('admission_date', { ascending: false });
+      // Run all fetches concurrently and independently so a failure in one
+      // step does not prevent the others (especially Activity Posts) from loading.
+      const [
+        membersResult,
+        appsResult,
+        logsResult,
+        notifsResult,
+        settingsResult,
+        messagesResult,
+        postsResult,
+      ] = await Promise.allSettled([
+        supabase.from('members').select('*').order('admission_date', { ascending: false }),
+        supabase.from('applications').select('*').order('applied_date', { ascending: false }),
+        supabase.from('activity_logs').select('*').order('timestamp', { ascending: false }).limit(50),
+        supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(100),
+        supabase.from('club_settings').select('*').limit(1).maybeSingle(),
+        supabase.from('contact_messages').select('*').order('created_at', { ascending: false }),
+        supabase.from('activity_posts').select('*').order('post_date', { ascending: false }),
+      ]);
 
-      if (!mErr && dbMembers && dbMembers.length > 0) {
-        const mapped: Member[] = dbMembers.map((m: any) => {
-          const comp = calculateProfileCompletion({
-            name: m.name,
-            fatherName: m.father_name,
-            whatsapp: m.whatsapp,
-            email: m.email,
-            bloodGroup: m.blood_group,
-            dob: m.dob,
-            aadhaar: m.aadhaar,
-            villageTown: m.village_town,
-            district: m.district || 'Purba Medinipur',
-            postOffice: m.post_office,
-            policeStation: m.police_station,
-            city: m.city,
-            state: m.state || 'West Bengal',
-            pincode: m.pincode,
+      // 1. Members
+      if (membersResult.status === 'fulfilled') {
+        const { data: dbMembers, error: mErr } = membersResult.value;
+        if (!mErr && dbMembers && dbMembers.length > 0) {
+          const mapped: Member[] = dbMembers.map((m: any) => {
+            const comp = calculateProfileCompletion({
+              name: m.name,
+              fatherName: m.father_name,
+              whatsapp: m.whatsapp,
+              email: m.email,
+              bloodGroup: m.blood_group,
+              dob: m.dob,
+              aadhaar: m.aadhaar,
+              villageTown: m.village_town,
+              district: m.district || 'Purba Medinipur',
+              postOffice: m.post_office,
+              policeStation: m.police_station,
+              city: m.city,
+              state: m.state || 'West Bengal',
+              pincode: m.pincode,
+            });
+
+            return {
+              id: m.id,
+              memberId: m.member_id,
+              fromNo: m.from_no,
+              userId: m.user_id,
+              role: m.role || 'MEMBER',
+              status: m.status || 'ACTIVE',
+              admissionDate: m.admission_date,
+              avatarUrl: m.avatar_url,
+              name: m.name,
+              fatherName: m.father_name,
+              whatsapp: m.whatsapp,
+              altMobile: m.alt_mobile,
+              email: m.email,
+              aadhaar: m.aadhaar,
+              bloodGroup: m.blood_group,
+              dob: m.dob,
+              houseNumber: m.house_number,
+              villageTown: m.village_town,
+              postOffice: m.post_office,
+              policeStation: m.police_station,
+              city: m.city,
+              district: m.district || 'Purba Medinipur',
+              state: m.state || 'West Bengal',
+              country: m.country || 'India',
+              pincode: m.pincode,
+              profileCompletion: m.profile_completion || comp.score,
+              missingFields: comp.missingFields || [],
+              committeeRole: m.committee_role || undefined,
+              committeeVision: m.committee_vision || undefined,
+              password: m.password || 'kpns@2026',
+              createdAt: m.created_at,
+              updatedAt: m.updated_at,
+            };
           });
+          setMembers(mapped);
 
-          return {
-            id: m.id,
-            memberId: m.member_id,
-            fromNo: m.from_no,
-            userId: m.user_id,
-            role: m.role || 'MEMBER',
-            status: m.status || 'ACTIVE',
-            admissionDate: m.admission_date,
-            avatarUrl: m.avatar_url,
-            name: m.name,
-            fatherName: m.father_name,
-            whatsapp: m.whatsapp,
-            altMobile: m.alt_mobile,
-            email: m.email,
-            aadhaar: m.aadhaar,
-            bloodGroup: m.blood_group,
-            dob: m.dob,
-            houseNumber: m.house_number,
-            villageTown: m.village_town,
-            postOffice: m.post_office,
-            policeStation: m.police_station,
-            city: m.city,
-            district: m.district || 'Purba Medinipur',
-            state: m.state || 'West Bengal',
-            country: m.country || 'India',
-            pincode: m.pincode,
-            profileCompletion: m.profile_completion || comp.score,
-            missingFields: comp.missingFields || [],
-            committeeRole: m.committee_role || undefined,
-            committeeVision: m.committee_vision || undefined,
-            password: m.password || 'kpns@2026',
-            createdAt: m.created_at,
-            updatedAt: m.updated_at,
-          };
-        });
-        setMembers(mapped);
-
-        // Keep current user updated if logged in
-        setCurrentUser((prev) => {
-          if (!prev) {
-            if (typeof window !== 'undefined') {
-              const savedUserId = localStorage.getItem('kpns_auth_user_id');
-              if (savedUserId) {
-                const matched = mapped.find(
-                  (m) =>
-                    m.memberId.toLowerCase() === savedUserId.toLowerCase() ||
-                    m.id === savedUserId ||
-                    m.userId.toLowerCase() === savedUserId.toLowerCase()
-                );
-                if (matched) return matched;
+          // Keep current user updated if logged in
+          setCurrentUser((prev) => {
+            if (!prev) {
+              if (typeof window !== 'undefined') {
+                const savedUserId = localStorage.getItem('kpns_auth_user_id');
+                if (savedUserId) {
+                  const matched = mapped.find(
+                    (m) =>
+                      m.memberId.toLowerCase() === savedUserId.toLowerCase() ||
+                      m.id === savedUserId ||
+                      m.userId.toLowerCase() === savedUserId.toLowerCase()
+                  );
+                  if (matched) return matched;
+                }
               }
-            }
-            return null;
-          }
-          const matched = mapped.find((m) => m.memberId === prev.memberId || m.id === prev.id);
-          return matched || prev;
-        });
-      }
-
-      // 2. Fetch Applications
-      const { data: dbApps, error: aErr } = await supabase
-        .from('applications')
-        .select('*')
-        .order('applied_date', { ascending: false });
-
-      if (!aErr && dbApps && dbApps.length > 0) {
-        const mappedApps: Application[] = dbApps.map((a: any) => ({
-          id: a.id,
-          status: a.status,
-          appliedDate: a.applied_date,
-          name: a.name,
-          fatherName: a.father_name,
-          whatsapp: a.whatsapp,
-          altMobile: a.alt_mobile,
-          email: a.email,
-          aadhaar: a.aadhaar,
-          bloodGroup: a.blood_group,
-          dob: a.dob,
-          houseNumber: a.house_number,
-          villageTown: a.village_town,
-          postOffice: a.post_office,
-          policeStation: a.police_station,
-          city: a.city,
-          district: a.district || 'Purba Medinipur',
-          state: a.state || 'West Bengal',
-          country: a.country || 'India',
-          pincode: a.pincode,
-          fromNo: a.from_no,
-          memberId: a.member_id,
-          admissionDate: a.admission_date,
-          userId: a.user_id,
-          rejectionReason: a.rejection_reason,
-          reviewedBy: a.reviewed_by,
-          reviewedAt: a.reviewed_at,
-        }));
-        setApplications(mappedApps);
-      }
-
-      // 3. Fetch Activity Logs
-      const { data: dbLogs, error: lErr } = await supabase
-        .from('activity_logs')
-        .select('*')
-        .order('timestamp', { ascending: false })
-        .limit(50);
-
-      if (!lErr && dbLogs && dbLogs.length > 0) {
-        const mappedLogs: ActivityLog[] = dbLogs.map((l: any) => ({
-          id: l.id,
-          timestamp: l.timestamp ? new Date(l.timestamp).toLocaleString('en-IN') : '',
-          user: l.user_name || 'SYSTEM',
-          role: l.role || 'Admin',
-          action: l.action,
-          memberId: l.member_id,
-          details: l.details,
-        }));
-        setActivityLogs(mappedLogs);
-      }
-
-      // 4. Fetch Notifications & Photo Requests
-      const { data: dbNotifs, error: nErr } = await supabase
-        .from('notifications')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (!nErr && dbNotifs && dbNotifs.length > 0) {
-        // Standard user notifications (excluding raw photo_request payload)
-        const regularNotifs = dbNotifs.filter((n: any) => n.type !== 'photo_request');
-        const mappedNotifs: NotificationItem[] = regularNotifs.map((n: any) => ({
-          id: n.id,
-          title: n.title,
-          description: n.description,
-          date: n.created_at ? new Date(n.created_at).toLocaleDateString() : 'Recent',
-          read: n.read ?? false,
-          type: n.type || 'info',
-        }));
-        setNotifications(mappedNotifs);
-
-        // Photo approval requests
-        const photoNotifs = dbNotifs.filter((n: any) => n.type === 'photo_request');
-        const mappedRequests: PhotoApprovalRequest[] = photoNotifs
-          .map((n: any) => {
-            try {
-              const parsed = typeof n.description === 'string' ? JSON.parse(n.description) : n.description;
-              return {
-                id: n.id,
-                memberId: parsed.memberId,
-                memberName: parsed.memberName,
-                photoUrl: parsed.photoUrl,
-                currentPhotoUrl: parsed.currentPhotoUrl,
-                requestedAt: parsed.requestedAt || n.created_at,
-                status: parsed.status || (n.read ? 'APPROVED' : 'PENDING'),
-                rejectionReason: parsed.rejectionReason,
-              };
-            } catch {
               return null;
             }
-          })
-          .filter(Boolean) as PhotoApprovalRequest[];
-
-        setPhotoRequests(mappedRequests);
-
-        // Update pendingAvatarUrl on members
-        const pendingMap = new Map<string, string>();
-        mappedRequests.forEach((req) => {
-          if (req.status === 'PENDING' && req.photoUrl) {
-            pendingMap.set(req.memberId, req.photoUrl);
-          }
-        });
-
-        if (pendingMap.size > 0) {
-          setMembers((prev) =>
-            prev.map((m) => {
-              const pending = pendingMap.get(m.memberId);
-              return pending !== m.pendingAvatarUrl ? { ...m, pendingAvatarUrl: pending } : m;
-            })
-          );
-          setCurrentUser((prev) => {
-            if (!prev) return null;
-            const pending = pendingMap.get(prev.memberId);
-            return pending !== prev.pendingAvatarUrl ? { ...prev, pendingAvatarUrl: pending } : prev;
+            const matched = mapped.find((m) => m.memberId === prev.memberId || m.id === prev.id);
+            return matched || prev;
           });
         }
+      } else {
+        console.warn('Members fetch failed:', membersResult.reason);
       }
 
-      // 5. Fetch Club Settings
-      const { data: dbSettings, error: sErr } = await supabase
-        .from('club_settings')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
-
-      if (!sErr && dbSettings) {
-        setClubSettings({
-          clubNameBengali: dbSettings.club_name_bengali || DEFAULT_CLUB_SETTINGS.clubNameBengali,
-          clubNameEnglish: dbSettings.club_name_english || DEFAULT_CLUB_SETTINGS.clubNameEnglish,
-          tagline: dbSettings.tagline || DEFAULT_CLUB_SETTINGS.tagline,
-          contactEmail: dbSettings.contact_email || DEFAULT_CLUB_SETTINGS.contactEmail,
-          contactPhone: dbSettings.contact_phone || DEFAULT_CLUB_SETTINGS.contactPhone,
-          address: dbSettings.address || DEFAULT_CLUB_SETTINGS.address,
-          logoUrl: dbSettings.logo_url || DEFAULT_CLUB_SETTINGS.logoUrl,
-          registrationOpen: dbSettings.registration_open ?? true,
-          autoGenerateMemberId: dbSettings.auto_generate_member_id ?? true,
-          memberIdPrefix: dbSettings.member_id_prefix || 'KPNS',
-        });
+      // 2. Applications
+      if (appsResult.status === 'fulfilled') {
+        const { data: dbApps, error: aErr } = appsResult.value;
+        if (!aErr && dbApps && dbApps.length > 0) {
+          const mappedApps: Application[] = dbApps.map((a: any) => ({
+            id: a.id,
+            status: a.status,
+            appliedDate: a.applied_date,
+            name: a.name,
+            fatherName: a.father_name,
+            whatsapp: a.whatsapp,
+            altMobile: a.alt_mobile,
+            email: a.email,
+            aadhaar: a.aadhaar,
+            bloodGroup: a.blood_group,
+            dob: a.dob,
+            houseNumber: a.house_number,
+            villageTown: a.village_town,
+            postOffice: a.post_office,
+            policeStation: a.police_station,
+            city: a.city,
+            district: a.district || 'Purba Medinipur',
+            state: a.state || 'West Bengal',
+            country: a.country || 'India',
+            pincode: a.pincode,
+            fromNo: a.from_no,
+            memberId: a.member_id,
+            admissionDate: a.admission_date,
+            userId: a.user_id,
+            rejectionReason: a.rejection_reason,
+            reviewedBy: a.reviewed_by,
+            reviewedAt: a.reviewed_at,
+          }));
+          setApplications(mappedApps);
+        }
+      } else {
+        console.warn('Applications fetch failed:', appsResult.reason);
       }
 
-      // 6. Fetch Contact Messages
-      const { data: dbMessages, error: cErr } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!cErr && dbMessages) {
-        const mappedMsgs: ContactMessage[] = dbMessages.map((m: any) => ({
-          id: m.id,
-          name: m.name,
-          phone: m.phone,
-          email: m.email,
-          message: m.message,
-          read: m.read ?? false,
-          createdAt: m.created_at,
-        }));
-        setContactMessages(mappedMsgs);
+      // 3. Activity Logs
+      if (logsResult.status === 'fulfilled') {
+        const { data: dbLogs, error: lErr } = logsResult.value;
+        if (!lErr && dbLogs && dbLogs.length > 0) {
+          const mappedLogs: ActivityLog[] = dbLogs.map((l: any) => ({
+            id: l.id,
+            timestamp: l.timestamp ? new Date(l.timestamp).toLocaleString('en-IN') : '',
+            user: l.user_name || 'SYSTEM',
+            role: l.role || 'Admin',
+            action: l.action,
+            memberId: l.member_id,
+            details: l.details,
+          }));
+          setActivityLogs(mappedLogs);
+        }
+      } else {
+        console.warn('Activity logs fetch failed:', logsResult.reason);
       }
 
-      // 7. Fetch Activity Posts
-      const { data: dbPosts, error: pErr } = await supabase
-        .from('activity_posts')
-        .select('*')
-        .order('post_date', { ascending: false });
+      // 4. Notifications & Photo Requests
+      if (notifsResult.status === 'fulfilled') {
+        const { data: dbNotifs, error: nErr } = notifsResult.value;
+        if (!nErr && dbNotifs && dbNotifs.length > 0) {
+          const regularNotifs = dbNotifs.filter((n: any) => n.type !== 'photo_request');
+          const mappedNotifs: NotificationItem[] = regularNotifs.map((n: any) => ({
+            id: n.id,
+            title: n.title,
+            description: n.description,
+            date: n.created_at ? new Date(n.created_at).toLocaleDateString() : 'Recent',
+            read: n.read ?? false,
+            type: n.type || 'info',
+          }));
+          setNotifications(mappedNotifs);
 
-      if (!pErr && dbPosts) {
-        const mappedPosts: ActivityPost[] = dbPosts.map((p: any) => ({
-          id: p.id,
-          title: p.title,
-          body: p.body,
-          photoUrl: p.photo_url || undefined,
-          postDate: p.post_date,
-          fbLink: p.fb_link || undefined,
-          instagramLink: p.instagram_link || undefined,
-          youtubeLink: p.youtube_link || undefined,
-          xLink: p.x_link || undefined,
-          published: p.published ?? true,
-          createdBy: p.created_by || undefined,
-          createdAt: p.created_at,
-          updatedAt: p.updated_at,
-        }));
-        setActivityPosts(mappedPosts);
+          const photoNotifs = dbNotifs.filter((n: any) => n.type === 'photo_request');
+          const mappedRequests: PhotoApprovalRequest[] = photoNotifs
+            .map((n: any) => {
+              try {
+                const parsed = typeof n.description === 'string' ? JSON.parse(n.description) : n.description;
+                return {
+                  id: n.id,
+                  memberId: parsed.memberId,
+                  memberName: parsed.memberName,
+                  photoUrl: parsed.photoUrl,
+                  currentPhotoUrl: parsed.currentPhotoUrl,
+                  requestedAt: parsed.requestedAt || n.created_at,
+                  status: parsed.status || (n.read ? 'APPROVED' : 'PENDING'),
+                  rejectionReason: parsed.rejectionReason,
+                };
+              } catch {
+                return null;
+              }
+            })
+            .filter(Boolean) as PhotoApprovalRequest[];
+
+          setPhotoRequests(mappedRequests);
+
+          const pendingMap = new Map<string, string>();
+          mappedRequests.forEach((req) => {
+            if (req.status === 'PENDING' && req.photoUrl) {
+              pendingMap.set(req.memberId, req.photoUrl);
+            }
+          });
+
+          if (pendingMap.size > 0) {
+            setMembers((prev) =>
+              prev.map((m) => {
+                const pending = pendingMap.get(m.memberId);
+                return pending !== m.pendingAvatarUrl ? { ...m, pendingAvatarUrl: pending } : m;
+              })
+            );
+            setCurrentUser((prev) => {
+              if (!prev) return null;
+              const pending = pendingMap.get(prev.memberId);
+              return pending !== prev.pendingAvatarUrl ? { ...prev, pendingAvatarUrl: pending } : prev;
+            });
+          }
+        }
+      } else {
+        console.warn('Notifications fetch failed:', notifsResult.reason);
+      }
+
+      // 5. Club Settings
+      if (settingsResult.status === 'fulfilled') {
+        const { data: dbSettings, error: sErr } = settingsResult.value;
+        if (!sErr && dbSettings) {
+          setClubSettings({
+            clubNameBengali: dbSettings.club_name_bengali || DEFAULT_CLUB_SETTINGS.clubNameBengali,
+            clubNameEnglish: dbSettings.club_name_english || DEFAULT_CLUB_SETTINGS.clubNameEnglish,
+            tagline: dbSettings.tagline || DEFAULT_CLUB_SETTINGS.tagline,
+            contactEmail: dbSettings.contact_email || DEFAULT_CLUB_SETTINGS.contactEmail,
+            contactPhone: dbSettings.contact_phone || DEFAULT_CLUB_SETTINGS.contactPhone,
+            address: dbSettings.address || DEFAULT_CLUB_SETTINGS.address,
+            logoUrl: dbSettings.logo_url || DEFAULT_CLUB_SETTINGS.logoUrl,
+            registrationOpen: dbSettings.registration_open ?? true,
+            autoGenerateMemberId: dbSettings.auto_generate_member_id ?? true,
+            memberIdPrefix: dbSettings.member_id_prefix || 'KPNS',
+          });
+        }
+      } else {
+        console.warn('Club settings fetch failed:', settingsResult.reason);
+      }
+
+      // 6. Contact Messages
+      if (messagesResult.status === 'fulfilled') {
+        const { data: dbMessages, error: cErr } = messagesResult.value;
+        if (!cErr && dbMessages) {
+          const mappedMsgs: ContactMessage[] = dbMessages.map((m: any) => ({
+            id: m.id,
+            name: m.name,
+            phone: m.phone,
+            email: m.email,
+            message: m.message,
+            read: m.read ?? false,
+            createdAt: m.created_at,
+          }));
+          setContactMessages(mappedMsgs);
+        }
+      } else {
+        console.warn('Contact messages fetch failed:', messagesResult.reason);
+      }
+
+      // 7. Activity Posts — fetched independently; always runs regardless of other failures
+      if (postsResult.status === 'fulfilled') {
+        const { data: dbPosts, error: pErr } = postsResult.value;
+        if (!pErr && dbPosts) {
+          const mappedPosts: ActivityPost[] = dbPosts.map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            body: p.body,
+            photoUrl: p.photo_url || undefined,
+            postDate: p.post_date,
+            fbLink: p.fb_link || undefined,
+            instagramLink: p.instagram_link || undefined,
+            youtubeLink: p.youtube_link || undefined,
+            xLink: p.x_link || undefined,
+            published: p.published ?? true,
+            createdBy: p.created_by || undefined,
+            createdAt: p.created_at,
+            updatedAt: p.updated_at,
+          }));
+          setActivityPosts(mappedPosts);
+        } else if (pErr) {
+          console.warn('Activity posts fetch error:', pErr.message);
+        }
+      } else {
+        console.warn('Activity posts fetch failed:', postsResult.reason);
       }
     } catch (err) {
       console.warn('Supabase fetch encountered an issue, using local cache:', err);
