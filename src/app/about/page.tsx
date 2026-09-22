@@ -156,7 +156,7 @@ function AboutContent() {
                 key: 'kpnscup',
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm text-amber-700">
-                    <TrophyOutlined className="text-amber-500" /> KPNS CUP
+                    <span className="text-base leading-none">🏏</span> KPNS CUP
                   </span>
                 ),
               },
@@ -363,20 +363,20 @@ function AboutContent() {
             {/* Introductory Card with exact text */}
             <div className="bg-gradient-to-br from-amber-500/10 via-amber-50/40 to-white rounded-3xl p-6 sm:p-8 border border-amber-200/80 shadow-xs space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-800 text-xs font-bold border border-amber-300">
-                  🏆 Annual Sports Tournament • Est. 2013
+                <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-800 text-xs font-bold border border-amber-300 flex items-center gap-1.5">
+                  <span className="text-sm">🏏</span> Day-Night Cricket Tournament • Est. 2013
                 </span>
-                <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold">
-                  ⚽ 13+ Annual Editions
+                <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold flex items-center gap-1.5">
+                  <span>🌙</span> Floodlit Night Matches
                 </span>
-                <span className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold">
-                  🤝 Promoting Youth Camaraderie
+                <span className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold flex items-center gap-1.5">
+                  <span className="text-sm">🏏</span> 13+ Annual Editions
                 </span>
               </div>
 
               <div>
                 <h2 className="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-2">
-                  <TrophyOutlined className="text-amber-500" />
+                  <span className="text-2xl sm:text-3xl leading-none">🏏</span>
                   KPNS CUP
                 </h2>
                 {/* Exact user-provided description */}
@@ -396,15 +396,15 @@ function AboutContent() {
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm p-3.5 rounded-2xl border border-amber-100 shadow-2xs text-center">
                   <p className="text-xl sm:text-2xl font-black text-[#3447AA]">16 Teams</p>
-                  <p className="text-[11px] text-gray-500 font-semibold mt-0.5">Regional Clubs</p>
+                  <p className="text-[11px] text-gray-500 font-semibold mt-0.5">Cricket Clubs</p>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm p-3.5 rounded-2xl border border-amber-100 shadow-2xs text-center">
-                  <p className="text-xl sm:text-2xl font-black text-green-700">Annual</p>
-                  <p className="text-[11px] text-gray-500 font-semibold mt-0.5">Winter Championship</p>
+                  <p className="text-xl sm:text-2xl font-black text-green-700">Day &amp; Night</p>
+                  <p className="text-[11px] text-gray-500 font-semibold mt-0.5">Floodlit Cricket</p>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm p-3.5 rounded-2xl border border-amber-100 shadow-2xs text-center">
                   <p className="text-xl sm:text-2xl font-black text-purple-700">5,000+</p>
-                  <p className="text-[11px] text-gray-500 font-semibold mt-0.5">Enthusiastic Spectators</p>
+                  <p className="text-[11px] text-gray-500 font-semibold mt-0.5">Cricket Spectators</p>
                 </div>
               </div>
             </div>
@@ -414,7 +414,7 @@ function AboutContent() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
                 <div>
                   <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
-                    <CalendarOutlined className="text-[#3447AA]" />
+                    <span className="text-base leading-none">🏏</span>
                     Tournament Editions &amp; Facebook Photos
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5">
@@ -445,7 +445,7 @@ function AboutContent() {
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                       }`}
                     >
-                      <TrophyOutlined className={isActive ? 'text-amber-300' : 'text-gray-400'} />
+                      <span className="text-xs leading-none">🏏</span>
                       <span>{edition.year}</span>
                       <span
                         className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${
@@ -463,8 +463,8 @@ function AboutContent() {
               <div className="bg-gradient-to-r from-blue-50/80 via-white to-amber-50/50 p-5 rounded-2xl border border-blue-100/80 mt-4 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#3447AA]">
-                      KPNS CUP {currentCup.year} • {currentCup.edition}
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#3447AA] flex items-center gap-1.5">
+                      <span>🏏</span> KPNS CUP {currentCup.year} • {currentCup.edition} (Day-Night Cricket)
                     </span>
                     <h4 className="text-lg font-black text-gray-900 mt-0.5">{currentCup.season}</h4>
                     <p className="text-xs text-gray-600 mt-1 max-w-2xl">{currentCup.description}</p>
@@ -492,8 +492,11 @@ function AboutContent() {
                   <span className="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 font-medium flex items-center gap-1.5">
                     🏟️ {currentCup.venue}
                   </span>
-                  <span className="px-3 py-1 rounded-xl bg-green-50 text-green-800 font-medium">
-                    ⚽ {currentCup.teamsCount} Teams
+                  <span className="px-3 py-1 rounded-xl bg-green-50 text-green-800 font-medium flex items-center gap-1.5">
+                    <span>🏏</span> {currentCup.teamsCount} Cricket Teams
+                  </span>
+                  <span className="px-3 py-1 rounded-xl bg-purple-50 text-purple-800 font-medium flex items-center gap-1.5">
+                    <span>🌙</span> Day-Night Floodlights
                   </span>
                 </div>
               </div>
@@ -502,8 +505,8 @@ function AboutContent() {
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <PictureOutlined className="text-[#3447AA]" />
-                    Tournament Photos ({currentCup.year})
+                    <span className="text-base leading-none">🏏</span>
+                    Cricket Tournament Photos ({currentCup.year})
                   </h4>
                   <span className="text-[11px] text-gray-400">
                     Click any photo to enlarge or view on Facebook
