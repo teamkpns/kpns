@@ -65,7 +65,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'Trophy Presentation Ceremony',
         caption: 'KPNS President & Committee handing over the coveted Champion Trophy to Panchrul 9Star Club.',
         category: 'Awards & Honors',
-        imageUrl: 'https://drive.google.com/uc?id=1-Hx-9wKvcC2LVE29m087EC_RMSx7UsuQ',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1-Hx-9wKvcC2LVE29m087EC_RMSx7UsuQ',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -73,7 +73,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'High-Octane Final Match Action',
         caption: 'Electrifying bowling and boundary defense in the final over under floodlights.',
         category: 'Match Action',
-        imageUrl: 'https://drive.google.com/uc?id=1lXo84m6XT_KmW05pei0qbj2zDyS9zA1T',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1lXo84m6XT_KmW05pei0qbj2zDyS9zA1T',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
