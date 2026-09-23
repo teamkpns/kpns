@@ -65,7 +65,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'Trophy Presentation Ceremony',
         caption: 'KPNS President & Committee handing over the coveted Champion Trophy to Panchrul 9Star Club.',
         category: 'Awards & Honors',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1-Hx-9wKvcC2LVE29m087EC_RMSx7UsuQ&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1-Hx-9wKvcC2LVE29m087EC_RMSx7UsuQ',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -73,7 +73,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'High-Octane Final Match Action',
         caption: 'Electrifying bowling and boundary defense in the final over under floodlights.',
         category: 'Match Action',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1lXo84m6XT_KmW05pei0qbj2zDyS9zA1T&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1lXo84m6XT_KmW05pei0qbj2zDyS9zA1T',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -373,7 +373,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'Before Final Match',
         caption: 'Teams gathering at the ground ahead of the historic inaugural KPNS CUP final match in 2013.',
         category: 'Match Preparation',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1qd4MmdkxeEZxRG5ZcBXcNWPihaWBCybS&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1qd4MmdkxeEZxRG5ZcBXcNWPihaWBCybS',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -381,7 +381,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'Before Starting',
         caption: 'Players and organisers assembled at the ground before the commencement of the 1st KPNS CUP tournament.',
         category: 'Opening Ceremony',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1C5o8W1hM5lHIXx47cOmOEgLNDX8a17VV&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1C5o8W1hM5lHIXx47cOmOEgLNDX8a17VV',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -389,7 +389,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'Champion Team',
         caption: 'The inaugural KPNS CUP 2013 champion team — Khejurda Palliunnyayan Narayan Sangha CC — celebrating their historic title.',
         category: 'Celebration',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1skD-r2pUQaGFnUMwRuALq-7LFzuNCRr2&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1skD-r2pUQaGFnUMwRuALq-7LFzuNCRr2',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -397,7 +397,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'The KPNS CUP Trophy',
         caption: 'The coveted KPNS CUP trophy — symbol of cricketing excellence and community pride since 2013.',
         category: 'Trophy',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1L0WlGZ0WpiDctDKZhgIu7AZ5385nX2TF&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1L0WlGZ0WpiDctDKZhgIu7AZ5385nX2TF',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
       {
@@ -405,7 +405,7 @@ export const KPNS_CUP_YEARS: CupYearData[] = [
         title: 'Tournament Ground',
         caption: 'Khejurda High School Ground — the birthplace of the KPNS CUP Day-Night Cricket Tournament in 2013.',
         category: 'Venue',
-        imageUrl: 'https://drive.google.com/thumbnail?id=1whJXWUd9BWQJTFV_LG25YbgqgJr6SrS-&sz=w1200',
+        imageUrl: 'https://lh3.googleusercontent.com/d/1whJXWUd9BWQJTFV_LG25YbgqgJr6SrS-',
         facebookUrl: 'https://www.facebook.com/kpns.club/photos',
       },
     ],
