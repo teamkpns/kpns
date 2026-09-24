@@ -46,7 +46,7 @@ function AboutContent() {
 
   // Sub-tab state for KPNS CUP and Boishakhi Sandhya
   const [selectedCupYear, setSelectedCupYear] = useState<number>(2025);
-  const [selectedBoishakhiYear, setSelectedBoishakhiYear] = useState<string>('১৪৩১');
+  const [selectedBoishakhiYear, setSelectedBoishakhiYear] = useState<string>('১৪৩২');
 
   // Modals for interactive previews
   const [previewPhoto, setPreviewPhoto] = useState<CupPhoto | null>(null);
@@ -156,7 +156,7 @@ function AboutContent() {
                 key: 'kpnscup',
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm text-amber-700">
-                    <span className="text-base leading-none">🏏</span> KPNS CUP
+                    <TrophyOutlined className="text-amber-500" /> KPNS CUP
                   </span>
                 ),
               },
@@ -364,19 +364,19 @@ function AboutContent() {
             <div className="bg-gradient-to-br from-amber-500/10 via-amber-50/40 to-white rounded-3xl p-6 sm:p-8 border border-amber-200/80 shadow-xs space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-800 text-xs font-bold border border-amber-300 flex items-center gap-1.5">
-                  <span className="text-sm">🏏</span> Day-Night Cricket Tournament • Est. 2013
+                  <TrophyOutlined className="text-amber-600" /> Day-Night Cricket Tournament • Est. 2013
                 </span>
                 <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold flex items-center gap-1.5">
                   <span>🌙</span> Floodlit Night Matches
                 </span>
                 <span className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold flex items-center gap-1.5">
-                  <span className="text-sm">🏏</span> 13+ Annual Editions
+                  <TrophyOutlined className="text-green-600" /> 13+ Annual Editions
                 </span>
               </div>
 
               <div>
                 <h2 className="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-2">
-                  <span className="text-2xl sm:text-3xl leading-none">🏏</span>
+                  <TrophyOutlined className="text-amber-500" />
                   KPNS CUP
                 </h2>
                 {/* Exact user-provided description */}
@@ -414,7 +414,7 @@ function AboutContent() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
                 <div>
                   <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
-                    <span className="text-base leading-none">🏏</span>
+                    <TrophyOutlined className="text-amber-500" />
                     Tournament Editions &amp; Facebook Photos
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5">
@@ -445,7 +445,7 @@ function AboutContent() {
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                       }`}
                     >
-                      <span className="text-xs leading-none">🏏</span>
+                      <TrophyOutlined className={isActive ? 'text-amber-300' : 'text-amber-500'} />
                       <span>{edition.year}</span>
                       <span
                         className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${
@@ -464,7 +464,7 @@ function AboutContent() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#3447AA] flex items-center gap-1.5">
-                      <span>🏏</span> KPNS CUP {currentCup.year} • {currentCup.edition} (Day-Night Cricket)
+                      <TrophyOutlined className="text-amber-500" /> KPNS CUP {currentCup.year} • {currentCup.edition} (Day-Night Cricket)
                     </span>
                     <h4 className="text-lg font-black text-gray-900 mt-0.5">{currentCup.season}</h4>
                     <p className="text-xs text-gray-600 mt-1 max-w-2xl">{currentCup.description}</p>
@@ -505,8 +505,8 @@ function AboutContent() {
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                    <span className="text-base leading-none">🏏</span>
-                    Cricket Tournament Photos ({currentCup.year})
+                    <TrophyOutlined className="text-amber-500" />
+                    Tournament Photos ({currentCup.year})
                   </h4>
                   <span className="text-[11px] text-gray-400">
                     Click any photo to enlarge or view on Facebook
@@ -739,67 +739,87 @@ function AboutContent() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {currentBoishakhi.videos.map((vid) => (
-                    <div
-                      key={vid.id}
-                      onClick={() => setActiveVideo(vid)}
-                      className="group bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs hover:shadow-md transition-all cursor-pointer flex flex-col"
-                    >
-                      {/* Video Thumbnail with YouTube Red Play Button */}
-                      <div className="relative h-44 overflow-hidden bg-slate-950">
-                        <img
-                          src={vid.thumbnailUrl}
-                          alt={vid.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
-                        />
-                        {/* YouTube Play Icon Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-12 h-12 rounded-full bg-red-600/90 group-hover:bg-red-600 text-white flex items-center justify-center text-xl shadow-lg transition-transform group-hover:scale-110">
-                            <PlayCircleOutlined />
+                {currentBoishakhi.videos.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {currentBoishakhi.videos.map((vid) => (
+                      <div
+                        key={vid.id}
+                        onClick={() => setActiveVideo(vid)}
+                        className="group bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs hover:shadow-md transition-all cursor-pointer flex flex-col"
+                      >
+                        {/* Video Thumbnail with YouTube Red Play Button */}
+                        <div className="relative h-44 overflow-hidden bg-slate-950">
+                          <img
+                            src={vid.thumbnailUrl}
+                            alt={vid.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
+                          />
+                          {/* YouTube Play Icon Overlay */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-red-600/90 group-hover:bg-red-600 text-white flex items-center justify-center text-xl shadow-lg transition-transform group-hover:scale-110">
+                              <PlayCircleOutlined />
+                            </div>
+                          </div>
+
+                          {/* Category & Duration Tags */}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white text-[10px] font-bold">
+                            {vid.category}
+                          </div>
+                          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 text-white text-[10px] font-mono font-bold">
+                            {vid.duration}
                           </div>
                         </div>
 
-                        {/* Category & Duration Tags */}
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white text-[10px] font-bold">
-                          {vid.category}
-                        </div>
-                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 text-white text-[10px] font-mono font-bold">
-                          {vid.duration}
+                        {/* Video Details */}
+                        <div className="p-4 flex flex-col flex-1 justify-between space-y-2">
+                          <div>
+                            <h5 className="font-bold text-gray-900 text-xs sm:text-sm leading-snug line-clamp-2">
+                              {vid.bengaliTitle}
+                            </h5>
+                            {vid.performer && (
+                              <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">
+                                শিল্পী: {vid.performer}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <span className="text-[11px] text-red-600 font-bold flex items-center gap-1">
+                              <YoutubeFilled /> দেখুন
+                            </span>
+                            <a
+                              href={vid.youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-[10px] text-gray-400 hover:text-red-600 font-semibold"
+                            >
+                              YouTube-এ খুলুন ↗
+                            </a>
+                          </div>
                         </div>
                       </div>
-
-                      {/* Video Details */}
-                      <div className="p-4 flex flex-col flex-1 justify-between space-y-2">
-                        <div>
-                          <h5 className="font-bold text-gray-900 text-xs sm:text-sm leading-snug line-clamp-2">
-                            {vid.bengaliTitle}
-                          </h5>
-                          {vid.performer && (
-                            <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">
-                              শিল্পী: {vid.performer}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                          <span className="text-[11px] text-red-600 font-bold flex items-center gap-1">
-                            <YoutubeFilled /> দেখুন
-                          </span>
-                          <a
-                            href={vid.youtubeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-[10px] text-gray-400 hover:text-red-600 font-semibold"
-                          >
-                            YouTube-এ খুলুন ↗
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center space-y-3">
+                    <YoutubeFilled className="text-4xl text-gray-300" />
+                    <h5 className="text-sm font-bold text-gray-700">
+                      {currentBoishakhi.bengaliYear} বঙ্গাব্দের ভিডিও ডিজিটাল আর্কাইভে সংগৃহীত হচ্ছে
+                    </h5>
+                    <p className="text-xs text-gray-500 max-w-md mx-auto">
+                      আমাদের অফিসিয়াল ইউটিউব চ্যানেলে গিয়ে বৈশাখী সন্ধ্যার অন্যান্য সকল বর্ষের ভিডিও প্লে-লিস্ট দেখতে পারেন।
+                    </p>
+                    <a
+                      href={currentBoishakhi.playlistUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold text-xs transition"
+                    >
+                      <YoutubeFilled /> অফিসিয়াল ইউটিউব চ্যানেল দেখুন
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

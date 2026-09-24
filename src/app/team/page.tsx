@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Tabs, Input, Select, Avatar, Empty } from 'antd';
 import {
@@ -39,10 +39,15 @@ const roleBadgeClass = (role: string): string => {
 
 export default function TeamKPNSPage() {
   const { members, clubSettings } = usePortal();
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('committee');
   const [memberSearch, setMemberSearch] = useState('');
   const [bloodFilter, setBloodFilter] = useState('ALL');
   const [activeVisionId, setActiveVisionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Derive committee members from actual member data
   const committeeMembers = members
@@ -220,12 +225,16 @@ export default function TeamKPNSPage() {
           </p>
           <div className="flex items-center justify-center gap-6 pt-2">
             <div className="text-center">
-              <p className="text-2xl font-black text-white">{committeeMembers.length}</p>
+              <p className="text-2xl font-black text-white" suppressHydrationWarning>
+                {mounted ? committeeMembers.length : 0}
+              </p>
               <p className="text-xs text-pink-100 uppercase tracking-wider">Committee Members</p>
             </div>
             <div className="border-l border-white/30 h-8" />
             <div className="text-center">
-              <p className="text-2xl font-black text-white">{members.length}</p>
+              <p className="text-2xl font-black text-white" suppressHydrationWarning>
+                {mounted ? members.length : 0}
+              </p>
               <p className="text-xs text-pink-100 uppercase tracking-wider">Total Members</p>
             </div>
           </div>
@@ -245,16 +254,16 @@ export default function TeamKPNSPage() {
               {
                 key: 'committee',
                 label: (
-                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <CrownOutlined /> Managing Committee ({committeeMembers.length})
+                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm" suppressHydrationWarning>
+                    <CrownOutlined /> Managing Committee ({mounted ? committeeMembers.length : 0})
                   </span>
                 ),
               },
               {
                 key: 'members',
                 label: (
-                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <UserOutlined /> All Members ({members.length})
+                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm" suppressHydrationWarning>
+                    <UserOutlined /> All Members ({mounted ? members.length : 0})
                   </span>
                 ),
               },
