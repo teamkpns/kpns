@@ -222,11 +222,20 @@ export default function MemberTransactionsPage() {
     );
 
     let totalDue = 0;
-    let totalDonation = 0;
+    let surplusDonationFromPayments = 0;
+
+    // 1. All explicit donations made by this member across all transactions (event-linked or standalone)
+    const explicitDonations = transactions
+      .filter((t) => t.type === 'member_donation' || t.type?.toLowerCase().includes('donation'))
+      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
     const eventBreakdown = events
-      .filter((ev) => ev.contribution_amount > 0)
       .filter((ev) => {
+        const reqAmount = Number(ev.contribution_amount) || 0;
+        // If contribution_amount <= 0 (e.g. Club Development Fund), show if member paid towards it
+        if (reqAmount <= 0) {
+          return memberTxEventIds.has(ev.id);
+        }
         // Always show if the member paid something for this event
         if (memberTxEventIds.has(ev.id)) return true;
         // Always show if formally assigned via event_dues
@@ -251,7 +260,7 @@ export default function MemberTransactionsPage() {
           .filter((t) => t.type === 'member_payment')
           .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
         const donationAmt = eventTxs
-          .filter((t) => t.type === 'member_donation')
+          .filter((t) => t.type === 'member_donation' || t.type?.toLowerCase().includes('donation'))
           .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
         // Determine whether this event fee applies to this member
@@ -269,8 +278,14 @@ export default function MemberTransactionsPage() {
           isApplicable = false;
         }
 
+        const requiredAmt = isApplicable ? reqAmount : 0;
         // Effective balance: total paid minus the required fee amount
-        const effectiveBalance = totalPaidForEvent - (isApplicable ? reqAmount : 0);
+        const effectiveBalance = totalPaidForEvent - requiredAmt;
+
+        // If member overpaid the required fee using regular payments, add that excess as surplus donation
+        if (requiredAmt > 0 && feePaidAmt > requiredAmt) {
+          surplusDonationFromPayments += (feePaidAmt - requiredAmt);
+        }
 
         let status: 'PAID' | 'DUE' | 'DONATION' | 'NOT_APPLICABLE' = 'PAID';
 
@@ -283,34 +298,30 @@ export default function MemberTransactionsPage() {
         } else if (donationAmt > 0 || effectiveBalance > 0) {
           // Paid required fee plus a voluntary extra (either tagged as donation, or just overpaid)
           status = 'DONATION';
-          // Count only the genuine extra as donation
-          totalDonation += donationAmt > 0 ? donationAmt : effectiveBalance;
         } else {
           status = 'PAID';
         }
+
+        // What extra was donated for this event
+        const rowDonation = donationAmt > 0 ? donationAmt : (effectiveBalance > 0 ? effectiveBalance : 0);
 
         return {
           eventId: ev.id,
           title: ev.title,
           date: ev.event_date,
-          required: isApplicable ? reqAmount : 0,
+          required: requiredAmt,
           paid: totalPaidForEvent,
           feePaid: feePaidAmt,
-          donationAmt: donationAmt > 0 ? donationAmt : (effectiveBalance > 0 ? effectiveBalance : 0),
+          donationAmt: rowDonation,
           balance: effectiveBalance,
           status,
         };
       });
 
-    // Stand-alone donations not linked to any event (e.g. general development fund donations)
-    const standaloneDonations = transactions
-      .filter((t) => t.type === 'member_donation' && t.event_id === null)
-      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
-
     return {
       totalPaid,
       totalDue,
-      totalDonation: totalDonation + standaloneDonations,
+      totalDonation: explicitDonations + surplusDonationFromPayments,
       eventBreakdown,
     };
   }, [transactions, events, eventDues, allDuesEventIds, backendMember]);
@@ -331,7 +342,7 @@ export default function MemberTransactionsPage() {
       const matchType =
         typeFilter === 'ALL' ||
         (typeFilter === 'PAYMENT' && tx.type === 'member_payment') ||
-        (typeFilter === 'DONATION' && tx.type === 'member_donation');
+        (typeFilter === 'DONATION' && (tx.type === 'member_donation' || tx.type?.toLowerCase().includes('donation')));
 
       return matchSearch && matchType;
     });
@@ -476,13 +487,13 @@ export default function MemberTransactionsPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-xs flex items-center justify-between">
                 <div>
                   <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400">
-                    DONATIONS
+                    TOTAL DONATIONS
                   </p>
                   <p className="text-2xl sm:text-3xl font-black text-[#3447AA] mt-1">
                     ₹{financialSummary.totalDonation.toLocaleString('en-IN')}
                   </p>
                   <p className="text-[11px] text-gray-500 mt-0.5">
-                    Extra contributions &amp; special donations
+                    All voluntary contributions &amp; donations
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-[#FBEAEB] text-[#3447AA] flex items-center justify-center text-xl">
@@ -595,7 +606,7 @@ export default function MemberTransactionsPage() {
                           dataIndex: 'type',
                           key: 'type',
                           render: (val) => {
-                            const isDonation = val === 'member_donation';
+                            const isDonation = val === 'member_donation' || String(val).toLowerCase().includes('donation');
                             return (
                               <Tag
                                 color={isDonation ? 'gold' : 'blue'}
@@ -821,7 +832,7 @@ export default function MemberTransactionsPage() {
                 <div className="flex justify-between">
                   <span className="text-gray-500">Category:</span>
                   <span className="capitalize font-semibold text-gray-800">
-                    {selectedReceipt.type === 'member_donation' ? 'Voluntary Donation' : 'Membership Fee / Subscription'}
+                    {(selectedReceipt.type === 'member_donation' || selectedReceipt.type?.toLowerCase().includes('donation')) ? 'Voluntary Donation' : 'Membership Fee / Subscription'}
                   </span>
                 </div>
               </div>
