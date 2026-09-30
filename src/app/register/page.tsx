@@ -188,7 +188,7 @@ export default function RegisterPage() {
 
         {duplicateWarning && (
           <Alert
-            message="Duplicate Detection"
+            title="Duplicate Detection"
             description={duplicateWarning}
             type="warning"
             showIcon

@@ -139,7 +139,7 @@ export default function MemberPasswordPage() {
           </Form>
 
           <Alert
-            message="Security Tip"
+            title="Security Tip"
             description="Use a mix of uppercase letters, numbers, and symbols. Never share your KPNS member password with anyone."
             type="info"
             showIcon

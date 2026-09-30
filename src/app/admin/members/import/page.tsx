@@ -162,7 +162,7 @@ export default function MemberImportPage() {
           {/* Import Result Alert */}
           {result && (
             <Alert
-              message="Import Completed"
+              title="Import Completed"
               description={`Successfully added ${result.added} new members. Skipped ${result.duplicates} duplicate records.`}
               type="success"
               showIcon

@@ -403,7 +403,7 @@ export default function MemberTransactionsPage() {
           <Alert
             type="error"
             showIcon
-            message="Database Notice"
+            title="Database Notice"
             description={errorMsg}
             className="rounded-2xl"
           />

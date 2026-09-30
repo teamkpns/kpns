@@ -329,7 +329,7 @@ function ProfileContent() {
                   </div>
 
                   <Alert
-                    message="Official Records Protected"
+                    title="Official Records Protected"
                     description="Member ID, Form Number, and Date of Admission are official club records and can only be altered by the KPNS Administrator."
                     type="info"
                     showIcon
