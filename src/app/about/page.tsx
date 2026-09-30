@@ -308,7 +308,7 @@ function AboutContent() {
                       🌱 ১৯৩৫: নারায়ণ সংঘ
                     </span>
                     <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
-                      🏛️ ১৯৭৯: প্রথম রেজিস্ট্রেশন
+                      🏛️ ১৯৭৯: প্রথম রেজিস্ট্রেশন (S/1L/303103)
                     </span>
                     <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
                       ❤️ ২০১০: KPNS পুনঃনামকরণ

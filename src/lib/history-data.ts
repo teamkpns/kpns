@@ -232,27 +232,29 @@ export const HISTORY_TIMELINE: HistoryMilestone[] = [
     accentColor: 'teal',
     bn: {
       title: 'প্রথম রেজিস্ট্রেশন ও ঐতিহাসিক জমি দান',
-      tagline: 'কার্তিক চন্দ্র জানা ও দেবেন্দ্রনাথ জানা মহাশয়ের ৬ ডেসিমাল ভূসম্পত্তি অর্পণ',
+      tagline: 'প্রথম রেজিস্ট্রেশন নং: S/1L/303103 ও কার্তিক চন্দ্র জানা এবং দেবেন্দ্রনাথ জানা মহাশয়ের ৬ ডেসিমাল ভূসম্পত্তি অর্পণ',
       story: [
-        '১৯৭৯ সালে আমাদের সংগঠন প্রথমবারের মতো সরকারি রেজিস্ট্রেশন নম্বর লাভ করে আনুষ্ঠানিক আইনি স্বীকৃতি অর্জন করে।',
+        '১৯৭৯ সালে আমাদের সংগঠন প্রথমবারের মতো সরকারি রেজিস্ট্রেশন নম্বর (S/1L/303103) লাভ করে আনুষ্ঠানিক আইনি স্বীকৃতি অর্জন করে।',
         'এই গৌরবময় বছরেই সংগঠনের ইতিহাসে ঘটে এক অবিস্মরণীয় ঘটনা। ক্লাবের সমাজকল্যাণমূলক কর্মকাণ্ডের প্রতি গভীর শ্রদ্ধা ও আস্থার নিদর্শন হিসেবে এলাকার দুই সুসন্তান শ্রী কার্তিক চন্দ্র জানা এবং শ্রী দেবেন্দ্রনাথ জানা মহাশয় তাঁদের মূল্যবান ৬ ডেসিমাল জমি ক্লাবের নামে নিঃস্বার্থভাবে দান করেন।',
         'তাঁদের এই দূরদর্শী দান সংগঠনের ভবিষ্যৎ পরিকাঠামো ও দীর্ঘমেয়াদী সমাজসেবার স্থায়ী ভিত্তি গড়ে তোলে।',
       ],
+      badge: '📜 প্রথম রেজিস্ট্রেশন নং: S/1L/303103',
       donors: ['১. শ্রী কার্তিক চন্দ্র জানা', '২. শ্রী দেবেন্দ্রনাথ জানা'],
       quote: '“খেজুরদা নারায়ণ সংঘ তথা আমাদের ক্লাব যতদিন পৃথিবীর বুকে থাকবে, ততদিন আমরা পরম শ্রদ্ধার সঙ্গে তাঁদের স্মরণ করব। আমাদের প্রতি তাঁদের আস্থা, ভালোবাসা ও এই মহৎ অবদানের জন্য আমরা চিরকৃতজ্ঞ।”',
-      significance: 'সরকারি রেজিস্ট্রেশন এবং নিজস্ব ভূসম্পত্তির মালিকানা লাভ করে ক্লাবের প্রাতিষ্ঠানিক ভিত্তি চিরতরে সুদৃঢ় হয়।',
+      significance: 'সরকারি রেজিস্ট্রেশন (S/1L/303103) এবং নিজস্ব ভূসম্পত্তির মালিকানা লাভ করে ক্লাবের প্রাতিষ্ঠানিক ভিত্তি চিরতরে সুদৃঢ় হয়।',
     },
     en: {
       title: 'First Official Registration & Historic Land Donation',
-      tagline: 'Statutory Incorporation & 6 Decimals of Land Donated by Sri Kartik Chandra Jana & Sri Debendranath Jana',
+      tagline: 'First Reg. No: S/1L/303103 & 6 Decimals Land Donated by Sri Kartik Chandra Jana & Sri Debendranath Jana',
       story: [
-        'In 1979, the organization reached a monumental milestone by securing its first official Society Registration Number from the state government.',
+        'In 1979, the organization reached a monumental milestone by securing its first official Society Registration Number (S/1L/303103) from the state government, gaining statutory recognition.',
         'In the very same historic year, inspired by deep affection and trust in the Sangha’s humanitarian deeds, two noble benefactors—Sri Kartik Chandra Jana and Sri Debendranath Jana—donated 6 decimals of prime land to the organization.',
         'Their magnanimous gift established the permanent foundation for all subsequent community infrastructure and youth welfare projects.',
       ],
+      badge: '📜 First Registration No: S/1L/303103',
       donors: ['1. Sri Kartik Chandra Jana', '2. Sri Debendranath Jana'],
       quote: '"As long as Khejurda Narayan Sangha exists, we shall forever remember their noble deed with veneration. For their boundless faith and generosity, we remain eternally indebted."',
-      significance: 'Armed with legal registration and real-estate ownership, the club was permanently rooted in the geography and future of the region.',
+      significance: 'Armed with legal registration (S/1L/303103) and real-estate ownership, the club was permanently rooted in the geography and future of the region.',
     },
   },
   {
@@ -322,7 +324,7 @@ export const HISTORY_TIMELINE: HistoryMilestone[] = [
       tagline: 'স্যানিটেশন প্রকল্প, রেজিস্ট্রেশন নবীকরণের সংকট ও কঠিন পরীক্ষা',
       story: [
         '২০০৯ সালে বিবেকানন্দ যুব পরিষদ এলাকার ঘরে ঘরে স্বাস্থ্যকর পরিবেশ নিশ্চিত করতে রিং টয়লেট নির্মাণের একটি সরকারি সহায়তা প্রকল্প নিয়ে আমাদের সংগঠনের সঙ্গে যোগাযোগ করে।',
-        'প্রকল্পের সুবিধা গ্রহণের জন্য সংগঠনের রেজিস্ট্রেশন নম্বর চাওয়া হলে আমরা আমাদের পুরাতন নম্বর প্রদান করি। তখনই এক কঠিন সত্য উদঘাটিত হয়— দীর্ঘদিন ধরে ক্লাবের রেজিস্ট্রেশন নিয়মিত নবীকরণ করা হয়নি।',
+        'প্রকল্পের সুবিধা গ্রহণের জন্য সংগঠনের রেজিস্ট্রেশন নম্বর চাওয়া হলে আমরা আমাদের পুরাতন রেজিস্ট্রেশন নম্বর (S/1L/303103) প্রদান করি। তখনই এক কঠিন সত্য উদঘাটিত হয়— দীর্ঘদিন ধরে ক্লাবের রেজিস্ট্রেশন নিয়মিত নবীকরণ করা হয়নি।',
         'আইনগত জটিলতা ও দীর্ঘদিনের Renewal Fee এবং Penalty-র বিপুল পরিমাণ অর্থ সেই সময়ে বহন করা ক্লাবের পক্ষে অসম্ভব হয়ে ওঠে। উপরন্তু নতুন করে রেজিস্ট্রেশন করতে গিয়ে জানা যায়— পুরনো “খেজুরদা নারায়ণ সংঘ” নামটি হুবহু আর নিবন্ধন করা যাবে না।',
       ],
       quote: '“ঐতিহ্যকে বাঁচিয়ে রেখে কীভাবে নতুনভাবে পথচলা শুরু করা যায়?” — এই গভীর সংকটই আমাদের পুনর্গঠনের পথে নিয়ে যায়।',
@@ -333,7 +335,7 @@ export const HISTORY_TIMELINE: HistoryMilestone[] = [
       tagline: 'Sanitation Initiative, The Lapsed Registration Crisis & A Decisive Dilemma',
       story: [
         'In 2009, Vivekananda Yuba Parishad approached the club to partner on a government-supported initiative to construct hygienic ring-toilets in village households.',
-        'When administrative paperwork required society credentials, an unsettling revelation surfaced: the club’s statutory registration had lapsed due to unfiled renewals over several decades.',
+        'When administrative paperwork required society credentials, we provided our historical registration number (S/1L/303103). An unsettling revelation surfaced: the club’s statutory registration had lapsed due to unfiled renewals over several decades.',
         'The cumulative renewal fees and penal levies amounted to a sum far beyond the means of the village youth. Furthermore, statutory regulations barred re-registering under the exact historical name as a new entity.',
       ],
       quote: '"How could we preserve our cherished heritage while forging a legally compliant future?" — This existential crisis forced an organizational renaissance.',
