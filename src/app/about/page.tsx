@@ -24,6 +24,7 @@ import {
   EyeOutlined,
   VideoCameraOutlined,
   PictureOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { Footer } from '@/components/common/Footer';
@@ -38,11 +39,17 @@ import {
   BoishakhiYearData,
   BoishakhiVideo,
 } from '@/lib/events-data';
+import {
+  HISTORY_INTRO,
+  HISTORY_TIMELINE,
+  HISTORY_CONCLUSION,
+} from '@/lib/history-data';
 
 function AboutContent() {
   const { clubSettings, activityPosts, isLoading } = usePortal();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('activity');
+  const [historyLang, setHistoryLang] = useState<'bn' | 'en'>('bn');
 
   // Sub-tab state for KPNS CUP and Boishakhi Sandhya
   const [selectedCupYear, setSelectedCupYear] = useState<number>(2025);
@@ -52,10 +59,16 @@ function AboutContent() {
   const [previewPhoto, setPreviewPhoto] = useState<CupPhoto | null>(null);
   const [activeVideo, setActiveVideo] = useState<BoishakhiVideo | null>(null);
 
-  // Allow direct deep-link to any tab: e.g. /about?tab=kpnscup or /about?tab=boishakhi
+  // Allow direct deep-link to any tab: e.g. /about?tab=kpnscup or /about?tab=boishakhi or /about?tab=history
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab) setActiveTab(tab);
+    if (tab) {
+      if (tab === 'history' || tab === 'legacy') {
+        setActiveTab('overview');
+      } else {
+        setActiveTab(tab);
+      }
+    }
   }, [searchParams]);
 
   const currentCup: CupYearData =
@@ -139,8 +152,8 @@ function AboutContent() {
               {
                 key: 'overview',
                 label: (
-                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <TeamOutlined /> Organization & Legacy
+                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm text-[#3447AA]">
+                    <HistoryOutlined /> আমাদের ইতিহাসের পথচলা
                   </span>
                 ),
               },
@@ -226,90 +239,234 @@ function AboutContent() {
           </div>
         )}
 
-        {/* TAB 2: OVERVIEW & LEGACY */}
+        {/* TAB 2: আমাদের ইতিহাসের পথচলা (1932 — 2026) */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fade-in">
-            {/* Story Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-              <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                  Our Roots & Heritage
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight">
-                  Nine Decades of Voluntary Social Upliftment
-                </h2>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  <strong>KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA (KPNS)</strong> was established in{' '}
-                  <strong>1935</strong> by visionary community leaders to empower the rural
-                  dwellers of Khejurda, Egra, and neighboring villages of Purba Medinipur, West
-                  Bengal.
-                </p>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Operating entirely through selfless volunteer dedication, the Sangha conducts
-                  continuous programs in <strong>free pediatric healthcare</strong>,{' '}
-                  <strong>ophthalmic surgeries</strong>, <strong>child nutrition</strong>,{' '}
-                  <strong>literary publications</strong>, and{' '}
-                  <strong>felicitation of regional scholars</strong>.
-                </p>
+            {/* Header Card with Title and Bilingual Switch Button */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FBEAEB] text-[#3447AA] text-xs font-bold mb-2">
+                    <HistoryOutlined /> {historyLang === 'bn' ? 'ঐতিহাসিক পরিক্রমা' : 'Historical Chronicle'} • ১৯৩২ — ২০২৬
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+                    {historyLang === 'bn' ? 'আমাদের ইতিহাসের পথচলা' : 'The Journey of Our History'}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                    {historyLang === 'bn'
+                      ? 'একটি মন্দির থেকে সামাজিক প্রতিষ্ঠান—প্রায় এক শতাব্দীর গৌরবময় আত্মত্যাগের ইতিহাস।'
+                      : 'From a humble shrine to an enduring civic institution—nearly a century of selfless service.'}
+                  </p>
+                </div>
 
-                <div className="pt-2 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-full bg-[#FBEAEB] text-[#3447AA] text-xs font-bold">
-                    🏛️ Est. 1935
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold">
-                    📍 Purba Medinipur, West Bengal
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold">
-                    🤝 100% Volunteer Driven
-                  </span>
+                {/* Bengali & English Two-Language Switch Button */}
+                <div className="inline-flex items-center p-1 rounded-2xl bg-gray-100/90 border border-gray-200 self-start md:self-auto shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setHistoryLang('bn')}
+                    className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                      historyLang === 'bn'
+                        ? 'bg-[#3447AA] text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/60'
+                    }`}
+                  >
+                    <span>🇧🇩 বাংলা</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHistoryLang('en')}
+                    className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                      historyLang === 'en'
+                        ? 'bg-[#3447AA] text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/60'
+                    }`}
+                  >
+                    <span>🌐 English</span>
+                  </button>
                 </div>
               </div>
 
-              <div className="lg:col-span-5 bg-gradient-to-br from-[#FBEAEB] via-pink-50 to-white rounded-3xl p-6 sm:p-8 border border-pink-100 shadow-xs space-y-4">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <SafetyCertificateOutlined className="text-[#3447AA]" />
-                  Core Mission Pillars
-                </h3>
-                <div className="space-y-3">
-                  <div className="bg-white p-3.5 rounded-2xl border border-pink-100 shadow-2xs">
-                    <p className="text-xs font-bold text-gray-900">Child & Mother Health</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">
-                      Supporting Anganwadi ICDS centers and rural pediatric nutrition.
-                    </p>
+              {/* Lead Motto Banner */}
+              <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-pink-50/60 p-6 sm:p-8 rounded-3xl border border-blue-100/80 relative overflow-hidden">
+                <div className="absolute top-0 right-0 transform translate-x-8 -translate-y-8 w-44 h-44 bg-[#3447AA]/5 rounded-full blur-2xl pointer-events-none" />
+                <div className="max-w-3xl space-y-4 relative z-10">
+                  <div className="border-l-4 border-[#3447AA] pl-4 sm:pl-5 space-y-1">
+                    {HISTORY_INTRO[historyLang].leadQuote.split('\n').map((line, idx) => (
+                      <p key={idx} className="text-base sm:text-lg md:text-xl font-black text-gray-900 leading-snug">
+                        {line}
+                      </p>
+                    ))}
                   </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-pink-100 shadow-2xs">
-                    <p className="text-xs font-bold text-gray-900">Free Medical Relief</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">
-                      Free doctor checkups, eye surgery camps, and medicine distributions.
-                    </p>
-                  </div>
-                  <div className="bg-white p-3.5 rounded-2xl border border-pink-100 shadow-2xs">
-                    <p className="text-xs font-bold text-gray-900">Literature & Heritage</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">
-                      Felicitation of local scholars through Sudhi Samman & Saaraswat Arghya.
-                    </p>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed pt-1">
+                    {HISTORY_INTRO[historyLang].leadDescription}
+                  </p>
+                  <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-bold">
+                    <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
+                      🛕 ১৯৩২: নারায়ণ মন্দির
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
+                      🌱 ১৯৩৫: নারায়ণ সংঘ
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
+                      🏛️ ১৯৭৯: প্রথম রেজিস্ট্রেশন
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
+                      ❤️ ২০১০: KPNS পুনঃনামকরণ
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-white text-gray-800 border border-gray-200 shadow-2xs">
+                      🌐 ২০২৬: ডিজিটাল প্ল্যাটফর্ম
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Impact Metric Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center shadow-xs">
-                <p className="text-2xl sm:text-3xl font-black text-[#3447AA]">1935</p>
-                <p className="text-xs text-gray-500 font-semibold mt-1">Foundation Year</p>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center shadow-xs">
-                <p className="text-2xl sm:text-3xl font-black text-pink-600">500+</p>
-                <p className="text-xs text-gray-500 font-semibold mt-1">Kids Treated Annually</p>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center shadow-xs">
-                <p className="text-2xl sm:text-3xl font-black text-green-600">100%</p>
-                <p className="text-xs text-gray-500 font-semibold mt-1">Free Medical Aid</p>
-              </div>
-              <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center shadow-xs">
-                <p className="text-2xl sm:text-3xl font-black text-amber-600">90+ Yrs</p>
-                <p className="text-xs text-gray-500 font-semibold mt-1">Community Service</p>
+            {/* Vertical Chronological Timeline */}
+            <div className="space-y-6">
+              {HISTORY_TIMELINE.map((item, idx) => {
+                const content = item[historyLang];
+                return (
+                  <div
+                    key={item.yearNumber + '-' + idx}
+                    className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden"
+                  >
+                    {/* Top Row: Year Pill & Era Indicator */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="w-12 h-12 rounded-2xl bg-[#FBEAEB] text-2xl flex items-center justify-center shrink-0 shadow-2xs">
+                          {item.icon}
+                        </span>
+                        <div>
+                          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#3447AA]">
+                            {historyLang === 'bn' ? `${item.year} সাল` : `Year ${item.periodLabel || item.yearNumber}`}
+                          </span>
+                          <h3 className="text-lg sm:text-xl font-black text-gray-900 leading-snug">
+                            {content.title}
+                          </h3>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 rounded-xl bg-gray-100 text-gray-700 text-xs font-bold font-mono">
+                        {item.periodLabel || item.year}
+                      </span>
+                    </div>
+
+                    {/* Tagline */}
+                    <p className="text-xs sm:text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#3447AA]" />
+                      {content.tagline}
+                    </p>
+
+                    {/* Story Paragraphs */}
+                    <div className="space-y-2 text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      {content.story.map((para, pIdx) => (
+                        <p key={pIdx}>{para}</p>
+                      ))}
+                    </div>
+
+                    {/* Optional Quote / Highlight Callout */}
+                    {content.quote && (
+                      <div className="my-4 p-4 rounded-2xl bg-amber-50/70 border-l-4 border-amber-500 text-amber-900 text-xs sm:text-sm font-medium italic leading-relaxed">
+                        {content.quote}
+                      </div>
+                    )}
+
+                    {/* Optional Bullet Points (Activities / Facilities) */}
+                    {content.bulletPoints && content.bulletPoints.length > 0 && (
+                      <div className="my-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {content.bulletPoints.map((bp, bIdx) => (
+                          <div
+                            key={bIdx}
+                            className="bg-gray-50 p-2.5 px-3.5 rounded-xl border border-gray-100 text-xs text-gray-700 font-semibold flex items-center gap-2"
+                          >
+                            <span>{bp}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Optional Donors / Benefactors Box */}
+                    {content.donors && content.donors.length > 0 && (
+                      <div className="my-4 p-4 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-2">
+                        <p className="text-xs font-extrabold uppercase tracking-wider text-[#3447AA] flex items-center gap-1.5">
+                          <span>🙏</span> {historyLang === 'bn' ? 'মহৎ দাতা ও পৃষ্ঠপোষকদের প্রতি শ্রদ্ধা:' : 'Honoring the Noble Donors & Benefactors:'}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {content.donors.map((donor, dIdx) => (
+                            <span
+                              key={dIdx}
+                              className="px-3 py-1 rounded-xl bg-white text-gray-900 font-black text-xs border border-blue-200/80 shadow-2xs"
+                            >
+                              {donor}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Optional Badge (e.g. Registration No or Active Construction) */}
+                    {content.badge && (
+                      <div className="my-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
+                        {content.badge}
+                      </div>
+                    )}
+
+                    {/* Historical Significance Footer */}
+                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-start gap-2 text-xs">
+                      <span className="font-black text-gray-900 shrink-0">
+                        {historyLang === 'bn' ? 'ঐতিহাসিক গুরুত্ব:' : 'Historical Significance:'}
+                      </span>
+                      <span className="text-gray-600 font-medium leading-relaxed">
+                        {content.significance}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Grand Conclusion & Manifesto Card */}
+            <div className="bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#1E1B4B] text-white rounded-3xl p-6 sm:p-10 shadow-lg border border-slate-700 space-y-6">
+              <div className="max-w-3xl mx-auto text-center space-y-4">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-bold border border-white/20">
+                  ⭐ {HISTORY_CONCLUSION[historyLang].title}
+                </span>
+
+                <div className="py-2 space-y-1.5">
+                  {HISTORY_CONCLUSION[historyLang].poem.map((line, idx) => (
+                    <p
+                      key={idx}
+                      className={`font-black ${
+                        idx === HISTORY_CONCLUSION[historyLang].poem.length - 1
+                          ? 'text-xl sm:text-2xl md:text-3xl text-amber-300 pt-2 tracking-wide'
+                          : 'text-sm sm:text-base md:text-lg text-slate-200'
+                      }`}
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto whitespace-pre-line">
+                  {HISTORY_CONCLUSION[historyLang].gratitudeText}
+                </p>
+
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/15 my-4">
+                  <p className="text-sm sm:text-base font-black text-amber-200 italic">
+                    {HISTORY_CONCLUSION[historyLang].creed}
+                  </p>
+                  <p className="text-xs text-slate-300 whitespace-pre-line mt-2 leading-relaxed">
+                    {HISTORY_CONCLUSION[historyLang].mantra}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-white/15">
+                  <h4 className="text-base sm:text-lg font-black text-white">
+                    {HISTORY_CONCLUSION[historyLang].footerBrand}
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {HISTORY_CONCLUSION[historyLang].footerSub}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
