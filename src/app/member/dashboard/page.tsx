@@ -14,6 +14,8 @@ import {
   RightOutlined,
   SafetyCertificateFilled,
   WalletOutlined,
+  CrownFilled,
+  TeamOutlined,
 } from '@ant-design/icons';
 import { MemberLayout } from '@/components/layouts/MemberLayout';
 import { ProfileCompletionCard } from '@/components/common/ProfileCompletionCard';
@@ -23,7 +25,7 @@ import { formatDate } from '@/lib/utils';
 import { KPNS_COLORS } from '@/lib/constants';
 
 export default function MemberDashboardPage() {
-  const { currentUser, clubSettings } = usePortal();
+  const { currentUser, members, clubSettings } = usePortal();
 
   // Greeting based on time
   const getGreeting = () => {
@@ -33,7 +35,7 @@ export default function MemberDashboardPage() {
     return 'Good Evening';
   };
 
-  const user = currentUser || {
+  const fallbackUser = {
     name: 'Pintu Patra',
     memberId: 'KPNS75PP26',
     fromNo: '75',
@@ -44,6 +46,22 @@ export default function MemberDashboardPage() {
     profileCompletion: 85,
     missingFields: ['City missing', 'Police Station missing'],
     avatarUrl: undefined as string | undefined,
+    committeeRole: undefined as string | undefined,
+    committeeVision: undefined as string | undefined,
+  };
+
+  // Find live record from members list to ensure latest committeeRole is synced
+  const liveMember = members?.find(
+    (m) =>
+      (currentUser?.memberId && m.memberId?.toLowerCase() === currentUser.memberId.toLowerCase()) ||
+      (currentUser?.id && m.id === currentUser.id) ||
+      (currentUser?.userId && m.userId?.toLowerCase() === currentUser.userId.toLowerCase())
+  );
+
+  const user = {
+    ...fallbackUser,
+    ...(currentUser || {}),
+    ...(liveMember || {}),
   };
 
   return (
@@ -52,9 +70,17 @@ export default function MemberDashboardPage() {
         {/* Powder Pink Welcome Card (Specification Section 9) */}
         <div className="bg-[#FBEAEB] rounded-3xl p-6 sm:p-8 border border-pink-200/80 shadow-xs relative overflow-hidden">
           <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-[#3447AA] text-xs font-bold shadow-xs">
-                <span>👋 {getGreeting()}, {user.name?.split(' ')[0]}</span>
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-[#3447AA] text-xs font-bold shadow-xs">
+                  <span>👋 {getGreeting()}, {user.name?.split(' ')[0]}</span>
+                </div>
+                {user.committeeRole && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-black shadow-xs">
+                    <CrownFilled className="text-amber-100" />
+                    <span>{user.committeeRole}</span>
+                  </div>
+                )}
               </div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 leading-tight">
                 Welcome to
@@ -76,6 +102,51 @@ export default function MemberDashboardPage() {
           </div>
         </div>
 
+        {/* Current Committee Role Spotlight Banner */}
+        {user.committeeRole && (
+          <div className="bg-gradient-to-r from-amber-50 via-amber-100/50 to-orange-50 rounded-3xl p-5 sm:p-6 border border-amber-300/80 shadow-xs relative overflow-hidden">
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center text-2xl shadow-sm shrink-0">
+                  <CrownFilled />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-full border border-amber-300">
+                      Current Committee Role
+                    </span>
+                    <span className="text-xs text-amber-800 font-semibold hidden sm:inline">
+                      Managing Committee Body
+                    </span>
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-black text-gray-900 mt-1 flex items-center gap-2">
+                    {user.committeeRole}
+                  </h2>
+                  {user.committeeVision ? (
+                    <p className="text-xs text-amber-950/85 italic mt-1 font-medium leading-relaxed max-w-2xl">
+                      &ldquo;{user.committeeVision}&rdquo;
+                    </p>
+                  ) : (
+                    <p className="text-xs text-amber-800/80 mt-1">
+                      Official Executive Portfolio &bull; Khejurda Pallyunnayan Narayan Sangha
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+                <Link
+                  href="/team"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-amber-50 text-[#3447AA] border border-amber-200 text-xs font-bold shadow-2xs transition"
+                >
+                  <TeamOutlined />
+                  <span>View Team KPNS</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Membership Summary Card (Specification Section 9) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
@@ -88,10 +159,18 @@ export default function MemberDashboardPage() {
                   {user.memberId}
                 </p>
               </div>
-              <StatusTag status={user.status} />
+              <div className="flex flex-col items-end gap-1.5">
+                <StatusTag status={user.status} />
+                {user.committeeRole && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 text-[11px] font-extrabold border border-amber-300 shadow-2xs">
+                    <CrownFilled className="text-amber-500 text-[10px]" />
+                    {user.committeeRole}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+            <div className={`grid ${user.committeeRole ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2'} gap-3 pt-3 border-t border-gray-100`}>
               <div className="bg-gray-50 p-3 rounded-2xl">
                 <p className="text-[10px] font-bold uppercase text-gray-400">FORM NO.</p>
                 <p className="text-base font-extrabold text-gray-800 mt-0.5">{user.fromNo || '—'}</p>
@@ -102,6 +181,14 @@ export default function MemberDashboardPage() {
                   {formatDate(user.admissionDate)}
                 </p>
               </div>
+              {user.committeeRole && (
+                <div className="bg-amber-50/80 p-3 rounded-2xl border border-amber-200/70 col-span-2 sm:col-span-1">
+                  <p className="text-[10px] font-bold uppercase text-amber-800">COMMITTEE ROLE</p>
+                  <p className="text-sm font-extrabold text-amber-900 mt-0.5 truncate" title={user.committeeRole}>
+                    {user.committeeRole}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
