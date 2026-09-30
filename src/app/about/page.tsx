@@ -1158,7 +1158,7 @@ function AboutContent() {
         footer={null}
         width={800}
         centered
-        destroyOnClose
+        destroyOnHidden
         className="rounded-3xl overflow-hidden"
       >
         {activeVideo && (
