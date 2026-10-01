@@ -48,7 +48,7 @@ import {
 function AboutContent() {
   const { clubSettings, activityPosts, isLoading } = usePortal();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState('activity');
+  const [activeTab, setActiveTab] = useState('overview');
   const [historyLang, setHistoryLang] = useState<'bn' | 'en'>('bn');
 
   // Sub-tab state for KPNS CUP and Boishakhi Sandhya
@@ -142,14 +142,6 @@ function AboutContent() {
             centered
             items={[
               {
-                key: 'activity',
-                label: (
-                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <NotificationOutlined /> Recent Activity
-                  </span>
-                ),
-              },
-              {
                 key: 'overview',
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm text-[#3447AA]">
@@ -158,10 +150,10 @@ function AboutContent() {
                 ),
               },
               {
-                key: 'icds',
+                key: 'activity',
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                    <SmileOutlined /> ICDS & Child Welfare
+                    <NotificationOutlined /> Recent Activity
                   </span>
                 ),
               },
@@ -178,6 +170,14 @@ function AboutContent() {
                 label: (
                   <span className="font-bold flex items-center gap-2 text-xs sm:text-sm text-rose-700">
                     <PlayCircleOutlined className="text-rose-500" /> বৈশাখী সন্ধ্যা
+                  </span>
+                ),
+              },
+              {
+                key: 'icds',
+                label: (
+                  <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
+                    <SmileOutlined /> ICDS & Child Welfare
                   </span>
                 ),
               },
@@ -201,45 +201,7 @@ function AboutContent() {
           />
         </div>
 
-        {/* TAB 1: RECENT ACTIVITY */}
-        {activeTab === 'activity' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="text-center mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                News &amp; Programs
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Recent Activity</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Latest events, health camps, and community initiatives by KPNS.
-              </p>
-            </div>
-
-            {isLoading ? (
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 flex justify-center">
-                <Spin size="large" />
-              </div>
-            ) : activityPosts.filter((p) => p.published).length === 0 ? (
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16">
-                <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={
-                    <p className="text-gray-500 text-sm">No activity posts yet. Check back soon!</p>
-                  }
-                />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {activityPosts
-                  .filter((p) => p.published)
-                  .map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 2: আমাদের ইতিহাসের পথচলা (1932 — 2026) */}
+        {/* TAB 1: আমাদের ইতিহাসের পথচলা (1932 — 2026) */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fade-in">
             {/* Header Card with Title and Bilingual Switch Button */}
@@ -472,49 +434,45 @@ function AboutContent() {
           </div>
         )}
 
-        {/* TAB 3: ICDS & CHILD DEVELOPMENT */}
-        {activeTab === 'icds' && (
+        {/* TAB 2: RECENT ACTIVITY */}
+        {activeTab === 'activity' && (
           <div className="space-y-6 animate-fade-in">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-6">
-              <div className="border-b border-gray-100 pb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
-                  Child Welfare Focus
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">
-                  Integrated Child Development Scheme (ICDS)
-                </h2>
-                <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                  Inaugurated under national welfare guidelines, the Integrated Child Development
-                  Scheme (ICDS) ensures pre-school education to every child, eradicates
-                  malnourishment, and monitors the healthcare of expectant and nursing mothers
-                  across local Anganwadi centers.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="text-base font-bold text-gray-900">Key Objectives & Community Commitments:</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {icdsObjectives.map((obj, i) => (
-                    <div
-                      key={i}
-                      className="bg-[#F8FAFC] p-4 rounded-2xl border border-gray-200 flex items-start gap-3"
-                    >
-                      <div className="w-7 h-7 rounded-full bg-[#3447AA] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                        {i + 1}
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-gray-900">{obj.title}</h4>
-                        <p className="text-xs text-gray-600 mt-1 leading-relaxed">{obj.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="text-center mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                News &amp; Programs
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">Recent Activity</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Latest events, health camps, and community initiatives by KPNS.
+              </p>
             </div>
+
+            {isLoading ? (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 flex justify-center">
+                <Spin size="large" />
+              </div>
+            ) : activityPosts.filter((p) => p.published).length === 0 ? (
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16">
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <p className="text-gray-500 text-sm">No activity posts yet. Check back soon!</p>
+                  }
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {activityPosts
+                  .filter((p) => p.published)
+                  .map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* TAB 4: KPNS CUP (Added right after ICDS) */}
+        {/* TAB 3: KPNS CUP */}
         {activeTab === 'kpnscup' && (
           <div className="space-y-6 animate-fade-in">
             {/* Introductory Card with exact text */}
@@ -719,7 +677,7 @@ function AboutContent() {
           </div>
         )}
 
-        {/* TAB 5: বৈশাখী সন্ধ্যা (Added right after KPNS CUP) */}
+        {/* TAB 4: বৈশাখী সন্ধ্যা */}
         {activeTab === 'boishakhi' && (
           <div className="space-y-6 animate-fade-in">
             {/* Introductory Card with exact text */}
@@ -977,6 +935,48 @@ function AboutContent() {
                     </a>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: ICDS & CHILD WELFARE */}
+        {activeTab === 'icds' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-6">
+              <div className="border-b border-gray-100 pb-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA]">
+                  Child Welfare Focus
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">
+                  Integrated Child Development Scheme (ICDS)
+                </h2>
+                <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                  Inaugurated under national welfare guidelines, the Integrated Child Development
+                  Scheme (ICDS) ensures pre-school education to every child, eradicates
+                  malnourishment, and monitors the healthcare of expectant and nursing mothers
+                  across local Anganwadi centers.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="text-base font-bold text-gray-900">Key Objectives & Community Commitments:</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {icdsObjectives.map((obj, i) => (
+                    <div
+                      key={i}
+                      className="bg-[#F8FAFC] p-4 rounded-2xl border border-gray-200 flex items-start gap-3"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-[#3447AA] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                        {i + 1}
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-gray-900">{obj.title}</h4>
+                        <p className="text-xs text-gray-600 mt-1 leading-relaxed">{obj.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

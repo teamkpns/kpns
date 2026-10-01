@@ -9,7 +9,7 @@ import {
   Form,
   Select,
   DatePicker,
-  message,
+  App,
   Divider,
   Tag,
   Empty,
@@ -38,6 +38,7 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 export default function AdminApplicationsPage() {
+  const { message } = App.useApp();
   const { applications, approveApplication, rejectApplication } = usePortal();
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState('');

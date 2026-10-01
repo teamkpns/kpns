@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Form, Input, Button, Checkbox, message } from 'antd';
+import { Form, Input, Button, Checkbox, App } from 'antd';
 import {
   UserOutlined,
   LockOutlined,
@@ -16,6 +16,7 @@ import { KPNSLogo } from '@/components/common/KPNSLogo';
 import { usePortal } from '@/context/portal-context';
 
 export default function LoginPage() {
+  const { message } = App.useApp();
   const router = useRouter();
   const { login, clubSettings } = usePortal();
   const [form] = Form.useForm();

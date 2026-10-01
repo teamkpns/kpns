@@ -9,7 +9,7 @@ import {
   Select,
   DatePicker,
   Button,
-  message,
+  App,
   Card,
   Tag,
   Alert,
@@ -40,6 +40,7 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 function ProfileContent() {
+  const { message } = App.useApp();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || 'membership';
   const [activeTab, setActiveTab] = useState(initialTab);

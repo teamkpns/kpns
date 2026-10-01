@@ -11,7 +11,7 @@ import {
   DatePicker,
   Button,
   Checkbox,
-  message,
+  App,
   Card,
   Divider,
   Alert,
@@ -37,6 +37,7 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 export default function RegisterPage() {
+  const { message } = App.useApp();
   const router = useRouter();
   const { submitApplication, members } = usePortal();
   const [currentStep, setCurrentStep] = useState(0);

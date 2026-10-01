@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Form, Input, Button, message, Card } from 'antd';
+import { Form, Input, Button, App, Card } from 'antd';
 import {
   EnvironmentOutlined,
   PhoneOutlined,
@@ -25,6 +25,7 @@ import { SOCIAL_LINKS, CLUB_COORDINATES } from '@/lib/constants';
 const { TextArea } = Input;
 
 export default function ContactPage() {
+  const { message } = App.useApp();
   const { clubSettings, submitContactMessage } = usePortal();
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);

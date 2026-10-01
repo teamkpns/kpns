@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Form, Input, Button, Switch, Tabs, message, Card, Divider } from 'antd';
+import { Form, Input, Button, Switch, Tabs, App, Card, Divider } from 'antd';
 import {
   SettingOutlined,
   SaveOutlined,
@@ -18,6 +18,7 @@ import { KPNSLogo } from '@/components/common/KPNSLogo';
 import { usePortal } from '@/context/portal-context';
 
 export default function AdminSettingsPage() {
+  const { message } = App.useApp();
   const { clubSettings, updateClubSettings } = usePortal();
   const [form] = Form.useForm();
   const [saving, setSaving] = useState(false);

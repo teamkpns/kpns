@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Form, Input, Button, Progress, message, Alert } from 'antd';
+import { Form, Input, Button, Progress, App, Alert } from 'antd';
 import {
   LockOutlined,
   KeyOutlined,
@@ -14,6 +14,7 @@ import { evaluatePasswordStrength } from '@/lib/utils';
 import { usePortal } from '@/context/portal-context';
 
 export default function MemberPasswordPage() {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [newPassword, setNewPassword] = useState('');

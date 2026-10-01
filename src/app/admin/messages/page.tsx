@@ -9,7 +9,7 @@ import {
   Select,
   Modal,
   Popconfirm,
-  message,
+  App,
   Empty,
   Badge,
 } from 'antd';
@@ -32,6 +32,7 @@ import { ContactMessage } from '@/types';
 const { Option } = Select;
 
 export default function AdminMessagesPage() {
+  const { message } = App.useApp();
   const { contactMessages, markContactMessageAsRead, deleteContactMessage, refreshData } = usePortal();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'UNREAD' | 'READ'>('ALL');

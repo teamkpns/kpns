@@ -9,7 +9,7 @@ import {
   Modal,
   Form,
   DatePicker,
-  message,
+  App,
   Tabs,
   Avatar,
   Tag,
@@ -49,6 +49,7 @@ import dayjs from 'dayjs';
 const { Option } = Select;
 
 export default function AdminMembersPage() {
+  const { message } = App.useApp();
   const {
     members,
     updateMemberProfile,

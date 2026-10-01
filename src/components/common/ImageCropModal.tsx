@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Modal, Button, Slider, message } from 'antd';
+import { Modal, Button, Slider, App } from 'antd';
 import {
   UploadOutlined,
   ZoomInOutlined,
@@ -31,6 +31,7 @@ export function ImageCropModal({
   title,
   submitText,
 }: ImageCropModalProps) {
+  const { message } = App.useApp();
   const is16by9 = aspectRatio === '16:9';
 
   // Sizing definitions

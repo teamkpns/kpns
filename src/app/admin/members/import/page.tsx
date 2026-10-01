@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button, Upload, Table, Alert, message, Tag, Steps, Card } from 'antd';
+import { Button, Upload, Table, Alert, App, Tag, Steps, Card } from 'antd';
 import {
   UploadOutlined,
   FileExcelOutlined,
@@ -18,6 +18,7 @@ import { Member } from '@/types';
 import { calculateProfileCompletion } from '@/lib/utils';
 
 export default function MemberImportPage() {
+  const { message } = App.useApp();
   const router = useRouter();
   const { importMembersList } = usePortal();
   const [fileList, setFileList] = useState<any[]>([]);

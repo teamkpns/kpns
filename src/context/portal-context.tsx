@@ -21,7 +21,7 @@ import {
 } from '@/lib/constants';
 import { calculateProfileCompletion, generateSuggestedMemberId } from '@/lib/utils';
 import { supabase } from '@/lib/supabase/client';
-import { message } from 'antd';
+import { App } from 'antd';
 
 interface PortalContextType {
   currentUser: Member | null;
@@ -79,6 +79,7 @@ interface PortalContextType {
 const PortalContext = createContext<PortalContextType | undefined>(undefined);
 
 export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { message } = App.useApp();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [members, setMembers] = useState<Member[]>(() => {

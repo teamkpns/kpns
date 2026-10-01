@@ -11,7 +11,7 @@ import {
   Popconfirm,
   Tag,
   Empty,
-  message,
+  App,
 } from 'antd';
 import {
   PlusOutlined,
@@ -37,6 +37,7 @@ import { ImageCropModal } from '@/components/common/ImageCropModal';
 const { TextArea } = Input;
 
 export default function AdminPostsPage() {
+  const { message } = App.useApp();
   const {
     activityPosts,
     createActivityPost,
