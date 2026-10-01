@@ -170,21 +170,21 @@ export default function MemberDashboardPage() {
               </div>
             </div>
 
-            <div className={`grid ${user.committeeRole ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2'} gap-3 pt-3 border-t border-gray-100`}>
+            <div className={`grid ${user.committeeRole ? 'grid-cols-3' : 'grid-cols-2'} gap-3 pt-3 border-t border-gray-100`}>
               <div className="bg-gray-50 p-3 rounded-2xl">
                 <p className="text-[10px] font-bold uppercase text-gray-400">FORM NO.</p>
                 <p className="text-base font-extrabold text-gray-800 mt-0.5">{user.fromNo || '—'}</p>
               </div>
               <div className="bg-gray-50 p-3 rounded-2xl">
                 <p className="text-[10px] font-bold uppercase text-gray-400">ADMISSION DATE</p>
-                <p className="text-base font-extrabold text-gray-800 mt-0.5">
+                <p className="text-sm font-extrabold text-gray-800 mt-0.5 leading-snug">
                   {formatDate(user.admissionDate)}
                 </p>
               </div>
               {user.committeeRole && (
-                <div className="bg-amber-50/80 p-3 rounded-2xl border border-amber-200/70 col-span-2 sm:col-span-1">
+                <div className="bg-amber-50/80 p-3 rounded-2xl border border-amber-200/70">
                   <p className="text-[10px] font-bold uppercase text-amber-800">COMMITTEE ROLE</p>
-                  <p className="text-sm font-extrabold text-amber-900 mt-0.5 truncate" title={user.committeeRole}>
+                  <p className="text-sm font-extrabold text-amber-900 mt-0.5 truncate leading-snug" title={user.committeeRole}>
                     {user.committeeRole}
                   </p>
                 </div>
