@@ -12,7 +12,6 @@ import {
   LoadingOutlined,
   SwapOutlined,
   WalletOutlined,
-  CrownFilled,
 } from '@ant-design/icons';
 import { Button, Avatar, Spin } from 'antd';
 import { Header } from '@/components/common/Header';
@@ -23,17 +22,9 @@ import { KPNS_COLORS } from '@/lib/constants';
 export const MemberLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { currentUser, currentRole, isLoading, notifications, logout, switchDemoUser, members } = usePortal();
+  const { currentUser, currentRole, isLoading, notifications, logout, switchDemoUser } = usePortal();
   const unread = notifications.filter((n) => !n.read).length;
   const isAdmin = currentRole === 'ADMIN';
-
-  const liveMember = members?.find(
-    (m) =>
-      (currentUser?.memberId && m.memberId?.toLowerCase() === currentUser.memberId.toLowerCase()) ||
-      (currentUser?.id && m.id === currentUser.id) ||
-      (currentUser?.userId && m.userId?.toLowerCase() === currentUser.userId.toLowerCase())
-  );
-  const committeeRole = liveMember?.committeeRole || currentUser?.committeeRole;
 
   // Protect member routes: Only authenticated users can view
   useEffect(() => {
@@ -85,17 +76,9 @@ export const MemberLayout: React.FC<{ children: React.ReactNode }> = ({ children
                     <p className="text-[11px] text-[#3447AA] font-mono font-semibold">
                       {currentUser.memberId}
                     </p>
-                    <div className="flex flex-wrap items-center gap-1 mt-0.5">
-                      <span className="inline-block text-[9px] font-extrabold uppercase px-1.5 py-0.2 bg-white text-[#3447AA] rounded">
-                        {currentUser.role}
-                      </span>
-                      {committeeRole && (
-                        <span className="inline-flex items-center gap-0.5 text-[9px] font-black uppercase px-1.5 py-0.2 bg-amber-200 text-amber-900 rounded border border-amber-300">
-                          <CrownFilled className="text-amber-600 text-[8px]" />
-                          {committeeRole}
-                        </span>
-                      )}
-                    </div>
+                    <span className="inline-block mt-0.5 text-[9px] font-extrabold uppercase px-1.5 py-0.2 bg-white text-[#3447AA] rounded">
+                      {currentUser.role}
+                    </span>
                   </div>
                 </div>
               </div>
