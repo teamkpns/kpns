@@ -226,24 +226,44 @@ function AboutContent() {
                   <button
                     type="button"
                     onClick={() => setHistoryLang('bn')}
-                    className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
                       historyLang === 'bn'
                         ? 'bg-[#3447AA] text-white shadow-sm'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/60'
                     }`}
+                    title="বাংলা (Bengali)"
                   >
-                    <span>🇧🇩 বাংলা</span>
+                    <span
+                      className={`w-5 h-5 rounded-md flex items-center justify-center font-black text-xs leading-none shrink-0 ${
+                        historyLang === 'bn'
+                          ? 'bg-white/20 text-white'
+                          : 'bg-white text-[#3447AA] shadow-2xs'
+                      }`}
+                    >
+                      ব
+                    </span>
+                    <span>বাংলা</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setHistoryLang('en')}
-                    className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
                       historyLang === 'en'
                         ? 'bg-[#3447AA] text-white shadow-sm'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/60'
                     }`}
+                    title="English"
                   >
-                    <span>🌐 English</span>
+                    <span
+                      className={`w-5 h-5 rounded-md flex items-center justify-center font-black text-xs leading-none shrink-0 font-sans ${
+                        historyLang === 'en'
+                          ? 'bg-white/20 text-white'
+                          : 'bg-white text-[#3447AA] shadow-2xs'
+                      }`}
+                    >
+                      E
+                    </span>
+                    <span>English</span>
                   </button>
                 </div>
               </div>
