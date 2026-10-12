@@ -45,6 +45,88 @@ import {
   HISTORY_CONCLUSION,
 } from '@/lib/history-data';
 
+interface CampPhotoItem {
+  id: string;
+  title: string;
+  caption: string;
+  category: string;
+  imageUrl: string;
+  facebookUrl: string;
+  isRealCampPhoto?: boolean;
+}
+
+const HEALTH_CAMP_PHOTOS: CampPhotoItem[] = [
+  {
+    id: 'health-p1',
+    title: 'Dr. Debabrata Karan (Child Specialist) Consulting Patients',
+    caption: 'Renowned Pediatric Specialist Dr. Debabrata Karan conducting clinical diagnosis, physical checkups, and prescription care for rural children at KPNS camp.',
+    category: 'Pediatric Health Camp',
+    imageUrl: '/img/slideshow4.jpg',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+    isRealCampPhoto: true,
+  },
+  {
+    id: 'health-p2',
+    title: 'Pediatric Wellness & Stethoscope Screening',
+    caption: 'Specialized chest, pulse, and health screening tailored for economically backward village infants and children.',
+    category: 'Health Check-up',
+    imageUrl: 'https://lh3.googleusercontent.com/d/1wW8SVPu49-15-lAzsIkB9zQBLH2o0SH8',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+  },
+  {
+    id: 'health-p3',
+    title: 'Free Medicine Aid & Prescription Distribution',
+    caption: 'Dispensing essential pediatric tonics, antibiotics, and vitamins directly arranged and funded by KPNS.',
+    category: 'Free Medical Aid',
+    imageUrl: 'https://lh3.googleusercontent.com/d/15Fn60Jr1kCqDKw8qdttRiuIMgHkKVhBc',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+  },
+  {
+    id: 'health-p4',
+    title: 'Maternal & Child Nutritional Guidance',
+    caption: 'Empowering mothers with crucial nutritional education in partnership with rural ASHA Karmees and ICDS workers.',
+    category: 'Child Welfare',
+    imageUrl: 'https://lh3.googleusercontent.com/d/15gUpc2-bX-jV2h5tlCgykuaj1bHfTUe9',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+  },
+];
+
+const EYE_CAMP_PHOTOS: CampPhotoItem[] = [
+  {
+    id: 'eye-p1',
+    title: 'Ophthalmic Examination Camp with Lions Club of EGRA',
+    caption: 'Specialist eye examination and ophthalmoscopy hosted at KPNS club premises for visually challenged villagers.',
+    category: 'Eye Check-up Camp',
+    imageUrl: '/img/slideshow1.jpg',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+    isRealCampPhoto: true,
+  },
+  {
+    id: 'eye-p2',
+    title: 'Eyesight Refraction & Vision Testing',
+    caption: 'Detailed vision diagnosis and refractive error evaluation conducted for elderly rural patients.',
+    category: 'Vision Testing',
+    imageUrl: 'https://lh3.googleusercontent.com/d/1QRF0nlb7AUI_99VJJmLzhEHJZ506FoUw',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+  },
+  {
+    id: 'eye-p3',
+    title: 'Free Prescription Eyeglasses Distribution',
+    caption: 'Distributing customized vision-correcting spectacles and eye drops funded and arranged by KPNS.',
+    category: 'Free Eyeglasses',
+    imageUrl: 'https://lh3.googleusercontent.com/d/1sq7seLSOHNrNtQhtd7EKb2B-8UV76QQT',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+  },
+  {
+    id: 'eye-p4',
+    title: 'Cataract Operation & Surgical Hospital Coordination',
+    caption: 'Facilitating cataract operations, patient transit, and specialized surgical care with partner eye hospitals.',
+    category: 'Cataract Surgery',
+    imageUrl: 'https://lh3.googleusercontent.com/d/10lCOATuCygbN7TWY7eGsfHqK2gKVkTZ4',
+    facebookUrl: 'https://www.facebook.com/kpns.club',
+  },
+];
+
 function AboutContent() {
   const { clubSettings, activityPosts, isLoading } = usePortal();
   const searchParams = useSearchParams();
@@ -56,7 +138,7 @@ function AboutContent() {
   const [selectedBoishakhiYear, setSelectedBoishakhiYear] = useState<string>('১৪৩২');
 
   // Modals for interactive previews
-  const [previewPhoto, setPreviewPhoto] = useState<CupPhoto | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<CupPhoto | CampPhotoItem | null>(null);
   const [activeVideo, setActiveVideo] = useState<BoishakhiVideo | null>(null);
 
   // Allow direct deep-link to any tab: e.g. /about?tab=kpnscup or /about?tab=boishakhi or /about?tab=history
@@ -1007,48 +1089,160 @@ function AboutContent() {
           <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Pediatric Health Camps */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl">
-                  <MedicineBoxOutlined />
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-5 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl">
+                    <MedicineBoxOutlined />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Free Health Camps for Children</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    KPNS regularly organizes free health check-up camps specifically tailored for the
+                    economically backward children of our locality. Sick children are diagnosed and
+                    provided with <strong>free medical aid and prescription medicines</strong> directly
+                    from our organization.
+                  </p>
+                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs space-y-1 text-gray-700">
+                    <p>
+                      <strong>Medical Specialist Partner:</strong> Dr. Debabrata Karan (Renowned Child
+                      Specialist, Ramnagar State General Hospital).
+                    </p>
+                    <p>
+                      <strong>Field Support:</strong> Active assistance from rural ASHA Karmees and ICDS
+                      workers.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Free Health Camps for Children</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  KPNS regularly organizes free health check-up camps specifically tailored for the
-                  economically backward children of our locality. Sick children are diagnosed and
-                  provided with <strong>free medical aid and prescription medicines</strong> directly
-                  from our organization.
-                </p>
-                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs space-y-1 text-gray-700">
-                  <p>
-                    <strong>Medical Specialist Partner:</strong> Dr. Debabrata Karan (Renowned Child
-                    Specialist, Ramnagar State General Hospital).
-                  </p>
-                  <p>
-                    <strong>Field Support:</strong> Active assistance from rural ASHA Karmees and ICDS
-                    workers.
-                  </p>
+
+                {/* Small Collage Pictures */}
+                <div className="space-y-2.5 pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-pink-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <PictureOutlined /> Photo Highlights
+                    </span>
+                    <span className="text-[10px] text-gray-400">Click photo to enlarge</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {HEALTH_CAMP_PHOTOS.map((photo) => (
+                      <div
+                        key={photo.id}
+                        onClick={() => setPreviewPhoto(photo)}
+                        className="group relative aspect-4/3 rounded-xl overflow-hidden bg-gray-100 border border-gray-200/90 cursor-pointer shadow-2xs hover:shadow-md transition-all flex flex-col"
+                        title={photo.title}
+                      >
+                        <img
+                          src={photo.imageUrl}
+                          alt={photo.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {photo.isRealCampPhoto && (
+                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-[#3447AA]/90 backdrop-blur-xs text-white text-[8px] font-extrabold uppercase tracking-wider z-10 shadow-2xs">
+                            KPNS Camp
+                          </span>
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-1 text-center">
+                          <EyeOutlined className="text-white text-base" />
+                        </div>
+                        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-[9px] font-bold text-white truncate text-center">
+                            {photo.category}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Facebook Link Below */}
+                <div className="pt-1">
+                  <a
+                    href="https://www.facebook.com/kpns.club"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-2xl bg-[#1877F2]/10 hover:bg-[#1877F2] text-[#1877F2] hover:text-white border border-[#1877F2]/20 hover:border-transparent transition-all font-bold text-xs group shadow-2xs"
+                  >
+                    <FacebookFilled className="text-base text-[#1877F2] group-hover:text-white transition-colors" />
+                    <span>View Children Health Camp on Facebook</span>
+                    <span className="text-xs group-hover:translate-x-0.5 transition-transform">↗</span>
+                  </a>
                 </div>
               </div>
 
               {/* Free Eye Care & Surgery Camps */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#3447AA] flex items-center justify-center text-2xl">
-                  <HeartFilled />
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xs space-y-5 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#3447AA] flex items-center justify-center text-2xl">
+                    <HeartFilled />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Free Eye Check-up & Surgery Camps</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    Free ophthalmic check-up camps are hosted at our club premises for visually
+                    challenged elders and rural patients in close collaboration with the esteemed{' '}
+                    <strong>Lions&apos; Club of EGRA</strong>.
+                  </p>
+                  <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs space-y-1 text-gray-700">
+                    <p>
+                      <strong>Medicines & Eyeglasses:</strong> Arranged and funded directly by KPNS.
+                    </p>
+                    <p>
+                      <strong>Complex Operations:</strong> Specialized cataract and eye surgery
+                      arrangements facilitated with hospital partners.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">Free Eye Check-up & Surgery Camps</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Free ophthalmic check-up camps are hosted at our club premises for visually
-                  challenged elders and rural patients in close collaboration with the esteemed{' '}
-                  <strong>Lions&apos; Club of EGRA</strong>.
-                </p>
-                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs space-y-1 text-gray-700">
-                  <p>
-                    <strong>Medicines & Eyeglasses:</strong> Arranged and funded directly by KPNS.
-                  </p>
-                  <p>
-                    <strong>Complex Operations:</strong> Specialized cataract and eye surgery
-                    arrangements facilitated with hospital partners.
-                  </p>
+
+                {/* Small Collage Pictures */}
+                <div className="space-y-2.5 pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-[#3447AA] uppercase tracking-wider flex items-center gap-1.5">
+                      <PictureOutlined /> Photo Highlights
+                    </span>
+                    <span className="text-[10px] text-gray-400">Click photo to enlarge</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {EYE_CAMP_PHOTOS.map((photo) => (
+                      <div
+                        key={photo.id}
+                        onClick={() => setPreviewPhoto(photo)}
+                        className="group relative aspect-4/3 rounded-xl overflow-hidden bg-gray-100 border border-gray-200/90 cursor-pointer shadow-2xs hover:shadow-md transition-all flex flex-col"
+                        title={photo.title}
+                      >
+                        <img
+                          src={photo.imageUrl}
+                          alt={photo.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {photo.isRealCampPhoto && (
+                          <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-[#3447AA]/90 backdrop-blur-xs text-white text-[8px] font-extrabold uppercase tracking-wider z-10 shadow-2xs">
+                            KPNS Camp
+                          </span>
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-1 text-center">
+                          <EyeOutlined className="text-white text-base" />
+                        </div>
+                        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-[9px] font-bold text-white truncate text-center">
+                            {photo.category}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Facebook Link Below */}
+                <div className="pt-1">
+                  <a
+                    href="https://www.facebook.com/kpns.club"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-2xl bg-[#1877F2]/10 hover:bg-[#1877F2] text-[#1877F2] hover:text-white border border-[#1877F2]/20 hover:border-transparent transition-all font-bold text-xs group shadow-2xs"
+                  >
+                    <FacebookFilled className="text-base text-[#1877F2] group-hover:text-white transition-colors" />
+                    <span>View Eye Check-up & Surgery Camp on Facebook</span>
+                    <span className="text-xs group-hover:translate-x-0.5 transition-transform">↗</span>
+                  </a>
                 </div>
               </div>
             </div>
@@ -1152,7 +1346,7 @@ function AboutContent() {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
               <div>
-                <span className="px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-900 text-[10px] font-bold">
+                <span className="px-2.5 py-0.5 rounded-md bg-[#3447AA]/10 text-[#3447AA] text-[10px] font-bold">
                   {previewPhoto.category}
                 </span>
                 <h4 className="text-base font-bold text-gray-900 mt-1">{previewPhoto.title}</h4>
