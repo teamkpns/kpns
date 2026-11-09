@@ -97,6 +97,10 @@ export default function MemberTransactionsPage() {
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [activeTab, setActiveTab] = useState('history');
 
+  // Dues statement filtering & search
+  const [duesSearchTerm, setDuesSearchTerm] = useState('');
+  const [duesStatusFilter, setDuesStatusFilter] = useState('ALL');
+
   // Receipt Modal
   const [selectedReceipt, setSelectedReceipt] = useState<TransactionRecord | null>(null);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
@@ -348,6 +352,28 @@ export default function MemberTransactionsPage() {
     });
   }, [transactions, searchTerm, typeFilter, eventsMap]);
 
+  // Filtered annual dues statements for table
+  const filteredDues = useMemo(() => {
+    return financialSummary.eventBreakdown.filter((item) => {
+      const term = duesSearchTerm.trim().toLowerCase();
+      const titleMatch = item.title.toLowerCase().includes(term);
+      const dateStr = dayjs(item.date).format('DD MMM YYYY').toLowerCase();
+      const yearStr = dayjs(item.date).year().toString();
+      const dateMatch = dateStr.includes(term) || yearStr.includes(term);
+      const statusMatch = item.status.toLowerCase().includes(term);
+
+      const matchSearch = term === '' || titleMatch || dateMatch || statusMatch;
+
+      const matchStatus =
+        duesStatusFilter === 'ALL' ||
+        (duesStatusFilter === 'PAID' && (item.status === 'PAID' || item.status === 'DONATION')) ||
+        (duesStatusFilter === 'DUE' && item.status === 'DUE') ||
+        (duesStatusFilter === 'DONATION' && item.status === 'DONATION');
+
+      return matchSearch && matchStatus;
+    });
+  }, [financialSummary.eventBreakdown, duesSearchTerm, duesStatusFilter]);
+
   // Print Receipt handler
   const handlePrintReceipt = (tx: TransactionRecord) => {
     setSelectedReceipt(tx);
@@ -521,7 +547,7 @@ export default function MemberTransactionsPage() {
                     key: 'dues',
                     label: (
                       <span className="font-bold flex items-center gap-2 text-xs sm:text-sm">
-                        <ClockCircleOutlined /> Annual Dues &amp; Fees Statement
+                        <ClockCircleOutlined /> Annual Dues &amp; Fees Statement ({financialSummary.eventBreakdown.length})
                       </span>
                     ),
                   },
@@ -652,16 +678,38 @@ export default function MemberTransactionsPage() {
               {/* Tab 2: Dues & Subscription Statement */}
               {activeTab === 'dues' && (
                 <div className="space-y-4 pt-2">
-                  <p className="text-xs text-gray-500">
-                    Below is your status for all mandatory annual club subscription fees and
-                    festival event contributions:
-                  </p>
+                  {/* Search and Filters */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <Input
+                      placeholder="Search by event, subscription, year..."
+                      prefix={<SearchOutlined className="text-gray-400" />}
+                      value={duesSearchTerm}
+                      onChange={(e) => setDuesSearchTerm(e.target.value)}
+                      allowClear
+                      className="max-w-xs rounded-xl text-xs h-10"
+                    />
 
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Select
+                        value={duesStatusFilter}
+                        onChange={setDuesStatusFilter}
+                        className="w-full sm:w-44 text-xs h-10"
+                        options={[
+                          { label: 'All Statements', value: 'ALL' },
+                          { label: 'Cleared (Paid)', value: 'PAID' },
+                          { label: 'Pending Dues', value: 'DUE' },
+                          { label: 'Extra Donations', value: 'DONATION' },
+                        ]}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dues Table */}
                   <div className="overflow-x-auto">
                     <Table
-                      dataSource={financialSummary.eventBreakdown}
+                      dataSource={filteredDues}
                       rowKey="eventId"
-                      pagination={false}
+                      pagination={{ pageSize: 8, showSizeChanger: false }}
                       className="rounded-2xl"
                       columns={[
                         {
