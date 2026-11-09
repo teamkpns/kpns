@@ -320,7 +320,8 @@ export default function MemberTransactionsPage() {
           balance: effectiveBalance,
           status,
         };
-      });
+      })
+      .filter((row) => row.status !== 'NOT_APPLICABLE');
 
     return {
       totalPaid,
