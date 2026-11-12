@@ -158,38 +158,44 @@ export default function HomePage() {
           </p>
 
           {/* Action Buttons */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-xl mx-auto w-full">
-            <Button
-              type="primary"
-              size="large"
-              icon={<HeartFilled className="text-pink-300" />}
-              onClick={() => setDonationModalOpen(true)}
-              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold text-sm sm:text-base h-11 sm:h-12 px-7 rounded-xl shadow-lg border-0 transition active:scale-95 cursor-pointer"
-            >
-              Donate Us
-            </Button>
-
-            <Link href="/register" className="w-full sm:w-auto">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-3.5 max-w-2xl mx-auto w-full flex-wrap">
+            <div className="w-full sm:w-auto flex justify-center">
               <Button
                 type="primary"
                 size="large"
-                icon={<UserAddOutlined />}
-                className="w-full sm:w-auto bg-[#FBEAEB] text-[#3447AA] hover:bg-white hover:text-[#1E2C78] font-bold text-sm sm:text-base h-11 sm:h-12 px-7 rounded-xl shadow-lg border-0 transition"
+                icon={<HeartFilled className="text-pink-300" />}
+                onClick={() => setDonationModalOpen(true)}
+                className="w-full sm:w-auto sm:min-w-[170px] bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold text-sm sm:text-base h-11 sm:h-12 px-6 rounded-xl shadow-lg border-0 transition active:scale-95 cursor-pointer flex items-center justify-center"
               >
-                Become a Member
+                Donate Us
               </Button>
-            </Link>
+            </div>
 
-            <Link href={currentUser ? '/member/dashboard' : '/login'} className="w-full sm:w-auto">
-              <Button
-                ghost
-                size="large"
-                icon={<LoginOutlined />}
-                className="w-full sm:w-auto border-white/60 text-white hover:border-white hover:bg-white/10 font-bold text-sm sm:text-base h-11 sm:h-12 px-7 rounded-xl transition"
-              >
-                {currentUser ? 'Go to Dashboard' : 'Member Login'}
-              </Button>
-            </Link>
+            <div className="w-full sm:w-auto flex justify-center">
+              <Link href="/register" className="w-full sm:w-auto inline-flex justify-center">
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<UserAddOutlined />}
+                  className="w-full sm:w-auto sm:min-w-[170px] bg-[#FBEAEB] text-[#3447AA] hover:bg-white hover:text-[#1E2C78] font-bold text-sm sm:text-base h-11 sm:h-12 px-6 rounded-xl shadow-lg border-0 transition flex items-center justify-center"
+                >
+                  Become a Member
+                </Button>
+              </Link>
+            </div>
+
+            <div className="w-full sm:w-auto flex justify-center">
+              <Link href={currentUser ? '/member/dashboard' : '/login'} className="w-full sm:w-auto inline-flex justify-center">
+                <Button
+                  ghost
+                  size="large"
+                  icon={<LoginOutlined />}
+                  className="w-full sm:w-auto sm:min-w-[170px] border-white/60 text-white hover:border-white hover:bg-white/10 font-bold text-sm sm:text-base h-11 sm:h-12 px-6 rounded-xl transition flex items-center justify-center"
+                >
+                  {currentUser ? 'Go to Dashboard' : 'Member Login'}
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Quick Metrics Bar */}
