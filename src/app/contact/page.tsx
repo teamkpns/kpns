@@ -15,12 +15,20 @@ import {
   XOutlined,
   GlobalOutlined,
   ClockCircleOutlined,
+  HeartFilled,
+  CopyOutlined,
+  CheckOutlined,
+  DownloadOutlined,
+  QrcodeOutlined,
+  BankOutlined,
+  SafetyCertificateOutlined,
+  MobileOutlined,
 } from '@ant-design/icons';
 import { Header } from '@/components/common/Header';
 import { Footer } from '@/components/common/Footer';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 import { usePortal } from '@/context/portal-context';
-import { SOCIAL_LINKS, CLUB_COORDINATES } from '@/lib/constants';
+import { SOCIAL_LINKS, CLUB_COORDINATES, DONATION_BANK_DETAILS } from '@/lib/constants';
 
 const { TextArea } = Input;
 
@@ -30,6 +38,16 @@ export default function ContactPage() {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopy = (text: string, fieldName: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    message.success(`${fieldName} copied to clipboard!`);
+    setTimeout(() => {
+      setCopiedField((prev) => (prev === fieldName ? null : prev));
+    }, 2000);
+  };
 
   const handleSubmit = async (values: { name: string; phone: string; email: string; message: string }) => {
     setSubmitting(true);
@@ -413,6 +431,158 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+
+        {/* 4. Official Donation & Bank Account Details */}
+        <section className="bg-white rounded-3xl p-6 sm:p-9 border border-gray-100 shadow-sm space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#3447AA] flex items-center gap-1.5">
+                <HeartFilled className="text-pink-500" /> Community Contribution &amp; Welfare
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">
+                Official Bank Account for Donations
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                Support Khejurda Palliunnyayan Narayan Sangha programs via Direct Bank Transfer (NEFT / RTGS / IMPS) or Instant UPI.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <img
+                src={DONATION_BANK_DETAILS.bankLogoUrl}
+                alt={DONATION_BANK_DETAILS.bankName}
+                className="h-10 sm:h-12 object-contain"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+            {/* Left QR Code Card (5 Cols) */}
+            <div className="lg:col-span-5 bg-gradient-to-b from-[#F8FAFC] to-white p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col items-center text-center space-y-3">
+              <div className="bg-white p-3.5 rounded-2xl border-2 border-dashed border-[#3447AA]/30 shadow-md">
+                <img
+                  src={DONATION_BANK_DETAILS.qrCodeUrl}
+                  alt="KPNS Donation UPI QR Code"
+                  className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs font-black text-gray-800 flex items-center justify-center gap-1.5">
+                  <QrcodeOutlined className="text-[#3447AA]" />
+                  <span>Scan to Donate via any UPI App</span>
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  Google Pay &bull; PhonePe &bull; Paytm &bull; BHIM &bull; CRED &bull; Any Bank App
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <a
+                  href={DONATION_BANK_DETAILS.upiIntentUrl}
+                  className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-[#3447AA] text-white text-xs font-bold sm:hidden"
+                >
+                  <MobileOutlined /> Open UPI App
+                </a>
+                <a
+                  href={DONATION_BANK_DETAILS.qrCodeUrl}
+                  download="KPNS-Donation-QR.png"
+                  className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition"
+                >
+                  <DownloadOutlined /> Save QR
+                </a>
+              </div>
+            </div>
+
+            {/* Right Account Details (7 Cols) */}
+            <div className="lg:col-span-7 space-y-3">
+              <div className="flex items-center gap-2 pb-1 text-[#3447AA]">
+                <BankOutlined className="text-base" />
+                <span className="text-xs font-black uppercase tracking-wider">
+                  Verified Bank Transfer Credentials
+                </span>
+              </div>
+
+              {/* Beneficiary Name */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3.5 rounded-2xl bg-gray-50 border border-gray-100">
+                <span className="text-xs text-gray-500 font-medium">Account / Beneficiary Name:</span>
+                <span className="font-bold text-xs sm:text-sm text-gray-900 text-right">
+                  {DONATION_BANK_DETAILS.accountName}
+                </span>
+              </div>
+
+              {/* Bank Name */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3.5 rounded-2xl bg-gray-50 border border-gray-100">
+                <span className="text-xs text-gray-500 font-medium">Bank Name:</span>
+                <span className="font-bold text-sm text-[#3447AA]">
+                  {DONATION_BANK_DETAILS.bankName}
+                </span>
+              </div>
+
+              {/* Account Number with Copy */}
+              <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-gray-50 border border-gray-100">
+                <div>
+                  <span className="text-xs text-gray-500 font-medium block">Account Number:</span>
+                  <span className="font-mono font-black text-base text-gray-900 tracking-wider">
+                    {DONATION_BANK_DETAILS.accountNumber}
+                  </span>
+                </div>
+                <Button
+                  size="middle"
+                  icon={copiedField === 'Account Number' ? <CheckOutlined className="text-green-600" /> : <CopyOutlined />}
+                  onClick={() => handleCopy(DONATION_BANK_DETAILS.accountNumber, 'Account Number')}
+                  className="rounded-xl text-xs font-bold"
+                >
+                  {copiedField === 'Account Number' ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
+
+              {/* IFSC Code with Copy */}
+              <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-gray-50 border border-gray-100">
+                <div>
+                  <span className="text-xs text-gray-500 font-medium block">IFSC Code:</span>
+                  <span className="font-mono font-black text-base text-gray-900 tracking-wider">
+                    {DONATION_BANK_DETAILS.ifscCode}
+                  </span>
+                </div>
+                <Button
+                  size="middle"
+                  icon={copiedField === 'IFSC Code' ? <CheckOutlined className="text-green-600" /> : <CopyOutlined />}
+                  onClick={() => handleCopy(DONATION_BANK_DETAILS.ifscCode, 'IFSC Code')}
+                  className="rounded-xl text-xs font-bold"
+                >
+                  {copiedField === 'IFSC Code' ? 'Copied' : 'Copy'}
+                </Button>
+              </div>
+
+              {/* UPI ID with Copy */}
+              <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-blue-50/70 border border-blue-100">
+                <div>
+                  <span className="text-xs text-blue-900 font-medium block">UPI ID / VPA:</span>
+                  <span className="font-mono font-black text-sm sm:text-base text-[#3447AA] tracking-wide">
+                    {DONATION_BANK_DETAILS.upiId}
+                  </span>
+                </div>
+                <Button
+                  size="middle"
+                  type="primary"
+                  icon={copiedField === 'UPI ID' ? <CheckOutlined /> : <CopyOutlined />}
+                  onClick={() => handleCopy(DONATION_BANK_DETAILS.upiId, 'UPI ID')}
+                  className="bg-[#3447AA] hover:bg-[#283887] rounded-xl text-xs font-bold"
+                >
+                  {copiedField === 'UPI ID' ? 'Copied' : 'Copy UPI'}
+                </Button>
+              </div>
+
+              <div className="pt-1 flex items-center gap-2 text-xs text-gray-500">
+                <SafetyCertificateOutlined className="text-green-600 text-sm shrink-0" />
+                <span>
+                  Official registered NGO account under West Bengal Societies Registration Act, 1961 (Reg. No: SO168946).
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

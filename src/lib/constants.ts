@@ -118,6 +118,17 @@ export const SOCIAL_LINKS = {
   x: 'https://x.com/KPNS_CLUB',
 };
 
+export const DONATION_BANK_DETAILS = {
+  accountName: 'KHEJURDA PALLIUNNYAYAN NARAYAN SANGHA',
+  bankName: 'Indian Bank',
+  accountNumber: '50171492459',
+  ifscCode: 'IDIB000B571',
+  upiId: '50171492459@indianbk',
+  bankLogoUrl: '/img/indian-bank-logo.png',
+  qrCodeUrl: '/img/donation-qr.png',
+  upiIntentUrl: 'upi://pay?pa=50171492459@indianbk&pn=Khejurda%20Palliunnyayan%20Narayan%20Sangha&cu=INR',
+};
+
 export const CLUB_COORDINATES = {
   lat: '21.8986° N',
   long: '87.5332° E',

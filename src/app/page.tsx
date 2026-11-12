@@ -19,11 +19,13 @@ import {
   YoutubeFilled,
   LeftOutlined,
   RightOutlined,
+  HeartFilled,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Header } from '@/components/common/Header';
 import { Footer } from '@/components/common/Footer';
 import { MobileBottomNav } from '@/components/common/MobileBottomNav';
+import { DonationModal } from '@/components/common/DonationModal';
 import { usePortal } from '@/context/portal-context';
 import { SOCIAL_LINKS, COMMITTEE_ROLE_ORDER } from '@/lib/constants';
 import { Member } from '@/types';
@@ -99,6 +101,7 @@ export default function HomePage() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [activeVisionId, setActiveVisionId] = useState<string | null>(null);
+  const [donationModalOpen, setDonationModalOpen] = useState(false);
 
   useEffect(() => {
     if (slideshowImages.length <= 1 || isPaused) return;
@@ -155,7 +158,17 @@ export default function HomePage() {
           </p>
 
           {/* Action Buttons */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto w-full">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-xl mx-auto w-full">
+            <Button
+              type="primary"
+              size="large"
+              icon={<HeartFilled className="text-pink-300" />}
+              onClick={() => setDonationModalOpen(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold text-sm sm:text-base h-11 sm:h-12 px-7 rounded-xl shadow-lg border-0 transition active:scale-95 cursor-pointer"
+            >
+              Donate Us
+            </Button>
+
             <Link href="/register" className="w-full sm:w-auto">
               <Button
                 type="primary"
@@ -607,6 +620,52 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ── 6. Donation Callout Section ───────────────────────────────────────── */}
+      <section className="py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="bg-gradient-to-r from-[#1E2C78] via-[#2A3B94] to-[#3447AA] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 rounded-full bg-pink-400/15 blur-3xl pointer-events-none" />
+
+          <div className="space-y-3 max-w-2xl text-center md:text-left relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-pink-200 border border-white/20">
+              <HeartFilled className="text-pink-300" /> Support Grassroots Social Work
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+              Fuel Community Healthcare &amp; Child Education
+            </h2>
+            <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed font-light">
+              Your contribution directly supports our annual eye surgery camps, Anganwadi child nutrition supplies, and academic felicitations across rural Purba Medinipur. 100% volunteer managed.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 relative z-10 w-full sm:w-auto">
+            <Button
+              type="primary"
+              size="large"
+              icon={<HeartFilled className="text-pink-400" />}
+              onClick={() => setDonationModalOpen(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold text-sm sm:text-base h-12 px-8 rounded-xl shadow-lg border-0 transition active:scale-95 cursor-pointer"
+            >
+              Donate Us
+            </Button>
+            <Link href="/contact" className="w-full sm:w-auto">
+              <Button
+                ghost
+                size="large"
+                className="w-full sm:w-auto border-white/50 text-white hover:bg-white/10 font-bold text-sm h-12 px-6 rounded-xl transition"
+              >
+                View Bank Details
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Donation Modal with blurred background */}
+      <DonationModal
+        open={donationModalOpen}
+        onClose={() => setDonationModalOpen(false)}
+      />
 
       {/* Footer */}
       <Footer />

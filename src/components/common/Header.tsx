@@ -21,8 +21,10 @@ import {
   MessageOutlined,
   FileImageOutlined,
   WalletOutlined,
+  HeartFilled,
 } from '@ant-design/icons';
 import { KPNSLogo } from './KPNSLogo';
+import { DonationModal } from './DonationModal';
 import { usePortal } from '@/context/portal-context';
 import { KPNS_COLORS } from '@/lib/constants';
 
@@ -37,6 +39,7 @@ export const Header: React.FC = () => {
     switchDemoUser,
   } = usePortal();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [donationModalOpen, setDonationModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -232,7 +235,16 @@ export const Header: React.FC = () => {
         </nav>
 
         {/* Right action items */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Donate Us Quick Button */}
+          <Button
+            size="middle"
+            icon={<HeartFilled className="text-pink-500" />}
+            onClick={() => setDonationModalOpen(true)}
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-full font-bold text-xs bg-pink-50 hover:bg-pink-100 text-[#3447AA] border border-pink-200 transition"
+          >
+            Donate Us
+          </Button>
           {/* Notification bell (authenticated only) */}
           {isAuth && (
             <Link
@@ -343,6 +355,17 @@ export const Header: React.FC = () => {
             <MailOutlined className="text-base text-[#3447AA]" />
             <span>Contact Us</span>
           </Link>
+
+          <button
+            onClick={() => {
+              setMobileDrawerOpen(false);
+              setDonationModalOpen(true);
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-[#3447AA] font-bold text-sm border border-pink-200 text-left transition cursor-pointer"
+          >
+            <HeartFilled className="text-base text-pink-500" />
+            <span>Donate Us</span>
+          </button>
 
           <Link
             href="/register"
@@ -510,6 +533,11 @@ export const Header: React.FC = () => {
           </div>
         </div>
       </Drawer>
+
+      <DonationModal
+        open={donationModalOpen}
+        onClose={() => setDonationModalOpen(false)}
+      />
     </header>
   );
 };
