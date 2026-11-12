@@ -39,7 +39,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({ open, onClose }) =
       footer={null}
       centered
       width={560}
-      destroyOnClose
+      destroyOnHidden
       closeIcon={
         <span className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition">
           <CloseOutlined className="text-sm" />
