@@ -82,20 +82,21 @@ export const DonationModal: React.FC<DonationModalProps> = ({ open, onClose }) =
         </div>
 
         {/* QR Code Card */}
-        <div className="bg-gradient-to-b from-[#F8FAFC] to-white p-5 rounded-3xl border border-gray-200 shadow-xs flex flex-col items-center text-center space-y-3">
-          <div className="relative group">
-            <div className="bg-white p-3 rounded-2xl border-2 border-dashed border-[#3447AA]/30 shadow-md">
+        <div className="bg-gradient-to-b from-[#F8FAFC] to-white p-5 rounded-3xl border border-gray-200 shadow-xs flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-full flex flex-col items-center justify-center text-center">
+            {/* Center-aligned QR Frame */}
+            <div className="w-fit mx-auto flex items-center justify-center p-3 sm:p-3.5 bg-white rounded-2xl border-2 border-dashed border-[#3447AA]/30 shadow-md">
               <img
                 src={DONATION_BANK_DETAILS.qrCodeUrl}
                 alt="KPNS UPI QR Code"
-                className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl"
+                className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl block mx-auto aspect-square"
               />
             </div>
-            <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-700">
+            <div className="mt-2.5 flex items-center justify-center gap-1.5 text-xs font-black text-gray-800">
               <QrcodeOutlined className="text-[#3447AA]" />
               <span>Scan to Pay via any UPI App</span>
             </div>
-            <p className="text-[10px] text-gray-400">
+            <p className="text-[10px] text-gray-400 mt-0.5">
               Google Pay &bull; PhonePe &bull; Paytm &bull; BHIM &bull; CRED &bull; Any Banking App
             </p>
           </div>

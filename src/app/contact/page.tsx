@@ -458,12 +458,12 @@ export default function ContactPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
             {/* Left QR Code Card (5 Cols) */}
-            <div className="lg:col-span-5 bg-gradient-to-b from-[#F8FAFC] to-white p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col items-center text-center space-y-3">
-              <div className="bg-white p-3.5 rounded-2xl border-2 border-dashed border-[#3447AA]/30 shadow-md">
+            <div className="lg:col-span-5 bg-gradient-to-b from-[#F8FAFC] to-white p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col items-center justify-center text-center space-y-3">
+              <div className="w-fit mx-auto flex items-center justify-center p-3.5 bg-white rounded-2xl border-2 border-dashed border-[#3447AA]/30 shadow-md">
                 <img
                   src={DONATION_BANK_DETAILS.qrCodeUrl}
                   alt="KPNS Donation UPI QR Code"
-                  className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl"
+                  className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-xl block mx-auto aspect-square"
                 />
               </div>
 
