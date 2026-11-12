@@ -90,10 +90,10 @@ export default function LoginPage() {
               KPNS Digital Portal
             </span>
             <div className="space-y-1.5">
-              <h1 className="text-2xl xl:text-3xl font-black text-white leading-tight">
+              <h1 suppressHydrationWarning className="text-2xl xl:text-3xl font-black text-white leading-tight">
                 {clubNameEnglish}
               </h1>
-              <p className="text-lg xl:text-xl font-bold text-pink-200 leading-snug">
+              <p suppressHydrationWarning className="text-lg xl:text-xl font-bold text-pink-200 leading-snug">
                 {clubNameBengali}
               </p>
             </div>
@@ -154,10 +154,10 @@ export default function LoginPage() {
                 <KPNSLogo size="md" showSubtitle={false} />
               </div>
               <div className="space-y-0.5">
-                <h1 className="text-lg sm:text-xl font-black text-gray-900 leading-snug">
+                <h1 suppressHydrationWarning className="text-lg sm:text-xl font-black text-gray-900 leading-snug">
                   {clubNameEnglish}
                 </h1>
-                <p className="text-sm sm:text-base font-bold text-[#3447AA]">
+                <p suppressHydrationWarning className="text-sm sm:text-base font-bold text-[#3447AA]">
                   {clubNameBengali}
                 </p>
               </div>
