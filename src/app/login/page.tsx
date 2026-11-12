@@ -102,36 +102,35 @@ export default function LoginPage() {
               and community communications.
             </p>
 
-          </div>
-
-          {/* How to Login Guide — Left Panel (Desktop) */}
-          <div className="relative z-10 mt-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-4 space-y-3">
-            <div className="flex items-center gap-2 mb-1">
-              <InfoCircleOutlined className="text-pink-300 text-sm shrink-0" />
-              <span className="text-xs font-bold text-pink-100 tracking-wide uppercase">How to Login?</span>
-            </div>
-            <div className="space-y-2 text-xs text-blue-100/90">
-              {[
-                { n: 1, text: 'Enter your Member ID, Mobile Number, or Email ID' },
-                { n: 2, text: 'Enter your account password carefully' },
-                { n: 3, text: 'Click Sign In — access your dashboard & profile' },
-              ].map(({ n, text }) => (
-                <div key={n} className="flex items-start gap-2.5">
-                  <span className="shrink-0 w-5 h-5 rounded-full bg-white/20 text-white text-[10px] font-bold flex items-center justify-center leading-none">
-                    {n}
-                  </span>
-                  <span className="leading-relaxed pt-0.5">{text}</span>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-white/15 pt-2.5 space-y-1.5 text-xs text-blue-100/80">
-              <div className="flex items-start gap-2">
-                <QuestionCircleOutlined className="text-pink-300 shrink-0 mt-0.5" />
-                <span><span className="font-semibold text-pink-100">Forgot Password?</span> Use the Forgot Password link to recover your account.</span>
+            {/* How to Login Guide — Left Panel (Desktop) */}
+            <div className="relative z-10 mt-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-4 space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <InfoCircleOutlined className="text-pink-300 text-sm shrink-0" />
+                <span className="text-xs font-bold text-pink-100 tracking-wide uppercase">How to Login?</span>
               </div>
-              <div className="flex items-start gap-2">
-                <InfoCircleOutlined className="text-pink-300 shrink-0 mt-0.5" />
-                <span><span className="font-semibold text-pink-100">Need Help?</span> Contact the KPNS IT Secretary for login assistance.</span>
+              <div className="space-y-2 text-xs text-blue-100/90">
+                {[
+                  { n: 1, text: 'Enter your Member ID, Mobile Number, or Email ID' },
+                  { n: 2, text: 'Enter your account password carefully' },
+                  { n: 3, text: 'Click Sign In — access your dashboard & profile' },
+                ].map(({ n, text }) => (
+                  <div key={n} className="flex items-start gap-2.5">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-white/20 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                      {n}
+                    </span>
+                    <span className="leading-relaxed pt-0.5">{text}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-white/15 pt-2.5 space-y-1.5 text-xs text-blue-100/80">
+                <div className="flex items-start gap-2">
+                  <QuestionCircleOutlined className="text-pink-300 shrink-0 mt-0.5" />
+                  <span><span className="font-semibold text-pink-100">Forgot Password?</span> Use the Forgot Password link to recover your account.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <InfoCircleOutlined className="text-pink-300 shrink-0 mt-0.5" />
+                  <span><span className="font-semibold text-pink-100">Need Help?</span> Contact the KPNS IT Secretary for login assistance.</span>
+                </div>
               </div>
             </div>
           </div>
