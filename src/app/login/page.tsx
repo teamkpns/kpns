@@ -10,7 +10,6 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone,
   ArrowLeftOutlined,
-  CheckCircleFilled,
   InfoCircleOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
@@ -103,20 +102,6 @@ export default function LoginPage() {
               and community communications.
             </p>
 
-            <div className="pt-3 space-y-2 text-xs text-pink-100">
-              <div className="flex items-center gap-2">
-                <CheckCircleFilled className="text-pink-300 shrink-0" />
-                <span>Instant profile verification &amp; ID generation</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircleFilled className="text-pink-300 shrink-0" />
-                <span>Masked Aadhaar and high-grade privacy protection</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircleFilled className="text-pink-300 shrink-0" />
-                <span>Mobile, tablet, and desktop responsive design</span>
-              </div>
-            </div>
           </div>
 
           {/* How to Login Guide — Left Panel (Desktop) */}
